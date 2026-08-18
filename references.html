@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nos Références | DIX SCOP CAE</title>
+    
+    <!-- Police Oswald sécurisée -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/oswald@5.0.8/index.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet (Carte) & PapaParse (CSV) & Lucide (Icônes) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dix: {
+                            dark: '#405F59',
+                            light: '#549e39',
+                            bg: '#f9fafb'
+                        }
+                    },
+                    fontFamily: {
+                        oswald: ['Oswald', 'sans-serif'],
+                        georgia: ['Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Georgia', serif; color: #1f2937; height: 100vh; display: flex; flex-direction: column; overflow: hidden; background-color: #f9fafb; }
+        .font-oswald { font-family: 'Oswald', sans-serif !important; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        #map { height: 100%; width: 100%; background: #e2e8f0; z-index: 1; }
+        
+        /* Barre de défilement discrète */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #549e39; border-radius: 10px; }
+        
+        /* Style Accordéon */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .active-card .accordion-content {
+            max-height: 1000px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+        .active-card { 
+            border-left: 8px solid #549e39 !important; 
+            background-color: white !important; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+            transform: scale(1.01);
+        }
+        .marker-dot { transition: all 0.3s ease; cursor: pointer; }
+        
+        /* Badge Logo sur la carte */
+        .map-logo-badge {
+            background: white;
+            border: 2px solid #549e39;
+            border-radius: 8px;
+            padding: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            min-height: 40px;
+            max-width: 120px;
+        }
+        .leaflet-tooltip-pane .leaflet-tooltip {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+        }
+        
+        /* Bouton Vue Générale personnalisé */
+        .map-control-btn {
+            background: white;
+            border: 2px solid #405F59;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .map-control-btn:hover { background: #405F59; color: white; }
+        .map-control-btn:hover i { color: white !important; }
+
+        /* Ajustements Selects */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23405F59'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem !important;
+        }
+
+        /* Filtre pour rendre la carte française grise et élégante */
+        .french-map-tiles {
+            filter: grayscale(100%) opacity(60%) contrast(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="bg-white shadow-sm flex-shrink-0 z-50 relative">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="text-2xl font-oswald border-2 border-dix-dark text-dix-dark px-2 py-0.5 rounded tracking-tighter hover:bg-dix-dark hover:text-white transition-colors">DIX</a>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6 items-center font-oswald text-sm text-dix-dark font-medium">
+                <a href="index.html" class="hover:text-dix-light transition-colors">Accueil</a>
+                <a href="expertises.html" class="hover:text-dix-light transition-colors">Expertises</a>
+                <a href="references.html" class="text-dix-light font-bold">Références</a>
+                <a href="outils.html" class="hover:text-dix-light transition-colors">Outils</a>
+                <a href="collectif.html" class="hover:text-dix-light transition-colors">La Coopérative</a>
+                <a href="index.html#contact" class="bg-dix-light text-white px-5 py-2 rounded-full hover:bg-green-700 transition-colors">Nous contacter</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="border-b border-gray-200 bg-white flex-shrink-0 z-40 relative shadow-sm">
+        <div class="flex flex-col lg:flex-row items-center w-full px-6 py-4 gap-4">
+            <div class="w-full lg:w-1/3">
+                <h1 class="text-2xl md:text-3xl tracking-widest text-dix-dark font-oswald flex items-center">
+                    <i data-lucide="map" class="mr-3 text-dix-light"></i> Explorer les projets
+                </h1>
+            </div>
+            
+            <div class="flex-1 flex flex-wrap gap-3 justify-end items-center w-full">
+                <!-- Recherche libre -->
+                <div class="relative flex-grow max-w-sm">
+                    <input type="text" id="searchInput" placeholder="Rechercher (mot-clé, client, ville)..." 
+                        class="w-full pl-10 pr-4 py-2 border-2 rounded-full text-sm outline-none focus:border-dix-light border-gray-200 bg-gray-50 transition-colors font-sans">
+                    <i data-lucide="search" class="absolute left-3.5 top-2.5 text-gray-400 w-4 h-4"></i>
+                </div>
+                
+                <!-- Filtres déroulants -->
+                <select id="themeFilter" class="px-4 py-2 border-2 rounded-full text-xs font-oswald tracking-widest outline-none bg-white border-gray-200 cursor-pointer hover:border-dix-light transition-colors min-w-[160px]">
+                    <option value="">Toutes thématiques</option>
+                </select>
+                <select id="typeFilter" class="px-4 py-2 border-2 rounded-full text-xs font-oswald tracking-widest outline-none bg-white border-gray-200 cursor-pointer hover:border-dix-light transition-colors min-w-[140px]">
+                    <option value="">Types porteurs</option>
+                </select>
+                <select id="yearFilter" class="px-4 py-2 border-2 rounded-full text-xs font-oswald tracking-widest outline-none bg-white border-gray-200 cursor-pointer hover:border-dix-light transition-colors min-w-[120px]">
+                    <option value="">Toutes années</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+        
+        <!-- SIDEBAR GAUCHE (Liste des projets) -->
+        <div id="sidebar" class="w-full h-1/2 md:h-full md:w-1/3 lg:w-[400px] bg-gray-50 border-r border-gray-200 overflow-y-auto custom-scroll p-4 md:p-6 space-y-4 shadow-inner relative z-20">
+            
+            <div id="loader" class="flex flex-col items-center justify-center py-20 text-gray-400 text-center">
+                <div id="loaderIcon" class="animate-spin rounded-full h-10 w-10 border-b-2 border-dix-light mb-4"></div>
+                <p id="loaderStatus" class="text-sm font-oswald tracking-widest">Synchronisation des références...</p>
+                <p id="errorHint" class="hidden mt-4 text-xs text-red-500 max-w-xs font-sans">Impossible de télécharger les données. Veuillez vérifier votre connexion.</p>
+            </div>
+            
+            <div id="resultsCount" class="hidden text-xs font-oswald text-gray-500 mb-2 tracking-widest pb-2 border-b border-gray-200"></div>
+            
+            <div id="resultsList" class="space-y-4 hidden pb-10"></div>
+        </div>
+
+        <!-- ZONE CARTE DROITE -->
+        <div class="flex-1 relative overflow-hidden z-10">
+            <div id="map"></div>
+            
+            <!-- Bouton pour dézoomer -->
+            <div class="absolute bottom-8 right-6 z-[1000]">
+                <button onclick="resetView()" class="map-control-btn group" title="Vue Générale (France)">
+                    <i data-lucide="maximize" class="w-5 h-5 text-dix-dark group-hover:text-white transition-colors"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // URL du fichier Google Sheets
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSm_4bPCRFK_gGVkxP-ZeTHzLauhQtqNg_zG2chKNuY8-iyDAuHjc_CQbpBCU4LY9-GRi1579CsUkhr/pub?gid=917397259&single=true&output=csv";
+        
+        // Mappage des colonnes selon la structure établie
+        const COLS = { 
+            ANNEE: 0, REGION: 1, LOGO: 2, CLIENT: 3, TYPE: 4, CATEGORIE: 5, 
+            TITRE: 6, DESC: 7, ADRESSE: 8, CP: 9, VILLE: 10, LAT: 11, LNG: 12 
+        };
+        
+        let allData = [];
+        let map, markersLayer;
+        let activeMarker = null;
+
+        // Fonction de nettoyage HTML pour éviter les injections
+        function escapeHtml(unsafe) {
+            return (unsafe || "").toString()
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        // Initialisation des icônes Lucide
+        function refreshIcons() {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        // Gestion du loader visuel
+        function updateLoaderStatus(status, isError = false) {
+            const statusEl = document.getElementById('loaderStatus');
+            const hintEl = document.getElementById('errorHint');
+            const loaderIcon = document.getElementById('loaderIcon');
+            
+            if (statusEl) statusEl.textContent = status;
+            if (isError) {
+                if (hintEl) hintEl.classList.remove('hidden');
+                if (loaderIcon) loaderIcon.classList.add('hidden');
+            }
+        }
+
+        // Démarrage au chargement de la fenêtre
+        window.addEventListener('load', function() {
+            refreshIcons();
+            initMap();
+            loadData();
+        });
+
+        function initMap() {
+            map = L.map('map', { zoomControl: false }).setView([46.80, 2.50], 6);
+            
+            // Serveur OpenStreetMap France avec filtre gris personnalisé via CSS
+            L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap France',
+                className: 'french-map-tiles'
+            }).addTo(map);
+            
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+        }
+
+        // Nettoyage de l'URL du logo
+        function cleanUrl(text) {
+            if (!text) return null;
+            let url = String(text).trim();
+            const match = url.match(/["'](http[^"']+)["']/i);
+            return match ? match[1] : (url.startsWith('http') ? url : null);
+        }
+
+        function loadData() {
+            Papa.parse(CSV_URL, {
+                download: true,
+                header: false,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    try {
+                        if (!results.data || results.data.length < 2) throw new Error("Fichier vide");
+                        
+                        const rows = results.data.slice(1); // Ignorer les entêtes
+                        
+                        allData = rows.map((row, index) => {
+                            // Nettoyage des coordonnées GPS
+                            const lat = parseFloat(String(row[COLS.LAT] || "").replace(',', '.').replace(/\s/g, ''));
+                            const lng = parseFloat(String(row[COLS.LNG] || "").replace(',', '.').replace(/\s/g, ''));
+                            if (isNaN(lat) || isNaN(lng)) return null;
+                            
+                            let yearRaw = row[COLS.ANNEE] || "";
+                            let yearDisplay = yearRaw.split('\n')[0].trim();
+                            
+                            return {
+                                id: index,
+                                year: yearDisplay,
+                                region: row[COLS.REGION] || "",
+                                logo: cleanUrl(row[COLS.LOGO]),
+                                client: row[COLS.CLIENT] || "Client inconnu",
+                                typePorteur: row[COLS.TYPE] || "Autre",
+                                category: row[COLS.CATEGORIE] || "Mission",
+                                title: row[COLS.TITRE] || "Titre non défini",
+                                desc: row[COLS.DESC] || "",
+                                adresse: row[COLS.ADRESSE] || "",
+                                cp: row[COLS.CP] || "",
+                                city: row[COLS.VILLE] || "",
+                                lat: lat, 
+                                lng: lng
+                            };
+                        }).filter(Boolean); // Retire les lignes invalides (sans GPS)
+                        
+                        renderFilters();
+                        
+                        // LECTURE MAGIQUE DE L'URL (Filtre entrant depuis les autres pages)
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const themeQuery = urlParams.get('theme');
+                        if (themeQuery) {
+                            document.getElementById('searchInput').value = themeQuery;
+                        }
+                        
+                        // Lancer le premier affichage
+                        filterData();
+                        
+                        document.getElementById('loader').classList.add('hidden');
+                        document.getElementById('resultsList').classList.remove('hidden');
+                        document.getElementById('resultsCount').classList.remove('hidden');
+                    } catch (err) {
+                        console.error("Erreur parsing:", err);
+                        updateLoaderStatus("Erreur de format de données", true);
+                    }
+                },
+                error: (err) => {
+                    console.error("Erreur réseau:", err);
+                    updateLoaderStatus("Accès aux données bloqué", true);
+                }
+            });
+        }
+
+        function renderFilters() {
+            // Catégories (Thèmes)
+            const categories = [...new Set(allData.map(d => d.category))].filter(Boolean).sort();
+            const themeSelect = document.getElementById('themeFilter');
+            categories.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c; opt.textContent = c.toUpperCase();
+                themeSelect.appendChild(opt);
+            });
+
+            // Types de porteurs
+            const types = [...new Set(allData.map(d => d.typePorteur))].filter(Boolean).sort();
+            const typeSelect = document.getElementById('typeFilter');
+            types.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t; opt.textContent = t.toUpperCase();
+                typeSelect.appendChild(opt);
+            });
+
+            // Années
+            let years = [...new Set(allData.map(d => d.year))].filter(Boolean);
+            years.sort((a, b) => {
+                if (a === "En cours") return -1;
+                if (b === "En cours") return 1;
+                return b.localeCompare(a); // Décroissant
+            });
+            const yearSelect = document.getElementById('yearFilter');
+            years.forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y; opt.textContent = y.toUpperCase();
+                yearSelect.appendChild(opt);
+            });
+        }
+
+        function render(data) {
+            const listContainer = document.getElementById('resultsList');
+            const countContainer = document.getElementById('resultsCount');
+            
+            listContainer.innerHTML = '';
+            markersLayer.clearLayers();
+            const bounds = [];
+            
+            countContainer.textContent = `${data.length} référence${data.length > 1 ? 's' : ''} trouvée${data.length > 1 ? 's' : ''}`;
+            
+            // Jitter dynamique : Empêcher les marqueurs exactement au même endroit de se chevaucher
+            const coordTracker = {};
+            
+            data.forEach(item => {
+                // Application du Jitter (Spirale)
+                const coordKey = item.lat + "," + item.lng;
+                if (coordTracker[coordKey]) {
+                    const count = coordTracker[coordKey];
+                    coordTracker[coordKey]++;
+                    const radius = 0.003 * count; // Décalage proportionnel
+                    const angle = count * 2.4; 
+                    item.lat += Math.cos(angle) * radius;
+                    item.lng += Math.sin(angle) * radius;
+                } else {
+                    coordTracker[coordKey] = 1;
+                }
+
+                // 1. Création de la Carte Latérale HTML
+                const card = document.createElement('div');
+                card.id = `card-${item.id}`;
+                card.className = "bg-white rounded-xl cursor-pointer transition-all duration-300 border border-gray-200 p-4 hover:border-dix-light group shadow-sm";
+                
+                const clientEscaped = escapeHtml(item.client);
+                const initialEscaped = escapeHtml(item.client.charAt(0));
+                
+                let displayAddress = "";
+                if(item.adresse) displayAddress += escapeHtml(item.adresse) + ", ";
+                if(item.cp) displayAddress += escapeHtml(item.cp) + " ";
+                if(item.city) displayAddress += escapeHtml(item.city);
+
+                let logoHtml;
+                if (item.logo && item.logo.trim() !== "") {
+                    logoHtml = `<img src="${escapeHtml(item.logo)}" onerror="this.onerror=null; this.outerHTML='<div class=\\'text-dix-dark opacity-30 font-oswald text-3xl w-full h-full flex items-center justify-center\\'>${initialEscaped}</div>'" class="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all">`;
+                } else {
+                    logoHtml = `<div class="text-dix-dark opacity-30 font-oswald text-3xl w-full h-full flex items-center justify-center">${initialEscaped}</div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center p-2 border border-gray-100 flex-shrink-0">
+                            ${logoHtml}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="text-base font-bold text-dix-dark font-oswald leading-tight uppercase truncate pr-2">${clientEscaped}</h4>
+                                <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 rounded text-gray-600 group-hover:bg-dix-light group-hover:text-white transition-colors flex-shrink-0">${escapeHtml(item.year)}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                <span class="text-[9px] uppercase tracking-wider text-dix-light font-bold border border-dix-light/30 px-1.5 rounded">${escapeHtml(item.category)}</span>
+                                <span class="text-[9px] uppercase tracking-wider text-gray-500 bg-gray-100 px-1.5 rounded">${escapeHtml(item.typePorteur)}</span>
+                            </div>
+                            <p class="text-xs leading-snug text-gray-700 font-serif line-clamp-2">${escapeHtml(item.title)}</p>
+                            
+                            <div class="accordion-content">
+                                <div class="h-px bg-gray-100 w-full mb-3"></div>
+                                <p class="text-xs text-gray-600 leading-relaxed whitespace-pre-line mb-3 font-sans">${escapeHtml(item.desc) || 'Pas de description supplémentaire.'}</p>
+                                <div class="flex items-start gap-2 text-[10px] text-gray-500 font-sans bg-gray-50 p-2 rounded">
+                                    <i data-lucide="map-pin" class="w-3 h-3 text-dix-light mt-0.5 flex-shrink-0"></i>
+                                    <span>${displayAddress} <br><span class="font-bold text-dix-dark uppercase">${escapeHtml(item.region)}</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                card.onclick = () => selectRef(item, true);
+                listContainer.appendChild(card);
+                
+                // 2. Création du Marqueur Géographique
+                const markerIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div class="marker-dot bg-dix-light w-4 h-4 rounded-full border-2 border-white shadow-md hover:scale-125 hover:bg-green-600 transition-transform"></div>`,
+                    iconSize: [16, 16], iconAnchor: [8, 8]
+                });
+                
+                const marker = L.marker([item.lat, item.lng], { icon: markerIcon }).addTo(markersLayer);
+                marker.itemData = item;
+                marker.on('click', (e) => {
+                    L.DomEvent.stopPropagation(e);
+                    selectRef(item, true);
+                });
+                
+                bounds.push([item.lat, item.lng]);
+            });
+
+            // Ajustement automatique de la vue de la carte
+            if (bounds.length > 0) {
+                const uniqueBounds = [...new Set(bounds.map(b => b[0]+","+b[1]))];
+                if (uniqueBounds.length === 1) {
+                   map.setView(bounds[0], 8);
+                } else {
+                   map.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 });
+                }
+            }
+            refreshIcons();
+        }
+
+        function resetView() {
+            const bounds = [];
+            markersLayer.eachLayer(layer => {
+                if (layer instanceof L.Marker) bounds.push(layer.getLatLng());
+            });
+            if (bounds.length > 0) {
+                const uniqueBounds = [...new Set(bounds.map(b => b.lat+","+b.lng))];
+                if (uniqueBounds.length === 1) map.flyTo(bounds[0], 6, { duration: 1.2 });
+                else map.fitBounds(bounds, { padding: [40, 40], duration: 1.2 });
+            }
+        }
+
+        function selectRef(item, fromUI = false) {
+            // Nettoyage de l'interface
+            document.querySelectorAll('#resultsList > div').forEach(el => el.classList.remove('active-card'));
+            
+            // Activation de la carte HTML
+            const card = document.getElementById(`card-${item.id}`);
+            if(card) {
+                card.classList.add('active-card');
+                if (fromUI) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            // Animation de la carte géographique
+            map.flyTo([item.lat, item.lng], 13, { duration: 1.2 });
+            
+            if (activeMarker) activeMarker.unbindTooltip();
+            
+            // Affichage de l'infobulle sur le marqueur
+            markersLayer.eachLayer(layer => {
+                if (layer.itemData && layer.itemData.id === item.id) {
+                    const clientShort = escapeHtml(item.client.substring(0,25));
+                    let tooltipLogoHtml;
+                    if (item.logo && item.logo.trim() !== "") {
+                        tooltipLogoHtml = `<img src="${escapeHtml(item.logo)}" onerror="this.onerror=null; this.outerHTML='<span class=\\'font-oswald text-[10px] px-2 text-dix-dark font-bold text-center uppercase\\'>${clientShort.replace(/'/g, "\\'")}</span>'" style="max-height: 40px; max-width: 100px; width: auto; height: auto; object-fit: contain; display: block;">`;
+                    } else {
+                        tooltipLogoHtml = `<span class="font-oswald text-[10px] px-2 text-dix-dark font-bold text-center uppercase">${clientShort}</span>`;
+                    }
+
+                    const tooltipHtml = `<div class="map-logo-badge">${tooltipLogoHtml}</div>`;
+                    layer.bindTooltip(tooltipHtml, { permanent: true, direction: 'top', offset: [0, -15], opacity: 1 }).openTooltip();
+                    activeMarker = layer;
+                }
+            });
+        }
+
+        // Écouteurs d'événements pour la recherche et les filtres
+        document.getElementById('searchInput').oninput = filterData;
+        document.getElementById('themeFilter').onchange = filterData;
+        document.getElementById('typeFilter').onchange = filterData;
+        document.getElementById('yearFilter').onchange = filterData;
+
+        function filterData() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const theme = document.getElementById('themeFilter').value;
+            const typePorteur = document.getElementById('typeFilter').value;
+            const year = document.getElementById('yearFilter').value;
+
+            const filtered = allData.filter(d => {
+                // Recherche texte globale
+                const searchableText = [d.title, d.client, d.desc, d.adresse, d.city, d.category].join(" ").toLowerCase();
+                const matchesSearch = searchableText.includes(search);
+                
+                const matchesTheme = theme === "" || d.category === theme;
+                const matchesType = typePorteur === "" || d.typePorteur === typePorteur;
+                const matchesYear = year === "" || d.year === year;
+                
+                return matchesSearch && matchesTheme && matchesType && matchesYear;
+            });
+            render(filtered);
+            if (activeMarker) {
+                activeMarker.unbindTooltip();
+                activeMarker = null;
+            }
+        }
+    </script>
+</body>
+</html>
