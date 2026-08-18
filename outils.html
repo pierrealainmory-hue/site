@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outils & Modélisations | DIX SCOP CAE</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dix: { dark: '#405F59', light: '#549e39', bg: '#f9fafb' }
+                    },
+                    fontFamily: {
+                        oswald: ['Oswald', 'sans-serif'],
+                        georgia: ['Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Georgia', serif; color: #1f2937; background-color: #f9fafb; }
+        .font-oswald { font-family: 'Oswald', sans-serif !important; letter-spacing: 0.05em; text-transform: uppercase; }
+        .hero-pattern {
+            background-color: #405F59;
+            background-image: radial-gradient(#ffffff 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+        .tool-card { transition: all 0.3s ease; }
+        .tool-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border-color: #549e39; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- NAVIGATION -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="text-2xl font-oswald border-2 border-dix-dark text-dix-dark px-2 py-0.5 rounded tracking-tighter hover:bg-dix-dark hover:text-white transition-colors">DIX</a>
+            </div>
+            <div class="flex flex-wrap justify-center gap-5 items-center font-oswald text-sm text-dix-dark font-medium">
+                <a href="index.html" class="hover:text-dix-light transition-colors">Accueil</a>
+                <a href="expertises.html" class="hover:text-dix-light transition-colors">Expertises</a>
+                <a href="references.html" class="hover:text-dix-light transition-colors">Références</a>
+                <a href="outils.html" class="text-dix-light font-bold">Outils</a>
+                <a href="eclairages.html" class="hover:text-dix-light transition-colors">Éclairages</a>
+                <a href="collectif.html" class="hover:text-dix-light transition-colors">La Coopérative</a>
+                <a href="index.html#contact" class="bg-dix-light text-white px-5 py-2 rounded-full hover:bg-green-700 transition-colors">Nous contacter</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- EN-TÊTE / HERO -->
+    <header class="relative hero-pattern text-white pt-16 pb-20 overflow-hidden">
+        <div class="absolute inset-0 bg-dix-dark/95"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+            <span class="text-dix-light font-oswald tracking-widest text-sm mb-4 block">DÉVELOPPER LES COMMUNS</span>
+            <h1 class="text-4xl md:text-5xl font-oswald mb-6 leading-tight">
+                Concevoir les outils de la relocalisation alimentaire.
+            </h1>
+            <p class="text-lg text-gray-200 italic leading-relaxed">
+                Notre approche de l'ingénierie territoriale se matérialise par la conception de calculateurs, de matrices de gouvernance et de modélisateurs open-source. Nous documentons l'action pour la rendre reproductible.
+            </p>
+        </div>
+    </header>
+
+    <!-- GRILLE DES OUTILS -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Outil 1 -->
+                <div class="tool-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-dix-light/10 rounded-bl-full z-0"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-dix-dark text-white rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Simulateurs économiques & capacitaires</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                            Modélisation de la viabilité des unités de transformation (légumeries, conserveries) et des espaces de distribution. Évaluation des prix de revient en circuits-courts pour garantir une rémunération équitable du producteur.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Modélisation financière</span>
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Dimensionnement</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outil 2 -->
+                <div class="tool-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-dix-dark/10 rounded-bl-full z-0"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-dix-light text-white rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Matrices de gouvernance & Ingénierie juridique</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                            Gabarits statutaires pour la création de Sociétés Coopératives d'Intérêt Collectif (SCIC) appliquées aux filières alimentaires. Rédaction de conventions de contractualisation pour protéger les producteurs des asymétries de marché.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Communs</span>
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Statuts SCIC/SCOP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outil 3 -->
+                <div class="tool-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-dix-dark/10 rounded-bl-full z-0"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-dix-dark text-white rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Analyse Spatiale (SIG) & Logistique</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                            Outils de cartographie dynamique permettant l'optimisation des flux d'approvisionnement et la modélisation de hubs logistiques partagés inter-fermes. Analyse d'empreinte carbone pour le "dernier kilomètre" rural.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">QGIS / Mapping</span>
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Décarbonation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outil 4 : La Fabrique -->
+                <div class="tool-card bg-dix-light/5 border border-dix-light/20 rounded-2xl p-8 relative overflow-hidden md:col-span-2">
+                    <div class="flex flex-col md:flex-row gap-8 items-center relative z-10">
+                        <div class="md:w-2/3">
+                            <span class="text-dix-light font-oswald tracking-widest text-xs mb-2 block border-b border-dix-light/30 inline-block pb-1">INNOVATION INTERNE</span>
+                            <h3 class="text-3xl font-oswald text-dix-dark mb-4 mt-2">La Fabrique DIX (Budget Participatif)</h3>
+                            <p class="text-sm text-gray-700 leading-relaxed mb-4">
+                                Afin d'investir massivement dans la recherche et le développement d'outils au service des territoires, la coopérative DIX a développé sa propre plateforme de "Budget Participatif". 
+                            </p>
+                            <p class="text-sm text-gray-700 leading-relaxed mb-6">
+                                Ce logiciel sur-mesure permet à la coopérative d'allouer une part de ses excédents financiers (sous forme de "Jetons") pour financer des actions de recherche, des expérimentations ou des modélisations. Les acteurs territoriaux peuvent soumettre leurs défis sur cette plateforme pour qu'ils soient traités par notre collectif d'ingénierie.
+                            </p>
+                            <a href="index.html#dix-lab" class="inline-flex items-center font-oswald text-sm bg-dix-dark text-white px-5 py-2.5 rounded hover:bg-gray-800 transition-colors">
+                                Soumettre une idée à La Fabrique
+                            </a>
+                        </div>
+                        <div class="md:w-1/3">
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 transform rotate-2">
+                                <div class="h-4 bg-gray-100 rounded w-1/2 mb-3"></div>
+                                <div class="h-2 bg-gray-100 rounded w-full mb-2"></div>
+                                <div class="h-2 bg-gray-100 rounded w-3/4 mb-4"></div>
+                                <div class="w-full bg-green-100 rounded-full h-2 mb-2">
+                                    <div class="bg-dix-light h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                                <div class="text-[10px] text-right text-gray-400 font-oswald">Financement : 75%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 text-gray-400 py-12 border-t border-gray-800 flex-shrink-0 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="md:col-span-2">
+                <div class="text-2xl font-oswald border-2 border-gray-600 text-white px-2 py-0.5 rounded tracking-tighter inline-block mb-4">DIX</div>
+                <p class="text-sm italic mb-4 max-w-sm">La coopérative d'ingénierie et d'assistance à maîtrise d'ouvrage dédiée à la relocalisation des systèmes alimentaires territoriaux.</p>
+                <div class="text-sm text-gray-500">
+                    📍 Siège social : 6 Grande Rue, 77320 Chartronges<br>
+                    ✉️ contact@dix.coop
+                </div>
+            </div>
+            <div>
+                <h4 class="font-oswald text-white mb-4 uppercase tracking-widest text-sm">Navigation</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="expertises.html" class="hover:text-white transition-colors">Notre Approche</a></li>
+                    <li><a href="references.html" class="hover:text-white transition-colors">Nos Références</a></li>
+                    <li><a href="eclairages.html" class="hover:text-white transition-colors">Éclairages</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-oswald text-white mb-4 uppercase tracking-widest text-sm">Légal</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors">Mentions légales</a></li>
+                    <li class="mt-4 pt-4 border-t border-gray-800 text-gray-500">
+                        SCOP SAS à capital variable<br>
+                        SIREN 830 937 710
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
