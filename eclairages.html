@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éclairages & Recherche | DIX SCOP CAE</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dix: { dark: '#405F59', light: '#549e39', bg: '#f9fafb' }
+                    },
+                    fontFamily: {
+                        oswald: ['Oswald', 'sans-serif'],
+                        georgia: ['Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Georgia', serif; color: #1f2937; background-color: #f9fafb; }
+        .font-oswald { font-family: 'Oswald', sans-serif !important; letter-spacing: 0.05em; text-transform: uppercase; }
+        
+        .hero-pattern {
+            background-color: #405F59;
+            background-image: radial-gradient(#ffffff 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+
+        .article-card { transition: all 0.3s ease; }
+        .article-card:hover { transform: translateY(-4px); box-shadow: 0 15px 30px -5px rgba(0,0,0,0.1); border-color: #549e39; }
+        .article-card:hover h3 { color: #549e39; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- NAVIGATION -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="text-2xl font-oswald border-2 border-dix-dark text-dix-dark px-2 py-0.5 rounded tracking-tighter hover:bg-dix-dark hover:text-white transition-colors">DIX</a>
+            </div>
+            <div class="flex flex-wrap justify-center gap-5 items-center font-oswald text-sm text-dix-dark font-medium">
+                <a href="index.html" class="hover:text-dix-light transition-colors">Accueil</a>
+                <a href="expertises.html" class="hover:text-dix-light transition-colors">Expertises</a>
+                <a href="references.html" class="hover:text-dix-light transition-colors">Références</a>
+                <a href="outils.html" class="hover:text-dix-light transition-colors">Outils</a>
+                <a href="eclairages.html" class="text-dix-light font-bold">Éclairages</a>
+                <a href="collectif.html" class="hover:text-dix-light transition-colors">La Coopérative</a>
+                <a href="index.html#contact" class="bg-dix-light text-white px-5 py-2 rounded-full hover:bg-green-700 transition-colors">Nous contacter</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- EN-TÊTE / HERO -->
+    <header class="relative hero-pattern text-white pt-16 pb-20 overflow-hidden border-b-8 border-dix-light">
+        <div class="absolute inset-0 bg-dix-dark/95"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+            <span class="text-dix-light font-oswald tracking-widest text-sm mb-4 block">RECHERCHE-ACTION & TRIBUNES</span>
+            <h1 class="text-4xl md:text-5xl font-oswald mb-6 leading-tight">
+                Documenter les trajectoires de résilience.
+            </h1>
+            <p class="text-lg text-gray-200 italic leading-relaxed">
+                Retrouvez ici nos carnets de terrain, nos décryptages analytiques sur les impasses du modèle dominant, et nos propositions pour une gouvernance territorialisée de l'alimentation.
+            </p>
+        </div>
+    </header>
+
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-12">
+            
+            <!-- GRILLE D'ARTICLES -->
+            <div class="lg:w-2/3 space-y-10">
+                
+                <!-- Article 1 -->
+                <article class="article-card border border-gray-200 rounded-2xl p-6 md:p-8 bg-white cursor-pointer group">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-[10px] font-oswald tracking-widest bg-dix-dark text-white px-2 py-1 rounded">RECHERCHE</span>
+                        <span class="text-xs text-gray-400 font-sans">Publié le 12 Février 2026</span>
+                    </div>
+                    <h3 class="text-2xl font-oswald text-dix-dark mb-3 leading-tight transition-colors">Sortir de l'extractivisme : Pour un modèle post-industriel des filières locales.</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                        La transition alimentaire contemporaine est fréquemment pensée, normée et structurée depuis les centres métropolitains. Ce « biais urbain » tend à invisibiliser les vulnérabilités spécifiques des espaces ruraux, reléguant ces derniers au simple statut de zones de production ou d'extraction de ressources...
+                    </p>
+                    <div class="flex items-center gap-4 border-t border-gray-100 pt-4">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-oswald text-gray-600">PA</div>
+                        <span class="text-xs text-gray-500 font-oswald uppercase">Pierre-Alain Mory</span>
+                    </div>
+                </article>
+
+                <!-- Article 2 -->
+                <article class="article-card border border-gray-200 rounded-2xl p-6 md:p-8 bg-white cursor-pointer group">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-[10px] font-oswald tracking-widest bg-dix-light text-white px-2 py-1 rounded">CARNET DE TERRAIN</span>
+                        <span class="text-xs text-gray-400 font-sans">Publié le 05 Novembre 2025</span>
+                    </div>
+                    <h3 class="text-2xl font-oswald text-dix-dark mb-3 leading-tight transition-colors">La logistique du "Dernier Kilomètre" rural : Analyse d'une asymétrie.</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                        L'acheminement isolé et fragmenté est une hérésie écologique et économique pour les producteurs ruraux. Comment concevoir des schémas logistiques de proximité pour réduire la dépendance aux infrastructures lointaines ? Retour d'expérience sur le projet de massification frigorifique inter-fermes.
+                    </p>
+                    <div class="flex items-center gap-4 border-t border-gray-100 pt-4">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-oswald text-gray-600">FD</div>
+                        <span class="text-xs text-gray-500 font-oswald uppercase">François Devilliers</span>
+                    </div>
+                </article>
+
+                <!-- Article 3 -->
+                <article class="article-card border border-gray-200 rounded-2xl p-6 md:p-8 bg-white cursor-pointer group opacity-80 hover:opacity-100">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-[10px] font-oswald tracking-widest bg-gray-600 text-white px-2 py-1 rounded">TRIBUNE INVITÉE</span>
+                        <span class="text-xs text-gray-400 font-sans">Publié le 18 Septembre 2025</span>
+                    </div>
+                    <h3 class="text-2xl font-oswald text-dix-dark mb-3 leading-tight transition-colors">Loi EGAlim : Un levier de justice territoriale encore sous-exploité.</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                        Mobiliser la commande publique comme vecteur de déconstruction des asymétries territoriales demande une révision profonde des pratiques de sourcing. Focus sur le rôle des cuisines centrales.
+                    </p>
+                    <div class="flex items-center gap-4 border-t border-gray-100 pt-4">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-oswald text-blue-700">CP</div>
+                        <span class="text-xs text-gray-500 font-oswald uppercase">Partenaire Public</span>
+                    </div>
+                </article>
+
+            </div>
+
+            <!-- SIDEBAR : APPEL À CONTRIBUTIONS -->
+            <div class="lg:w-1/3">
+                <div class="sticky top-28 bg-gray-50 p-8 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 class="text-xl font-oswald text-dix-dark mb-4 border-b-2 border-dix-light inline-block pb-1">Un espace de réflexion ouvert</h3>
+                    <p class="text-sm text-gray-600 italic mb-6 leading-relaxed">
+                        Le pôle "Éclairages" de la coopérative DIX n'est pas réservé à nos seuls sociétaires. Nous l'envisageons comme un média de territoire au service des communs.
+                    </p>
+                    <p class="text-sm text-gray-600 mb-8 leading-relaxed">
+                        Vous êtes élu·e, acteur·rice associatif, agriculteur·rice ou chercheur·euse ? Vous avez produit une analyse ou un retour d'expérience que vous jugez utile pour l'écosystème de la transition alimentaire ? <strong>Publiez-le chez nous.</strong>
+                    </p>
+                    
+                    <a href="mailto:contact@dix.coop?subject=Proposition de publication - Éclairages" class="block w-full text-center bg-dix-dark hover:bg-gray-800 text-white font-oswald px-6 py-4 rounded transition-colors shadow-md">
+                        Proposer un article
+                    </a>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h4 class="text-sm font-oswald text-gray-500 mb-3">Mots-clés explorés :</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs px-2 py-1 bg-white border border-gray-200 rounded text-gray-600 hover:border-dix-light cursor-pointer">#Gouvernance</span>
+                            <span class="text-xs px-2 py-1 bg-white border border-gray-200 rounded text-gray-600 hover:border-dix-light cursor-pointer">#Communs</span>
+                            <span class="text-xs px-2 py-1 bg-white border border-gray-200 rounded text-gray-600 hover:border-dix-light cursor-pointer">#Résilience</span>
+                            <span class="text-xs px-2 py-1 bg-white border border-gray-200 rounded text-gray-600 hover:border-dix-light cursor-pointer">#Logistique</span>
+                            <span class="text-xs px-2 py-1 bg-white border border-gray-200 rounded text-gray-600 hover:border-dix-light cursor-pointer">#TiersLieux</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 text-gray-400 py-12 border-t border-gray-800 flex-shrink-0 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="md:col-span-2">
+                <div class="text-2xl font-oswald border-2 border-gray-600 text-white px-2 py-0.5 rounded tracking-tighter inline-block mb-4">DIX</div>
+                <p class="text-sm italic mb-4 max-w-sm">La coopérative d'ingénierie et d'assistance à maîtrise d'ouvrage dédiée à la relocalisation des systèmes alimentaires territoriaux.</p>
+                <div class="text-sm text-gray-500">
+                    📍 Siège social : 6 Grande Rue, 77320 Chartronges<br>
+                    ✉️ contact@dix.coop
+                </div>
+            </div>
+            <div>
+                <h4 class="font-oswald text-white mb-4 uppercase tracking-widest text-sm">Navigation</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="expertises.html" class="hover:text-white transition-colors">Notre Approche</a></li>
+                    <li><a href="references.html" class="hover:text-white transition-colors">Nos Références</a></li>
+                    <li><a href="outils.html" class="hover:text-white transition-colors">Outils</a></li>
+                    <li><a href="collectif.html" class="hover:text-white transition-colors">La Coopérative (CAE)</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-oswald text-white mb-4 uppercase tracking-widest text-sm">Légal</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors">Mentions légales</a></li>
+                    <li class="mt-4 pt-4 border-t border-gray-800 text-gray-500">
+                        SCOP SAS à capital variable<br>
+                        SIREN 830 937 710
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
