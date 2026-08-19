@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expertises & Solutions | DIX SCOP CAE</title>
     
-    <!-- FIX POLICES : Preconnect forcé pour contrer les bloqueurs/VPN -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -30,17 +25,13 @@
     </script>
     
     <style>
+        /* Importation sécurisée de la police Oswald (Anti-bloqueurs) */
+        @import url('https://cdn.jsdelivr.net/npm/@fontsource/oswald@5.0.8/index.min.css');
+        
         body { font-family: 'Georgia', serif; color: #1f2937; background-color: #f9fafb; }
         .font-oswald { font-family: 'Oswald', sans-serif !important; letter-spacing: 0.05em; text-transform: uppercase; }
         
-        .hero-pattern {
-            background-color: #405F59;
-            background-image: radial-gradient(#ffffff 1px, transparent 1px);
-            background-size: 30px 30px;
-            background-position: 0 0, 15px 15px;
-        }
-
-        /* Animation pour l'accordéon des expertises et références */
+        /* Animation pour l'accordéon des expertises */
         .expandable-content {
             max-height: 0;
             overflow: hidden;
@@ -55,7 +46,7 @@
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- MENU UNIFIÉ (À copier sur toutes les pages) -->
+    <!-- NAVIGATION -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
@@ -73,9 +64,13 @@
         </div>
     </nav>
 
-    <!-- EN-TÊTE / HERO -->
-    <header class="relative hero-pattern text-white pt-16 pb-20 overflow-hidden">
-        <div class="absolute inset-0 bg-dix-dark/95"></div>
+    <!-- EN-TÊTE / HERO AVEC IMAGE DE FOND -->
+    <header class="relative text-white pt-24 pb-28 overflow-hidden">
+        <!-- Image de fond (Cagettes de légumes / Logistique) -->
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1488459716781-31db52582fe9?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-fixed"></div>
+        <div class="absolute inset-0 bg-dix-dark/90 mix-blend-multiply"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent opacity-100"></div>
+        
         <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
             <span class="text-dix-light font-oswald tracking-widest text-sm mb-4 block">MODÉLISATION DE LA CHAÎNE DE VALEUR</span>
             <h1 class="text-4xl md:text-5xl font-oswald mb-6 leading-tight">
@@ -87,8 +82,8 @@
         </div>
     </header>
 
-    <!-- LA CHAÎNE DE VALEUR (Nouveau Design Dynamique) -->
-    <section class="py-20 bg-gray-50 overflow-hidden">
+    <!-- LA CHAÎNE DE VALEUR -->
+    <section class="py-16 bg-gray-50 overflow-hidden">
         <div class="max-w-5xl mx-auto px-6">
             
             <div class="text-center mb-16">
@@ -101,12 +96,9 @@
                 
                 <!-- 1. Production locale -->
                 <div class="relative pl-8 md:pl-16">
-                    <!-- Noeud -->
                     <div class="absolute -left-[26px] top-4 w-12 h-12 bg-white border-4 border-dix-light rounded-full flex items-center justify-center text-dix-dark shadow-md z-10">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
-                    
-                    <!-- Carte Entête -->
                     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
@@ -117,8 +109,6 @@
                                 Voir la méthode & les projets
                             </button>
                         </div>
-                        
-                        <!-- Détails (Cachés par défaut) -->
                         <div id="details-1" class="expandable-content border-t border-gray-100 mt-0">
                             <div class="grid md:grid-cols-2 gap-8 pt-6 pb-2">
                                 <div>
@@ -133,11 +123,9 @@
                                     </ul>
                                 </div>
                                 <div class="bg-gray-50 p-4 rounded-xl">
-                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application (Derniers projets)</h4>
-                                    <div class="ref-container" data-theme="PRODUCTION">
-                                        <div class="animate-pulse flex space-x-4 p-2"><div class="rounded bg-gray-200 h-8 w-8"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
-                                    </div>
-                                    <a href="references.html?theme=PRODUCTION" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
+                                    <div class="ref-container" data-theme="PRODUCTION"></div>
+                                    <a href="references.html?theme=PRODUCTION" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références &rarr;</a>
                                 </div>
                             </div>
                         </div>
@@ -175,7 +163,7 @@
                                 <div class="bg-gray-50 p-4 rounded-xl">
                                     <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
                                     <div class="ref-container" data-theme="TRANSFORM"></div>
-                                    <a href="references.html?theme=TRANSFORM" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                    <a href="references.html?theme=TRANSFORM" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références &rarr;</a>
                                 </div>
                             </div>
                         </div>
@@ -213,7 +201,7 @@
                                 <div class="bg-gray-50 p-4 rounded-xl">
                                     <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
                                     <div class="ref-container" data-theme="RESTAU"></div>
-                                    <a href="references.html?theme=RESTAU" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                    <a href="references.html?theme=RESTAU" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références &rarr;</a>
                                 </div>
                             </div>
                         </div>
@@ -251,7 +239,7 @@
                                 <div class="bg-gray-50 p-4 rounded-xl">
                                     <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
                                     <div class="ref-container" data-theme="LOGIS"></div>
-                                    <a href="references.html?theme=LOGIS" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                    <a href="references.html?theme=LOGIS" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références &rarr;</a>
                                 </div>
                             </div>
                         </div>
@@ -289,7 +277,7 @@
                                 <div class="bg-gray-50 p-4 rounded-xl">
                                     <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
                                     <div class="ref-container" data-theme="DISTRIB"></div>
-                                    <a href="references.html?theme=DISTRIB" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                    <a href="references.html?theme=DISTRIB" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références &rarr;</a>
                                 </div>
                             </div>
                         </div>
@@ -327,7 +315,7 @@
                                 <div class="bg-gray-50 p-4 rounded-xl">
                                     <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
                                     <div class="ref-container" data-theme="FILIERE"></div>
-                                    <a href="references.html?theme=FILIERE" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                    <a href="references.html?theme=FILIERE" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références &rarr;</a>
                                 </div>
                             </div>
                         </div>
@@ -365,7 +353,46 @@
                                 <div class="bg-gray-50 p-4 rounded-xl">
                                     <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
                                     <div class="ref-container" data-theme="TIERS"></div>
-                                    <a href="references.html?theme=TIERS" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                    <a href="references.html?theme=TIERS" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références &rarr;</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Communication (NOUVEAU issu de la présentation) -->
+                <div class="relative pl-8 md:pl-16">
+                    <div class="absolute -left-[26px] top-4 w-12 h-12 bg-white border-4 border-dix-light rounded-full flex items-center justify-center text-dix-dark shadow-md z-10">
+                        <!-- Icône Porte-voix / Megaphone -->
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-2xl font-oswald text-dix-dark mb-1">Communication & Valorisation</h3>
+                                <p class="text-sm text-gray-500 italic">Faire savoir les particularités des projets engagés dans la transition.</p>
+                            </div>
+                            <button onclick="toggleDetails('details-8')" class="flex-shrink-0 text-sm font-oswald bg-gray-100 text-dix-dark px-4 py-2 rounded hover:bg-dix-light hover:text-white transition-colors">
+                                Voir la méthode & les projets
+                            </button>
+                        </div>
+                        <div id="details-8" class="expandable-content border-t border-gray-100 mt-0">
+                            <div class="grid md:grid-cols-2 gap-8 pt-6 pb-2">
+                                <div>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b pb-1">Notre Méthodologie</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                        Nous accompagnons les acteurs de l'alimentation dans leur stratégie de communication pour transmettre les bons messages. Nos missions incluent l'audit, la création d'identité visuelle (logos), la conception de sites web, la rédaction éditoriale et la réalisation de photographies professionnelles.
+                                    </p>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2">Outils Mobilisables</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc pl-5">
+                                        <li>Charte graphique et éditoriale.</li>
+                                        <li>Développement web et supports PLV.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
+                                    <div class="ref-container" data-theme="COMM"></div>
+                                    <a href="references.html?theme=COMM" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références &rarr;</a>
                                 </div>
                             </div>
                         </div>
@@ -401,6 +428,7 @@
                 <ul class="space-y-2 text-sm">
                     <li><a href="expertises.html" class="hover:text-white transition-colors">Notre Approche</a></li>
                     <li><a href="references.html" class="hover:text-white transition-colors">Nos Références</a></li>
+                    <li><a href="eclairages.html" class="hover:text-white transition-colors">Éclairages</a></li>
                     <li><a href="collectif.html" class="hover:text-white transition-colors">La Coopérative (CAE)</a></li>
                 </ul>
             </div>
@@ -425,8 +453,6 @@
                 el.classList.add('mt-0');
                 el.classList.remove('mt-6');
             } else {
-                // Fermer les autres (optionnel)
-                // document.querySelectorAll('.expandable-content').forEach(c => { c.classList.remove('expanded'); c.classList.remove('mt-6'); c.classList.add('mt-0'); });
                 el.classList.add('expanded');
                 el.classList.remove('mt-0');
                 el.classList.add('mt-6');
@@ -477,7 +503,7 @@
                         return b.year.localeCompare(a.year);
                     });
 
-                    // Remplissage
+                    // Remplissage avec recherche élargie (includes)
                     document.querySelectorAll('.ref-container').forEach(container => {
                         const theme = container.getAttribute('data-theme').toUpperCase();
                         const matching = projects.filter(p => p.category.includes(theme));
@@ -496,7 +522,7 @@
                                 ? `<img src="${escapeHtml(p.logo)}" onerror="this.onerror=null; this.outerHTML='<span class=\\'font-oswald text-gray-400 text-xl\\'>${initial}</span>'" class="max-h-full max-w-full object-contain mix-blend-multiply opacity-80 group-hover:opacity-100 transition-opacity">` 
                                 : `<span class="font-oswald text-gray-400 text-xl">${initial}</span>`;
                             
-                            // NOUVEAUTÉ : Click sur la carte pour afficher la description en-dessous (Accordéon inline)
+                            // Affichage de la description au clic (accordéon interne)
                             container.innerHTML += `
                                 <div class="p-3 bg-white rounded-xl border border-gray-100 hover:border-dix-light transition-all mb-2 cursor-pointer shadow-sm" onclick="this.querySelector('.mission-desc').classList.toggle('hidden')">
                                     <div class="flex items-center gap-4">
