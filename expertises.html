@@ -68,6 +68,7 @@
                 <a href="expertises.html" class="text-dix-light font-bold">Expertises</a>
                 <a href="references.html" class="hover:text-dix-light transition-colors">Références</a>
                 <a href="outils.html" class="hover:text-dix-light transition-colors">Outils</a>
+                <a href="eclairages.html" class="hover:text-dix-light transition-colors">Éclairages</a>
                 <a href="collectif.html" class="hover:text-dix-light transition-colors">La Coopérative</a>
                 <a href="index.html#contact" class="bg-dix-light text-white px-5 py-2 rounded-full hover:bg-green-700 transition-colors">Nous contacter</a>
             </div>
@@ -453,8 +454,18 @@
                     document.querySelectorAll('.ref-container').forEach(container => {
                         const theme = container.getAttribute('data-theme').toUpperCase();
                         
-                        // Filtrer les projets correspondant au thème de la carte
-                        const matching = projects.filter(p => p.category === theme || p.category === theme.replace('%20', ' '));
+                        // Filtrer les projets avec une recherche plus souple pour correspondre au vrai nom dans le fichier CSV
+                        const matching = projects.filter(p => {
+                            const cat = p.category;
+                            if (theme.includes("PROD") && cat.includes("PROD")) return true;
+                            if (theme.includes("TRANSFORM") && cat.includes("TRANSFORM")) return true;
+                            if (theme.includes("RESTAU") && cat.includes("RESTAU")) return true;
+                            if (theme.includes("LOGISTIQUE") && cat.includes("LOGIS")) return true;
+                            if (theme.includes("DISTRIB") && cat.includes("DISTRIB")) return true;
+                            if (theme.includes("FILIERE") && cat.includes("FILIERE")) return true;
+                            if (theme.includes("TIERS") && cat.includes("TIERS")) return true;
+                            return false;
+                        });
                         const top3 = matching.slice(0, 3);
                         
                         container.innerHTML = ''; // Retirer l'animation de chargement
