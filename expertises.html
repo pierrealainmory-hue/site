@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expertises & Solutions | DIX SCOP CAE</title>
     
+    <!-- FIX POLICES : Preconnect forcé pour contrer les bloqueurs/VPN -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- NOUVEAU : Ajout de PapaParse pour lire le Google Sheet -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <script>
@@ -19,11 +18,7 @@
             theme: {
                 extend: {
                     colors: {
-                        dix: {
-                            dark: '#405F59',
-                            light: '#549e39',
-                            bg: '#f9fafb'
-                        }
+                        dix: { dark: '#405F59', light: '#549e39', bg: '#f9fafb' }
                     },
                     fontFamily: {
                         oswald: ['Oswald', 'sans-serif'],
@@ -45,25 +40,28 @@
             background-position: 0 0, 15px 15px;
         }
 
-        .expertise-card {
-            transition: all 0.3s ease;
+        /* Animation pour l'accordéon des expertises et références */
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            opacity: 0;
         }
-        .expertise-card:hover {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border-color: #549e39;
-            transform: translateY(-2px);
+        .expanded {
+            max-height: 2000px;
+            opacity: 1;
         }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- NAVIGATION -->
+    <!-- MENU UNIFIÉ (À copier sur toutes les pages) -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
                 <a href="index.html" class="text-2xl font-oswald border-2 border-dix-dark text-dix-dark px-2 py-0.5 rounded tracking-tighter hover:bg-dix-dark hover:text-white transition-colors">DIX</a>
             </div>
-            <div class="flex flex-wrap justify-center gap-6 items-center font-oswald text-sm text-dix-dark font-medium">
+            <div class="flex flex-wrap justify-center gap-5 items-center font-oswald text-sm text-dix-dark font-medium">
                 <a href="index.html" class="hover:text-dix-light transition-colors">Accueil</a>
                 <a href="expertises.html" class="text-dix-light font-bold">Expertises</a>
                 <a href="references.html" class="hover:text-dix-light transition-colors">Références</a>
@@ -79,284 +77,302 @@
     <header class="relative hero-pattern text-white pt-16 pb-20 overflow-hidden">
         <div class="absolute inset-0 bg-dix-dark/95"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
-            <span class="text-dix-light font-oswald tracking-widest text-sm mb-4 block">INGÉNIERIE & MODÉLISATION</span>
+            <span class="text-dix-light font-oswald tracking-widest text-sm mb-4 block">MODÉLISATION DE LA CHAÎNE DE VALEUR</span>
             <h1 class="text-4xl md:text-5xl font-oswald mb-6 leading-tight">
-                Déconstruire les asymétries par des solutions territoriales
+                Déconstruire les asymétries par des solutions territoriales.
             </h1>
             <p class="text-lg text-gray-200 italic leading-relaxed">
-                Notre spécificité ne réside pas dans le conseil théorique, mais dans la conception de « solutions » opérationnelles. Nous accompagnons les territoires à chaque nœud de la chaîne de valeur pour relocaliser l'économie alimentaire.
+                Notre spécificité ne réside pas dans le conseil théorique isolant une problématique, mais dans une ingénierie systémique. Nous concevons des solutions pour chaque maillon du territoire, de la terre à l'assiette.
             </p>
         </div>
     </header>
 
-    <!-- INTRODUCTION : LA SPÉCIFICITÉ "SOLUTIONS" -->
-    <section class="py-16 bg-white border-b border-gray-200">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row gap-8 items-center">
-                <div class="md:w-1/3">
-                    <h2 class="text-2xl font-oswald text-dix-dark leading-tight">Une approche systémique des enjeux alimentaires.</h2>
-                </div>
-                <div class="md:w-2/3 text-gray-600 text-sm leading-relaxed space-y-4">
-                    <p>
-                        La transition alimentaire ne peut se penser en silos. Une ferme sans logistique est isolée ; une légumerie sans stratégie d'approvisionnement est vouée à l'échec. C'est pourquoi DIX intervient de la terre à l'assiette.
-                    </p>
-                    <p>
-                        Notre méthodologie s'adapte à la maturité de votre projet : de l'étude de faisabilité initiale (diagnostic, ingénierie juridique et financière) jusqu'à l'Assistance à Maîtrise d'Ouvrage (AMO) pour le dimensionnement et la mise en œuvre technique de vos infrastructures.
-                    </p>
-                </div>
+    <!-- LA CHAÎNE DE VALEUR (Nouveau Design Dynamique) -->
+    <section class="py-20 bg-gray-50 overflow-hidden">
+        <div class="max-w-5xl mx-auto px-6">
+            
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-oswald text-dix-dark">L'approche intégrée DIX</h2>
+                <p class="text-gray-500 italic mt-2">Cliquez sur un maillon pour découvrir notre méthodologie.</p>
             </div>
-        </div>
-    </section>
 
-    <!-- GRILLE DES EXPERTISES -->
-    <section class="py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-6 space-y-12">
-
-            <!-- 1. Production locale -->
-            <div class="expertise-card bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col md:flex-row">
-                <div class="bg-dix-dark p-8 md:w-1/3 text-white flex flex-col justify-center">
-                    <svg class="w-10 h-10 mb-4 text-dix-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <h3 class="text-2xl font-oswald mb-2">Production locale &<br>Fermes de proximité</h3>
-                    <p class="text-sm text-gray-300 italic">Sécuriser le foncier et modéliser la viabilité agricole hors des logiques extractives.</p>
-                </div>
-                <div class="p-8 md:w-2/3 flex flex-col justify-between">
-                    <div class="mb-6">
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Notre Méthodologie</h4>
-                        <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                            Nous accompagnons l'émergence d'écosystèmes productifs résilients en luttant contre la déprise agricole. Nos interventions couvrent les diagnostics fonciers territoriaux, la modélisation socio-économique d'exploitations agroécologiques et l'appui à l'installation. Nous structurons des modes de gouvernance par les communs (régies agricoles municipales, SCIC, coopératives d'usage) pour sanctuariser l'outil de production et le soustraire aux asymétries spéculatives.
-                        </p>
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Outils Mobilisables</h4>
-                        <ul class="text-sm text-gray-600 leading-relaxed space-y-1 mb-4 list-disc pl-5">
-                            <li>Outil de diagnostic et de veille foncière territoriale.</li>
-                            <li>Calculateur de viabilité économique et de résilience climatique pour micro-fermes.</li>
-                            <li>Matrice d'ingénierie juridique pour le portage foncier partagé.</li>
-                        </ul>
-
-                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
-                        <div class="ref-container mb-4" data-theme="PRODUCTION">
-                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div><div class="h-2 bg-gray-200 rounded w-1/2"></div></div></div>
+            <!-- TIMELINE / LIGNE CONDUCTRICE -->
+            <div class="relative border-l-4 border-dix-light/30 ml-4 md:ml-12 py-4 space-y-12">
+                
+                <!-- 1. Production locale -->
+                <div class="relative pl-8 md:pl-16">
+                    <!-- Noeud -->
+                    <div class="absolute -left-[26px] top-4 w-12 h-12 bg-white border-4 border-dix-light rounded-full flex items-center justify-center text-dix-dark shadow-md z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    
+                    <!-- Carte Entête -->
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-2xl font-oswald text-dix-dark mb-1">Production locale & Foncier</h3>
+                                <p class="text-sm text-gray-500 italic">Sécuriser le foncier et modéliser la viabilité agricole hors logiques extractives.</p>
+                            </div>
+                            <button onclick="toggleDetails('details-1')" class="flex-shrink-0 text-sm font-oswald bg-gray-100 text-dix-dark px-4 py-2 rounded hover:bg-dix-light hover:text-white transition-colors">
+                                Voir la méthode & les projets
+                            </button>
+                        </div>
+                        
+                        <!-- Détails (Cachés par défaut) -->
+                        <div id="details-1" class="expandable-content border-t border-gray-100 mt-0">
+                            <div class="grid md:grid-cols-2 gap-8 pt-6 pb-2">
+                                <div>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b pb-1">Notre Méthodologie</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                        Nous luttons contre la déprise agricole en structurant des modes de gouvernance par les communs (régies municipales, SCIC). Nos interventions couvrent les diagnostics territoriaux, l'ingénierie du portage partagé et la modélisation socio-économique d'exploitations agroécologiques.
+                                    </p>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2">Outils Mobilisables</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc pl-5">
+                                        <li>Calculateur de résilience climatique.</li>
+                                        <li>Matrice juridique de portage foncier.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application (Derniers projets)</h4>
+                                    <div class="ref-container" data-theme="PRODUCTION">
+                                        <div class="animate-pulse flex space-x-4 p-2"><div class="rounded bg-gray-200 h-8 w-8"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                                    </div>
+                                    <a href="references.html?theme=PRODUCTION" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-100 pt-4">
-                        <a href="references.html?theme=PRODUCTION" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer toutes les références (Production)
-                        </a>
+                </div>
+
+                <!-- 2. Transformation -->
+                <div class="relative pl-8 md:pl-16">
+                    <div class="absolute -left-[26px] top-4 w-12 h-12 bg-white border-4 border-dix-light rounded-full flex items-center justify-center text-dix-dark shadow-md z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     </div>
-                </div>
-            </div>
-
-            <!-- 2. Outils de transformation -->
-            <div class="expertise-card bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col md:flex-row-reverse">
-                <div class="bg-dix-dark p-8 md:w-1/3 text-white flex flex-col justify-center">
-                    <svg class="w-10 h-10 mb-4 text-dix-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    <h3 class="text-2xl font-oswald mb-2">Outils de transformation</h3>
-                    <p class="text-sm text-gray-300 italic">Relocaliser la valeur ajoutée sur le territoire et consolider les filières.</p>
-                </div>
-                <div class="p-8 md:w-2/3 flex flex-col justify-between">
-                    <div class="mb-6">
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Notre Méthodologie</h4>
-                        <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                            L'absence d'outils de transformation intermédiaires crée un goulot d'étranglement pénalisant les producteurs ruraux. Nous concevons et dimensionnons des unités mutualisées (légumeries, conserveries, meuneries, ateliers de découpe). Notre mission d'AMO couvre l'analyse fine des gisements locaux, le calibrage capacitaire et technologique de l'outil industriel, l'ingénierie financière des investissements et la définition du modèle d'exploitation assurant une répartition équitable de la valeur.
-                        </p>
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Outils Mobilisables</h4>
-                        <ul class="text-sm text-gray-600 leading-relaxed space-y-1 mb-4 list-disc pl-5">
-                            <li>Simulateur de dimensionnement capacitaire et des flux entrants/sortants.</li>
-                            <li>Calculateur d'amortissement et de retour sur investissement des équipements.</li>
-                            <li>Gabarits de cahiers des charges pour la maîtrise d'œuvre (AMO).</li>
-                        </ul>
-
-                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
-                        <div class="ref-container mb-4" data-theme="TRANSFORMATION">
-                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-2xl font-oswald text-dix-dark mb-1">Outils de Transformation</h3>
+                                <p class="text-sm text-gray-500 italic">Relocaliser la valeur ajoutée via des infrastructures mutualisées (légumeries, conserveries).</p>
+                            </div>
+                            <button onclick="toggleDetails('details-2')" class="flex-shrink-0 text-sm font-oswald bg-gray-100 text-dix-dark px-4 py-2 rounded hover:bg-dix-light hover:text-white transition-colors">
+                                Voir la méthode & les projets
+                            </button>
+                        </div>
+                        <div id="details-2" class="expandable-content border-t border-gray-100 mt-0">
+                            <div class="grid md:grid-cols-2 gap-8 pt-6 pb-2">
+                                <div>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b pb-1">Notre Méthodologie</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                        Nous concevons et dimensionnons des unités intermédiaires pour résorber les goulots d'étranglement. Notre AMO couvre le calibrage capacitaire, l'ingénierie financière des équipements et la modélisation de l'exploitation pour assurer une répartition équitable.
+                                    </p>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2">Outils Mobilisables</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc pl-5">
+                                        <li>Simulateur capacitaire (flux entrants/sortants).</li>
+                                        <li>Cahiers des charges pour la maîtrise d'œuvre.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
+                                    <div class="ref-container" data-theme="TRANSFORM"></div>
+                                    <a href="references.html?theme=TRANSFORM" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-100 pt-4">
-                        <a href="references.html?theme=TRANSFORMATION" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer toutes les références (Transformation)
-                        </a>
+                </div>
+
+                <!-- 3. Restauration Collective -->
+                <div class="relative pl-8 md:pl-16">
+                    <div class="absolute -left-[26px] top-4 w-12 h-12 bg-white border-4 border-dix-light rounded-full flex items-center justify-center text-dix-dark shadow-md z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     </div>
-                </div>
-            </div>
-
-            <!-- 3. Restauration collective et commerciale -->
-            <div class="expertise-card bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col md:flex-row">
-                <div class="bg-dix-dark p-8 md:w-1/3 text-white flex flex-col justify-center">
-                    <svg class="w-10 h-10 mb-4 text-dix-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <h3 class="text-2xl font-oswald mb-2">Restauration collective & commerciale</h3>
-                    <p class="text-sm text-gray-300 italic">Faire de l'achat public un levier de justice alimentaire et de consolidation rurale.</p>
-                </div>
-                <div class="p-8 md:w-2/3 flex flex-col justify-between">
-                    <div class="mb-6">
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Notre Méthodologie</h4>
-                        <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                            Nous mobilisons la commande publique (via les objectifs de la loi EGAlim) comme un puissant vecteur de déconstruction des asymétries territoriales. Nous accompagnons les cuisines centrales et les groupements d'achats dans la révision de leurs pratiques de sourcing. Nous modélisons des systèmes d'approvisionnement durables capables d'absorber les volumes locaux en garantissant une juste rémunération aux producteurs, tout en formant les équipes aux nouvelles pratiques culinaires.
-                        </p>
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Outils Mobilisables</h4>
-                        <ul class="text-sm text-gray-600 leading-relaxed space-y-1 mb-4 list-disc pl-5">
-                            <li>Outil d'évaluation des asymétries d'approvisionnement et de conformité EGAlim.</li>
-                            <li>Grille de pondération des critères environnementaux et sociaux pour appels d'offres publics.</li>
-                            <li>Simulateur d'impact sur le coût matière par assiette.</li>
-                        </ul>
-
-                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
-                        <div class="ref-container mb-4" data-theme="RESTAU.CO">
-                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-2xl font-oswald text-dix-dark mb-1">Restauration Collective & EGAlim</h3>
+                                <p class="text-sm text-gray-500 italic">Faire de l'achat public un levier structurant de la résilience territoriale.</p>
+                            </div>
+                            <button onclick="toggleDetails('details-3')" class="flex-shrink-0 text-sm font-oswald bg-gray-100 text-dix-dark px-4 py-2 rounded hover:bg-dix-light hover:text-white transition-colors">
+                                Voir la méthode & les projets
+                            </button>
+                        </div>
+                        <div id="details-3" class="expandable-content border-t border-gray-100 mt-0">
+                            <div class="grid md:grid-cols-2 gap-8 pt-6 pb-2">
+                                <div>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b pb-1">Notre Méthodologie</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                        Nous accompagnons les cuisines centrales dans la révision de leurs pratiques de sourcing. L'objectif est d'absorber les volumes locaux en garantissant une juste rémunération aux producteurs (sortir de la guerre des prix), tout en formant les équipes aux nouvelles pratiques culinaires.
+                                    </p>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2">Outils Mobilisables</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc pl-5">
+                                        <li>Évaluation conformité EGAlim.</li>
+                                        <li>Simulateur d'impact du coût matière.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
+                                    <div class="ref-container" data-theme="RESTAU"></div>
+                                    <a href="references.html?theme=RESTAU" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-100 pt-4">
-                        <a href="references.html?theme=RESTAU.CO" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer toutes les références (Restauration)
-                        </a>
+                </div>
+
+                <!-- 4. Logistique -->
+                <div class="relative pl-8 md:pl-16">
+                    <div class="absolute -left-[26px] top-4 w-12 h-12 bg-white border-4 border-dix-light rounded-full flex items-center justify-center text-dix-dark shadow-md z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                     </div>
-                </div>
-            </div>
-
-            <!-- 4. Logistique territoriale -->
-            <div class="expertise-card bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col md:flex-row-reverse">
-                <div class="bg-dix-dark p-8 md:w-1/3 text-white flex flex-col justify-center">
-                    <svg class="w-10 h-10 mb-4 text-dix-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                    <h3 class="text-2xl font-oswald mb-2">Logistique territoriale</h3>
-                    <p class="text-sm text-gray-300 italic">Optimiser et mutualiser les flux pour décarboner l'approvisionnement.</p>
-                </div>
-                <div class="p-8 md:w-2/3 flex flex-col justify-between">
-                    <div class="mb-6">
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Notre Méthodologie</h4>
-                        <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                            L'acheminement isolé et fragmenté est une hérésie écologique et économique pour les producteurs ruraux. Nous concevons des schémas logistiques de proximité (hubs territoriaux, points de massification frigorifiques) pour réduire la dépendance aux infrastructures lointaines. Nos études intègrent l'analyse spatiale des tournées, la modélisation des coûts du « dernier kilomètre » et la mise en place d'une gouvernance partagée des flottes de transport.
-                        </p>
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Outils Mobilisables</h4>
-                        <ul class="text-sm text-gray-600 leading-relaxed space-y-1 mb-4 list-disc pl-5">
-                            <li>Modélisateur SIG de tournées mutualisées inter-fermes.</li>
-                            <li>Calculateur d'empreinte carbone et d'analyse des coûts du dernier kilomètre.</li>
-                            <li>Application de gestion de partage d'espace de stockage frigorifique.</li>
-                        </ul>
-
-                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
-                        <div class="ref-container mb-4" data-theme="LOGISTIQUE">
-                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-2xl font-oswald text-dix-dark mb-1">Logistique Territoriale</h3>
+                                <p class="text-sm text-gray-500 italic">Mutualiser les flux pour décarboner le "dernier kilomètre" de l'approvisionnement.</p>
+                            </div>
+                            <button onclick="toggleDetails('details-4')" class="flex-shrink-0 text-sm font-oswald bg-gray-100 text-dix-dark px-4 py-2 rounded hover:bg-dix-light hover:text-white transition-colors">
+                                Voir la méthode & les projets
+                            </button>
+                        </div>
+                        <div id="details-4" class="expandable-content border-t border-gray-100 mt-0">
+                            <div class="grid md:grid-cols-2 gap-8 pt-6 pb-2">
+                                <div>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b pb-1">Notre Méthodologie</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                        L'acheminement fragmenté est une aberration économique. Nous concevons des schémas de proximité (hubs, massification frigorifique) intégrant l'analyse spatiale des tournées et la mise en place d'une gouvernance partagée des flottes.
+                                    </p>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2">Outils Mobilisables</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc pl-5">
+                                        <li>Modélisateur SIG de tournées inter-fermes.</li>
+                                        <li>Calculateur d'empreinte carbone.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
+                                    <div class="ref-container" data-theme="LOGIS"></div>
+                                    <a href="references.html?theme=LOGIS" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-100 pt-4">
-                        <a href="references.html?theme=LOGISTIQUE" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer toutes les références (Logistique)
-                        </a>
+                </div>
+
+                <!-- 5. Distribution -->
+                <div class="relative pl-8 md:pl-16">
+                    <div class="absolute -left-[26px] top-4 w-12 h-12 bg-white border-4 border-dix-light rounded-full flex items-center justify-center text-dix-dark shadow-md z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
-                </div>
-            </div>
-
-            <!-- 5. Distribution de proximité -->
-            <div class="expertise-card bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col md:flex-row">
-                <div class="bg-dix-dark p-8 md:w-1/3 text-white flex flex-col justify-center">
-                    <svg class="w-10 h-10 mb-4 text-dix-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    <h3 class="text-2xl font-oswald mb-2">Distribution de proximité &<br>Points de vente</h3>
-                    <p class="text-sm text-gray-300 italic">Restaurer l'accessibilité physique et l'équité économique.</p>
-                </div>
-                <div class="p-8 md:w-2/3 flex flex-col justify-between">
-                    <div class="mb-6">
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Notre Méthodologie</h4>
-                        <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                            Pour lutter contre l'isolement des bassins de vie et les "déserts alimentaires", nous accompagnons le montage de magasins de producteurs, d'épiceries coopératives ou solidaires, et de halles paysannes. Notre objectif est de sécuriser un débouché rémunérateur garantissant l'indépendance des producteurs, tout en favorisant la démocratie alimentaire locale. Nous intervenons sur le mix-marketing, les prévisionnels d'exploitation et la structuration juridique des collectifs de vente.
-                        </p>
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Outils Mobilisables</h4>
-                        <ul class="text-sm text-gray-600 leading-relaxed space-y-1 mb-4 list-disc pl-5">
-                            <li>Calculateur de prix de revient et de marge de distribution solidaire.</li>
-                            <li>Simulateur de modèle économique hybride (subventions publiques / chiffre d'affaires privé).</li>
-                            <li>Outil d'optimisation du référencement et des assortiments en circuits-courts.</li>
-                        </ul>
-
-                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
-                        <div class="ref-container mb-4" data-theme="DISTRIBUTION">
-                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-2xl font-oswald text-dix-dark mb-1">Distribution de Proximité</h3>
+                                <p class="text-sm text-gray-500 italic">Restaurer l'accessibilité physique en circuits-courts solidaires.</p>
+                            </div>
+                            <button onclick="toggleDetails('details-5')" class="flex-shrink-0 text-sm font-oswald bg-gray-100 text-dix-dark px-4 py-2 rounded hover:bg-dix-light hover:text-white transition-colors">
+                                Voir la méthode & les projets
+                            </button>
+                        </div>
+                        <div id="details-5" class="expandable-content border-t border-gray-100 mt-0">
+                            <div class="grid md:grid-cols-2 gap-8 pt-6 pb-2">
+                                <div>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b pb-1">Notre Méthodologie</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                        Nous luttons contre les déserts alimentaires en accompagnant les magasins de producteurs, épiceries coopératives et halles paysannes. Nous sécurisons le débouché rémunérateur pour les producteurs (structuration juridique, mix-marketing, marges).
+                                    </p>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2">Outils Mobilisables</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc pl-5">
+                                        <li>Calculateur de prix de revient et marge.</li>
+                                        <li>Outil d'optimisation d'assortiments locaux.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
+                                    <div class="ref-container" data-theme="DISTRIB"></div>
+                                    <a href="references.html?theme=DISTRIB" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-100 pt-4">
-                        <a href="references.html?theme=DISTRIBUTION" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer toutes les références (Distribution)
-                        </a>
+                </div>
+
+                <!-- 6. Filière -->
+                <div class="relative pl-8 md:pl-16">
+                    <div class="absolute -left-[26px] top-4 w-12 h-12 bg-white border-4 border-dix-light rounded-full flex items-center justify-center text-dix-dark shadow-md z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                     </div>
-                </div>
-            </div>
-
-            <!-- 6. Filière locale -->
-            <div class="expertise-card bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col md:flex-row-reverse">
-                <div class="bg-dix-dark p-8 md:w-1/3 text-white flex flex-col justify-center">
-                    <svg class="w-10 h-10 mb-4 text-dix-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                    <h3 class="text-2xl font-oswald mb-2">Filière locale</h3>
-                    <p class="text-sm text-gray-300 italic">Structurer la chaîne amont-aval par des mécanismes de solidarité.</p>
-                </div>
-                <div class="p-8 md:w-2/3 flex flex-col justify-between">
-                    <div class="mb-6">
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Notre Méthodologie</h4>
-                        <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                            Nous consolidons les interdépendances territoriales en structurant des filières intégrées (ex: filière blé-farine-pain, filière légumineuses). L'enjeu est de sortir de la logique du marché libre pour organiser une planification territoriale des besoins et des ressources. Notre rôle est d'assurer la contractualisation, une symétrie de l'information entre les maillons, et de protéger les producteurs des asymétries de pouvoir imposées par les donneurs d'ordres nationaux.
-                        </p>
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Outils Mobilisables</h4>
-                        <ul class="text-sm text-gray-600 leading-relaxed space-y-1 mb-4 list-disc pl-5">
-                            <li>Outil de répartition et de partage de la valeur ajoutée sur l'ensemble de la chaîne.</li>
-                            <li>Modèle de convention de filière et de contractualisation multipartite sécurisée.</li>
-                            <li>Plateforme de planification prévisionnelle de la production agricole.</li>
-                        </ul>
-
-                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
-                        <div class="ref-container mb-4" data-theme="FILIERE">
-                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-2xl font-oswald text-dix-dark mb-1">Structuration de Filières</h3>
+                                <p class="text-sm text-gray-500 italic">Consolider les interdépendances territoriales (ex: blé-farine-pain).</p>
+                            </div>
+                            <button onclick="toggleDetails('details-6')" class="flex-shrink-0 text-sm font-oswald bg-gray-100 text-dix-dark px-4 py-2 rounded hover:bg-dix-light hover:text-white transition-colors">
+                                Voir la méthode & les projets
+                            </button>
+                        </div>
+                        <div id="details-6" class="expandable-content border-t border-gray-100 mt-0">
+                            <div class="grid md:grid-cols-2 gap-8 pt-6 pb-2">
+                                <div>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b pb-1">Notre Méthodologie</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                        Sortir du libre marché pour organiser une planification territoriale par des mécanismes de solidarité. Nous assurons la contractualisation, la symétrie d'information, et protégeons les producteurs des asymétries imposées par la distribution classique.
+                                    </p>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2">Outils Mobilisables</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc pl-5">
+                                        <li>Modèle de convention tripartite.</li>
+                                        <li>Plateforme de planification prévisionnelle.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
+                                    <div class="ref-container" data-theme="FILIERE"></div>
+                                    <a href="references.html?theme=FILIERE" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-100 pt-4">
-                        <a href="references.html?theme=FILIERE" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer toutes les références (Filière)
-                        </a>
+                </div>
+
+                <!-- 7. Tiers-Lieux -->
+                <div class="relative pl-8 md:pl-16">
+                    <div class="absolute -left-[26px] top-4 w-12 h-12 bg-white border-4 border-dix-light rounded-full flex items-center justify-center text-dix-dark shadow-md z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
-                </div>
-            </div>
-
-            <!-- 7. Tiers-lieu nourricier -->
-            <div class="expertise-card bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col md:flex-row">
-                <div class="bg-dix-dark p-8 md:w-1/3 text-white flex flex-col justify-center">
-                    <svg class="w-10 h-10 mb-4 text-dix-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    <h3 class="text-2xl font-oswald mb-2">Tiers-lieux nourriciers</h3>
-                    <p class="text-sm text-gray-300 italic">Fédérer la démocratie alimentaire par des espaces multifonctionnels.</p>
-                </div>
-                <div class="p-8 md:w-2/3 flex flex-col justify-between">
-                    <div class="mb-6">
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Notre Méthodologie</h4>
-                        <p class="text-sm text-gray-600 leading-relaxed mb-4">
-                            Véritables épicentres de la transition, les tiers-lieux nourriciers associent souvent production urbaine ou périurbaine, transformation, vente, et sensibilisation citoyenne. Nous accompagnons l'hybridation économique de ces projets complexes, en structurant le modèle de revenus (articulation entre subventions publiques et recettes d'activités privées) et en facilitant l'ingénierie de l'animation pour maintenir la cohésion du collectif d'acteurs résidents.
-                        </p>
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2 border-b border-gray-100 pb-1">Outils Mobilisables</h4>
-                        <ul class="text-sm text-gray-600 leading-relaxed space-y-1 mb-4 list-disc pl-5">
-                            <li>Cartographie dynamique des écosystèmes d'acteurs et des usages du site.</li>
-                            <li>Matrice d'hybridation des revenus et modèle prévisionnel multi-activités.</li>
-                            <li>Bilan d'impact social et territorial pour les partenaires financeurs.</li>
-                        </ul>
-
-                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
-                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
-                        <div class="ref-container mb-4" data-theme="TIERS LIEU">
-                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-2xl font-oswald text-dix-dark mb-1">Tiers-Lieux Nourriciers</h3>
+                                <p class="text-sm text-gray-500 italic">Fédérer la démocratie alimentaire par des espaces multifonctionnels hybrides.</p>
+                            </div>
+                            <button onclick="toggleDetails('details-7')" class="flex-shrink-0 text-sm font-oswald bg-gray-100 text-dix-dark px-4 py-2 rounded hover:bg-dix-light hover:text-white transition-colors">
+                                Voir la méthode & les projets
+                            </button>
+                        </div>
+                        <div id="details-7" class="expandable-content border-t border-gray-100 mt-0">
+                            <div class="grid md:grid-cols-2 gap-8 pt-6 pb-2">
+                                <div>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b pb-1">Notre Méthodologie</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                        Épicentres de la transition, ils associent production, transformation, et sensibilisation. Nous accompagnons l'hybridation économique de ces projets (subventions vs recettes privées) et facilitons l'ingénierie d'animation des collectifs résidents.
+                                    </p>
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-2">Outils Mobilisables</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1 list-disc pl-5">
+                                        <li>Matrice d'hybridation des revenus.</li>
+                                        <li>Cartographie des acteurs et usages.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-200 pb-1">Cas d'Application</h4>
+                                    <div class="ref-container" data-theme="TIERS"></div>
+                                    <a href="references.html?theme=TIERS" class="block text-center text-xs font-oswald text-dix-light hover:underline mt-2 pt-2 border-t border-gray-200">Voir toutes les références liées &rarr;</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-100 pt-4">
-                        <a href="references.html?theme=TIERS%20LIEU" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer toutes les références (Tiers-lieux)
-                        </a>
-                    </div>
                 </div>
-            </div>
 
+            </div>
         </div>
     </section>
 
@@ -379,10 +395,6 @@
             <div class="md:col-span-2">
                 <div class="text-2xl font-oswald border-2 border-gray-600 text-white px-2 py-0.5 rounded tracking-tighter inline-block mb-4">DIX</div>
                 <p class="text-sm italic mb-4 max-w-sm">La coopérative d'ingénierie et d'assistance à maîtrise d'ouvrage dédiée à la relocalisation des systèmes alimentaires territoriaux.</p>
-                <div class="text-sm text-gray-500">
-                    📍 Siège social : 6 Grande Rue, 77320 Chartronges<br>
-                    ✉️ contact@dix.coop
-                </div>
             </div>
             <div>
                 <h4 class="font-oswald text-white mb-4 uppercase tracking-widest text-sm">Navigation</h4>
@@ -397,18 +409,32 @@
                 <ul class="space-y-2 text-sm">
                     <li><a href="#" class="hover:text-white transition-colors">Mentions légales</a></li>
                     <li class="mt-4 pt-4 border-t border-gray-800 text-gray-500">
-                        SCOP SAS à capital variable<br>
-                        SIREN 830 937 710
+                        SCOP SAS à capital variable<br>SIREN 830 937 710
                     </li>
                 </ul>
             </div>
         </div>
     </footer>
 
-    <!-- SCRIPT DE CHARGEMENT DES 3 DERNIERES RÉFÉRENCES PAR CATÉGORIE -->
+    <!-- SCRIPT GESTION ACCORDÉONS & RÉFÉRENCES -->
     <script>
+        function toggleDetails(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('expanded')) {
+                el.classList.remove('expanded');
+                el.classList.add('mt-0');
+                el.classList.remove('mt-6');
+            } else {
+                // Fermer les autres (optionnel)
+                // document.querySelectorAll('.expandable-content').forEach(c => { c.classList.remove('expanded'); c.classList.remove('mt-6'); c.classList.add('mt-0'); });
+                el.classList.add('expanded');
+                el.classList.remove('mt-0');
+                el.classList.add('mt-6');
+            }
+        }
+
         const CSV_URL_REFS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSm_4bPCRFK_gGVkxP-ZeTHzLauhQtqNg_zG2chKNuY8-iyDAuHjc_CQbpBCU4LY9-GRi1579CsUkhr/pub?gid=917397259&single=true&output=csv";
-        const COLS_REFS = { ANNEE: 0, LOGO: 2, CLIENT: 3, CATEGORIE: 5, TITRE: 6 };
+        const COLS_REFS = { ANNEE: 0, LOGO: 2, CLIENT: 3, CATEGORIE: 5, TITRE: 6, DESC: 7 };
 
         function escapeHtml(unsafe) {
             return (unsafe || "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -439,39 +465,28 @@
                             logo: cleanUrl(row[COLS_REFS.LOGO]),
                             client: row[COLS_REFS.CLIENT] || "",
                             category: (row[COLS_REFS.CATEGORIE] || "").trim().toUpperCase(),
-                            title: row[COLS_REFS.TITRE] || ""
+                            title: row[COLS_REFS.TITRE] || "",
+                            desc: row[COLS_REFS.DESC] || "Aucune description détaillée n'est disponible pour cette mission."
                         };
                     }).filter(p => p.client !== "");
 
-                    // Tri chronologique : "En cours" d'abord, puis par année décroissante
+                    // Tri récent -> ancien
                     projects.sort((a, b) => {
                         if (a.year === "En cours") return -1;
                         if (b.year === "En cours") return 1;
                         return b.year.localeCompare(a.year);
                     });
 
-                    // Injection dans chaque conteneur selon la thématique
+                    // Remplissage
                     document.querySelectorAll('.ref-container').forEach(container => {
                         const theme = container.getAttribute('data-theme').toUpperCase();
-                        
-                        // Filtrer les projets avec une recherche plus souple pour correspondre au vrai nom dans le fichier CSV
-                        const matching = projects.filter(p => {
-                            const cat = p.category;
-                            if (theme.includes("PROD") && cat.includes("PROD")) return true;
-                            if (theme.includes("TRANSFORM") && cat.includes("TRANSFORM")) return true;
-                            if (theme.includes("RESTAU") && cat.includes("RESTAU")) return true;
-                            if (theme.includes("LOGISTIQUE") && cat.includes("LOGIS")) return true;
-                            if (theme.includes("DISTRIB") && cat.includes("DISTRIB")) return true;
-                            if (theme.includes("FILIERE") && cat.includes("FILIERE")) return true;
-                            if (theme.includes("TIERS") && cat.includes("TIERS")) return true;
-                            return false;
-                        });
+                        const matching = projects.filter(p => p.category.includes(theme));
                         const top3 = matching.slice(0, 3);
                         
-                        container.innerHTML = ''; // Retirer l'animation de chargement
+                        container.innerHTML = ''; 
                         
                         if(top3.length === 0) {
-                            container.innerHTML = '<p class="text-xs text-gray-400 italic">Références en cours de documentation.</p>';
+                            container.innerHTML = '<p class="text-xs text-gray-400 italic">Références en cours d\'intégration.</p>';
                             return;
                         }
 
@@ -481,18 +496,24 @@
                                 ? `<img src="${escapeHtml(p.logo)}" onerror="this.onerror=null; this.outerHTML='<span class=\\'font-oswald text-gray-400 text-xl\\'>${initial}</span>'" class="max-h-full max-w-full object-contain mix-blend-multiply opacity-80 group-hover:opacity-100 transition-opacity">` 
                                 : `<span class="font-oswald text-gray-400 text-xl">${initial}</span>`;
                             
-                            // Création de la mini-carte cliquable
+                            // NOUVEAUTÉ : Click sur la carte pour afficher la description en-dessous (Accordéon inline)
                             container.innerHTML += `
-                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-dix-light hover:shadow-md transition-all group cursor-pointer mb-2" onclick="window.location.href='references.html?theme=${encodeURIComponent(theme)}'">
-                                    <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1 border border-gray-100 flex-shrink-0">
-                                        ${logoHtml}
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex justify-between items-center mb-1">
-                                            <h5 class="text-sm font-bold text-dix-dark font-oswald uppercase truncate pr-2 group-hover:text-dix-light transition-colors">${escapeHtml(p.client)}</h5>
-                                            <span class="text-[10px] font-bold px-2 py-0.5 bg-white border border-gray-200 rounded text-gray-500 flex-shrink-0">${escapeHtml(p.year)}</span>
+                                <div class="p-3 bg-white rounded-xl border border-gray-100 hover:border-dix-light transition-all mb-2 cursor-pointer shadow-sm" onclick="this.querySelector('.mission-desc').classList.toggle('hidden')">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center p-1 border border-gray-100 flex-shrink-0">
+                                            ${logoHtml}
                                         </div>
-                                        <p class="text-xs text-gray-600 truncate font-sans">${escapeHtml(p.title)}</p>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <h5 class="text-sm font-bold text-dix-dark font-oswald uppercase truncate pr-2">${escapeHtml(p.client)}</h5>
+                                                <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-50 border border-gray-200 rounded text-gray-500 flex-shrink-0">${escapeHtml(p.year)}</span>
+                                            </div>
+                                            <p class="text-xs text-gray-600 truncate font-sans">${escapeHtml(p.title)}</p>
+                                        </div>
+                                    </div>
+                                    <div class="mission-desc hidden mt-3 pt-3 border-t border-gray-100 text-[11px] text-gray-600 font-sans leading-relaxed whitespace-pre-line bg-gray-50 p-2 rounded">
+                                        <strong class="text-dix-dark block mb-1">Mission :</strong>
+                                        ${escapeHtml(p.desc)}
                                     </div>
                                 </div>
                             `;
