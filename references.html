@@ -135,6 +135,7 @@
                 <a href="expertises.html" class="hover:text-dix-light transition-colors">Expertises</a>
                 <a href="references.html" class="text-dix-light font-bold">Références</a>
                 <a href="outils.html" class="hover:text-dix-light transition-colors">Outils</a>
+                <a href="eclairages.html" class="hover:text-dix-light transition-colors">Éclairages</a>
                 <a href="collectif.html" class="hover:text-dix-light transition-colors">La Coopérative</a>
                 <a href="index.html#contact" class="bg-dix-light text-white px-5 py-2 rounded-full hover:bg-green-700 transition-colors">Nous contacter</a>
             </div>
@@ -143,13 +144,8 @@
 
     <header class="border-b border-gray-200 bg-white flex-shrink-0 z-40 relative shadow-sm">
         <div class="flex flex-col lg:flex-row items-center w-full px-6 py-4 gap-4">
-            <div class="w-full lg:w-1/3">
-                <h1 class="text-2xl md:text-3xl tracking-widest text-dix-dark font-oswald flex items-center">
-                    <i data-lucide="map" class="mr-3 text-dix-light"></i> Explorer les projets
-                </h1>
-            </div>
             
-            <div class="flex-1 flex flex-wrap gap-3 justify-end items-center w-full">
+            <div class="flex-1 flex flex-wrap gap-3 justify-start items-center w-full">
                 <!-- Recherche libre -->
                 <div class="relative flex-grow max-w-sm">
                     <input type="text" id="searchInput" placeholder="Rechercher (mot-clé, client, ville)..." 
@@ -496,7 +492,14 @@
             const card = document.getElementById(`card-${item.id}`);
             if(card) {
                 card.classList.add('active-card');
-                if (fromUI) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (fromUI) {
+                    // Cible spécifiquement la barre latérale pour un scroll parfait
+                    const sidebar = document.getElementById('sidebar');
+                    sidebar.scrollTo({
+                        top: card.offsetTop - sidebar.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                }
             }
             
             // Animation de la carte géographique
