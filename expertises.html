@@ -11,6 +11,9 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- NOUVEAU : Ajout de PapaParse pour lire le Google Sheet -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -127,11 +130,17 @@
                             <li>Calculateur de viabilité économique et de résilience climatique pour micro-fermes.</li>
                             <li>Matrice d'ingénierie juridique pour le portage foncier partagé.</li>
                         </ul>
+
+                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
+                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
+                        <div class="ref-container mb-4" data-theme="PRODUCTION">
+                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div><div class="h-2 bg-gray-200 rounded w-1/2"></div></div></div>
+                        </div>
                     </div>
                     <div class="border-t border-gray-100 pt-4">
                         <a href="references.html?theme=PRODUCTION" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer les références (Production)
+                            Explorer toutes les références (Production)
                         </a>
                     </div>
                 </div>
@@ -156,11 +165,17 @@
                             <li>Calculateur d'amortissement et de retour sur investissement des équipements.</li>
                             <li>Gabarits de cahiers des charges pour la maîtrise d'œuvre (AMO).</li>
                         </ul>
+
+                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
+                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
+                        <div class="ref-container mb-4" data-theme="TRANSFORMATION">
+                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                        </div>
                     </div>
                     <div class="border-t border-gray-100 pt-4">
                         <a href="references.html?theme=TRANSFORMATION" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer les références (Transformation)
+                            Explorer toutes les références (Transformation)
                         </a>
                     </div>
                 </div>
@@ -185,11 +200,17 @@
                             <li>Grille de pondération des critères environnementaux et sociaux pour appels d'offres publics.</li>
                             <li>Simulateur d'impact sur le coût matière par assiette.</li>
                         </ul>
+
+                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
+                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
+                        <div class="ref-container mb-4" data-theme="RESTAU.CO">
+                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                        </div>
                     </div>
                     <div class="border-t border-gray-100 pt-4">
                         <a href="references.html?theme=RESTAU.CO" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer les références (Restauration)
+                            Explorer toutes les références (Restauration)
                         </a>
                     </div>
                 </div>
@@ -214,11 +235,17 @@
                             <li>Calculateur d'empreinte carbone et d'analyse des coûts du dernier kilomètre.</li>
                             <li>Application de gestion de partage d'espace de stockage frigorifique.</li>
                         </ul>
+
+                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
+                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
+                        <div class="ref-container mb-4" data-theme="LOGISTIQUE">
+                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                        </div>
                     </div>
                     <div class="border-t border-gray-100 pt-4">
                         <a href="references.html?theme=LOGISTIQUE" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer les références (Logistique)
+                            Explorer toutes les références (Logistique)
                         </a>
                     </div>
                 </div>
@@ -243,11 +270,17 @@
                             <li>Simulateur de modèle économique hybride (subventions publiques / chiffre d'affaires privé).</li>
                             <li>Outil d'optimisation du référencement et des assortiments en circuits-courts.</li>
                         </ul>
+
+                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
+                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
+                        <div class="ref-container mb-4" data-theme="DISTRIBUTION">
+                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                        </div>
                     </div>
                     <div class="border-t border-gray-100 pt-4">
                         <a href="references.html?theme=DISTRIBUTION" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer les références (Distribution)
+                            Explorer toutes les références (Distribution)
                         </a>
                     </div>
                 </div>
@@ -272,11 +305,17 @@
                             <li>Modèle de convention de filière et de contractualisation multipartite sécurisée.</li>
                             <li>Plateforme de planification prévisionnelle de la production agricole.</li>
                         </ul>
+
+                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
+                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
+                        <div class="ref-container mb-4" data-theme="FILIERE">
+                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                        </div>
                     </div>
                     <div class="border-t border-gray-100 pt-4">
                         <a href="references.html?theme=FILIERE" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer les références (Filière)
+                            Explorer toutes les références (Filière)
                         </a>
                     </div>
                 </div>
@@ -301,11 +340,17 @@
                             <li>Matrice d'hybridation des revenus et modèle prévisionnel multi-activités.</li>
                             <li>Bilan d'impact social et territorial pour les partenaires financeurs.</li>
                         </ul>
+
+                        <!-- NOUVEAU : Conteneur pour les 3 dernières références -->
+                        <h4 class="font-oswald text-dix-dark text-sm tracking-widest mb-3 border-b border-gray-100 pb-1 mt-6">Dernières Références</h4>
+                        <div class="ref-container mb-4" data-theme="TIERS LIEU">
+                            <div class="animate-pulse flex space-x-4 p-3 bg-gray-50 rounded-xl"><div class="rounded-lg bg-gray-200 h-10 w-10"></div><div class="flex-1 space-y-2 py-1"><div class="h-2 bg-gray-200 rounded w-3/4"></div></div></div>
+                        </div>
                     </div>
                     <div class="border-t border-gray-100 pt-4">
                         <a href="references.html?theme=TIERS%20LIEU" class="inline-flex items-center text-sm font-oswald text-white bg-dix-light px-4 py-2 rounded hover:bg-green-700 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 
-                            Explorer les références (Tiers-lieux)
+                            Explorer toutes les références (Tiers-lieux)
                         </a>
                     </div>
                 </div>
@@ -359,5 +404,92 @@
         </div>
     </footer>
 
+    <!-- SCRIPT DE CHARGEMENT DES 3 DERNIERES RÉFÉRENCES PAR CATÉGORIE -->
+    <script>
+        const CSV_URL_REFS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSm_4bPCRFK_gGVkxP-ZeTHzLauhQtqNg_zG2chKNuY8-iyDAuHjc_CQbpBCU4LY9-GRi1579CsUkhr/pub?gid=917397259&single=true&output=csv";
+        const COLS_REFS = { ANNEE: 0, LOGO: 2, CLIENT: 3, CATEGORIE: 5, TITRE: 6 };
+
+        function escapeHtml(unsafe) {
+            return (unsafe || "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function cleanUrl(text) {
+            if (!text) return null;
+            let url = String(text).trim();
+            const match = url.match(/["'](http[^"']+)["']/i);
+            return match ? match[1] : (url.startsWith('http') ? url : null);
+        }
+
+        window.addEventListener('load', function() {
+            if (typeof Papa === 'undefined') return;
+            
+            Papa.parse(CSV_URL_REFS, {
+                download: true,
+                header: false,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    if (!results.data || results.data.length < 2) return;
+                    
+                    const rows = results.data.slice(1);
+                    let projects = rows.map(row => {
+                        let yearDisplay = (row[COLS_REFS.ANNEE] || "").split('\n')[0].trim();
+                        return {
+                            year: yearDisplay,
+                            logo: cleanUrl(row[COLS_REFS.LOGO]),
+                            client: row[COLS_REFS.CLIENT] || "",
+                            category: (row[COLS_REFS.CATEGORIE] || "").trim().toUpperCase(),
+                            title: row[COLS_REFS.TITRE] || ""
+                        };
+                    }).filter(p => p.client !== "");
+
+                    // Tri chronologique : "En cours" d'abord, puis par année décroissante
+                    projects.sort((a, b) => {
+                        if (a.year === "En cours") return -1;
+                        if (b.year === "En cours") return 1;
+                        return b.year.localeCompare(a.year);
+                    });
+
+                    // Injection dans chaque conteneur selon la thématique
+                    document.querySelectorAll('.ref-container').forEach(container => {
+                        const theme = container.getAttribute('data-theme').toUpperCase();
+                        
+                        // Filtrer les projets correspondant au thème de la carte
+                        const matching = projects.filter(p => p.category === theme || p.category === theme.replace('%20', ' '));
+                        const top3 = matching.slice(0, 3);
+                        
+                        container.innerHTML = ''; // Retirer l'animation de chargement
+                        
+                        if(top3.length === 0) {
+                            container.innerHTML = '<p class="text-xs text-gray-400 italic">Références en cours de documentation.</p>';
+                            return;
+                        }
+
+                        top3.forEach(p => {
+                            const initial = escapeHtml(p.client.charAt(0));
+                            let logoHtml = p.logo 
+                                ? `<img src="${escapeHtml(p.logo)}" onerror="this.onerror=null; this.outerHTML='<span class=\\'font-oswald text-gray-400 text-xl\\'>${initial}</span>'" class="max-h-full max-w-full object-contain mix-blend-multiply opacity-80 group-hover:opacity-100 transition-opacity">` 
+                                : `<span class="font-oswald text-gray-400 text-xl">${initial}</span>`;
+                            
+                            // Création de la mini-carte cliquable
+                            container.innerHTML += `
+                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-dix-light hover:shadow-md transition-all group cursor-pointer mb-2" onclick="window.location.href='references.html?theme=${encodeURIComponent(theme)}'">
+                                    <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1 border border-gray-100 flex-shrink-0">
+                                        ${logoHtml}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <h5 class="text-sm font-bold text-dix-dark font-oswald uppercase truncate pr-2 group-hover:text-dix-light transition-colors">${escapeHtml(p.client)}</h5>
+                                            <span class="text-[10px] font-bold px-2 py-0.5 bg-white border border-gray-200 rounded text-gray-500 flex-shrink-0">${escapeHtml(p.year)}</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 truncate font-sans">${escapeHtml(p.title)}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
