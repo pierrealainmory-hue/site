@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DIX | Modélisation de systèmes alimentaires territoriaux</title>
     
-    <!-- Utilisation de Bunny Fonts (Zéro pistage, non bloqué par Firefox/Adblockers) -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=oswald:300,400,500,700" rel="stylesheet" />
+    <!-- FIX POLICES : Preconnect forcé pour contrer les bloqueurs/VPN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -34,7 +35,6 @@
     
     <style>
         body { font-family: 'Georgia', serif; color: #1f2937; }
-        /* Ajout de !important pour forcer la priorité sur Tailwind */
         .font-oswald { font-family: 'Oswald', sans-serif !important; letter-spacing: 0.05em; text-transform: uppercase; }
         
         .hero-pattern {
@@ -128,16 +128,22 @@
                 <a href="expertises.html" class="hover:text-dix-light transition-colors">Expertises</a>
                 <a href="references.html" class="hover:text-dix-light transition-colors">Références</a>
                 <a href="outils.html" class="hover:text-dix-light transition-colors">Outils</a>
-                <a href="collectif.html" class="hover:text-dix-light transition-colors">La Coopérative</a>
                 <a href="eclairages.html" class="hover:text-dix-light transition-colors">Éclairages</a>
+                <a href="collectif.html" class="hover:text-dix-light transition-colors">La Coopérative</a>
                 <a href="#contact" class="bg-dix-light text-white px-5 py-2 rounded-full hover:bg-green-700 transition-colors">Nous contacter</a>
             </div>
         </div>
     </nav>
 
     <!-- EN-TÊTE / HERO -->
-    <header class="relative hero-pattern text-white pt-16 pb-24 overflow-hidden">
-        <div class="absolute inset-0 bg-dix-dark/90"></div>
+    <header class="relative text-white pt-20 pb-28 overflow-hidden">
+        <!-- Image de fond agricole/territoriale avec effet fixe (parallaxe) -->
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-fixed"></div>
+        
+        <!-- Double calque pour garantir la lisibilité (Vert foncé + Gradient Noir) -->
+        <div class="absolute inset-0 bg-dix-dark/85 mix-blend-multiply"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-80"></div>
+        
         <div class="relative z-10 max-w-6xl mx-auto px-6">
             
             <div class="text-center mb-12">
