@@ -167,6 +167,10 @@ Toute modification ou distribution doit conserver cette mention.
                     
                     <div class="space-y-5">
                         <div class="input-group">
+                            <label>Nom du projet / Établissement</label>
+                            <input type="text" id="estName" placeholder="Ex: Collège Jean Moulin" oninput="calculateAll()">
+                        </div>
+                        <div class="input-group">
                             <label>Public Cible</label>
                             <select id="targetPublic" onchange="calculateAll()">
                                 <option value="creche">Crèche</option>
@@ -189,7 +193,25 @@ Toute modification ou distribution doit conserver cette mention.
                             <label>Semaines d'activité / an</label>
                             <input type="number" id="weeksPerYear" value="36" oninput="calculateAll()">
                         </div>
+                        <button onclick="addEstablishment()" class="w-full mt-2 bg-dix-dark hover:bg-gray-800 text-white font-oswald py-3 rounded-lg transition-colors flex justify-center items-center gap-2 shadow-md">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Ajouter au cumul
+                        </button>
                     </div>
+                </div>
+
+                <!-- ZONE CUMUL LOCALSTORAGE -->
+                <div id="cumulContainer" class="hidden bg-white rounded-2xl shadow-lg border border-gray-100 p-6 border-l-4 border-l-dix-dark">
+                    <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
+                        <h2 class="text-lg text-dix-dark tracking-wide font-oswald uppercase">Périmètre d'étude</h2>
+                        <span id="badgeCount" class="bg-dix-dark text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
+                    </div>
+                    <div id="estList" class="space-y-3 mb-4 max-h-48 overflow-y-auto custom-scroll pr-1">
+                        <!-- Injected via JS -->
+                    </div>
+                    <button onclick="clearAllEst()" class="w-full text-xs text-red-500 hover:text-white hover:bg-red-500 font-oswald uppercase tracking-widest text-center border border-red-200 rounded py-2 transition-colors">
+                        Effacer la simulation globale
+                    </button>
                 </div>
 
                 <!-- INFO TECHNIQUE -->
@@ -321,20 +343,20 @@ Toute modification ou distribution doit conserver cette mention.
             <!-- Logos -->
             <div class="flex items-center gap-4">
                 <div class="w-px h-10 bg-slate-300 hidden sm:block"></div>
-                <a href="https://www.dix.coop/" target="_blank" class="hover:opacity-80 transition" title="Visiter le site de DIX">
-                    <div class="text-2xl font-oswald border-2 border-dix-dark text-dix-dark px-2 py-0.5 rounded tracking-tighter">DIX</div>
+                <a href="https://www.dix-autrement.fr/" target="_blank" class="hover:opacity-80 transition" title="Visiter le site de DIX Solutions">
+                    <img src="https://raw.githubusercontent.com/pierrealainmory-hue/site/main/logo-dix.png" alt="Logo DIX Solutions" class="h-12 object-contain">
                 </a>
             </div>
             
             <!-- Mentions légales -->
             <div class="text-xs text-slate-500 leading-relaxed md:text-right">
                 <strong class="text-slate-700">&copy; 2026 DIX - La Coopérative des Transitions Agricoles et Alimentaires des Territoires. Tous droits réservés.</strong><br>
-                Entreprise de l'Économie Sociale et Solidaire (ESS) - SCOP SAS au SIREN 830 937 710 | Siège social : 6 Grande Rue, 77320 Chartronges<br>
-                <!-- Mention inamovible de paternité et licence -->
+                Entreprise de l'Économie Sociale et Solidaire (ESS) - SAS au SIREN 830 937 710 | Siège social : 6 Grande Rue, 77320 Chartronges<br>
+                Plateforme expérimentale conçue et propulsée pour le PNR des Préalpes d'Azur.<br>
                 Outil originellement conçu et développé par Pierre-Alain Mory pour la coopérative DIX (Licence AGPL v3).<br>
                 <span class="mt-1 block">
-                    Contact : <a href="mailto:contact@dix.coop" class="text-dix-light font-bold hover:underline">contact@dix.coop</a> - 
-                    Web : <a href="https://www.dix.coop/" target="_blank" class="text-dix-light font-bold hover:underline">www.dix.coop</a>
+                    Contact : <a href="mailto:contact@dix-autrement.fr" class="text-[#549e39] font-bold hover:underline">contact@dix-autrement.fr</a> - 
+                    Web : <a href="https://www.dix-autrement.fr/" target="_blank" class="text-[#549e39] font-bold hover:underline">www.dix-autrement.fr</a>
                 </span>
             </div>
         </div>
@@ -389,6 +411,77 @@ Toute modification ou distribution doit conserver cette mention.
         const palletCapacities = { leg: 600, vpo: 500, fec: 800, fru: 500, lai: 450, pain: 150 };
         const agriYields = { leg: 25, fru: 18, fec: 7, pain: 6 };
 
+        // GESTION DU STOCKAGE LOCAL (CUMUL ETABLISSEMENTS)
+        let savedEstablishments = JSON.parse(localStorage.getItem('dix_sim_ests')) || [];
+        let currentAggData = null; // Stocke les résultats globaux pour le PDF
+
+        function escapeHtml(unsafe) {
+            return (unsafe || "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function updateEstList() {
+            const container = document.getElementById('estList');
+            const cumulContainer = document.getElementById('cumulContainer');
+            document.getElementById('badgeCount').innerText = savedEstablishments.length;
+            
+            if (savedEstablishments.length === 0) {
+                cumulContainer.classList.add('hidden');
+                return;
+            }
+            
+            cumulContainer.classList.remove('hidden');
+            container.innerHTML = savedEstablishments.map(e => `
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
+                    <div class="truncate pr-2">
+                        <p class="text-sm font-bold text-dix-dark truncate font-oswald uppercase tracking-wide">${escapeHtml(e.name)}</p>
+                        <p class="text-[10px] text-gray-500 font-georgia italic">${e.mealsPerDay} repas/j - ${e.publicType}</p>
+                    </div>
+                    <button onclick="removeEstablishment(${e.id})" class="text-gray-400 hover:text-red-500 flex-shrink-0 transition" title="Retirer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addEstablishment() {
+            const mealsPerDay = parseFloat(document.getElementById('mealsPerDay').value) || 0;
+            if (mealsPerDay <= 0) return; // Ne pas ajouter si vide
+
+            const name = document.getElementById('estName').value || `Établissement ${savedEstablishments.length + 1}`;
+            const publicType = document.getElementById('targetPublic').value;
+            const daysPerWeek = parseFloat(document.getElementById('daysPerWeek').value) || 0;
+            const weeksPerYear = parseFloat(document.getElementById('weeksPerYear').value) || 0;
+
+            savedEstablishments.push({
+                id: Date.now(), name, publicType, mealsPerDay, daysPerWeek, weeksPerYear
+            });
+
+            localStorage.setItem('dix_sim_ests', JSON.stringify(savedEstablishments));
+            
+            // Remise à zéro du formulaire de saisie
+            document.getElementById('estName').value = "";
+            document.getElementById('mealsPerDay').value = "0";
+            
+            updateEstList();
+            calculateAll();
+        }
+
+        function removeEstablishment(id) {
+            savedEstablishments = savedEstablishments.filter(e => e.id !== id);
+            localStorage.setItem('dix_sim_ests', JSON.stringify(savedEstablishments));
+            updateEstList();
+            calculateAll();
+        }
+
+        function clearAllEst() {
+            if(confirm("Êtes-vous sûr de vouloir effacer tout votre périmètre d'étude ?")) {
+                savedEstablishments = [];
+                localStorage.removeItem('dix_sim_ests');
+                updateEstList();
+                calculateAll();
+            }
+        }
+
         // ÉCOUTEURS D'ÉVÉNEMENTS DRAG & DROP
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -438,6 +531,7 @@ Toute modification ou distribution doit conserver cette mention.
             document.getElementById('fileInfo').classList.remove('hidden'); 
             document.getElementById('rowCount').innerText = count; 
             document.getElementById('mealsPerDay').value = Math.round(totalRepas); 
+            document.getElementById('estName').value = `Import CSV (${count} sites)`;
             calculateAll(); 
         }
 
@@ -449,34 +543,80 @@ Toute modification ou distribution doit conserver cette mention.
         }
 
         function calculateAll() {
-            const publicType = document.getElementById('targetPublic').value;
-            const mealsPerDay = parseFloat(document.getElementById('mealsPerDay').value) || 0;
-            const daysPerWeek = parseFloat(document.getElementById('daysPerWeek').value) || 0;
-            const weeksPerYear = parseFloat(document.getElementById('weeksPerYear').value) || 0;
-            const totalMeals = mealsPerDay * daysPerWeek * weeksPerYear;
+            const currentMealsPerDay = parseFloat(document.getElementById('mealsPerDay').value) || 0;
+            const currentEstName = document.getElementById('estName').value || "Saisie en cours";
             
-            document.getElementById('totalMeals').innerText = Math.round(totalMeals).toLocaleString('fr-FR');
-            
-            const g = grammages[publicType];
-            
+            // On agglomère les établissements sauvegardés ET la saisie en cours (pour l'effet live)
+            let itemsToCalculate = [...savedEstablishments];
+            if (currentMealsPerDay > 0) {
+                itemsToCalculate.push({
+                    name: currentEstName,
+                    publicType: document.getElementById('targetPublic').value,
+                    mealsPerDay: currentMealsPerDay,
+                    daysPerWeek: parseFloat(document.getElementById('daysPerWeek').value) || 0,
+                    weeksPerYear: parseFloat(document.getElementById('weeksPerYear').value) || 0
+                });
+            }
+
+            let globalTotalMeals = 0;
             let totalAnnualFini = 0, totalAnnualBrut = 0, totalWeeklyPallets = 0, totalSurfaceAgri = 0, totalWeeklyFiniKg = 0, totalWeeklyBrutKg = 0;
+            
+            // Initialisation des compteurs par catégorie
+            let catTotals = {};
+            for (let k in labels) {
+                 catTotals[k] = { annualFini: 0, annualBrut: 0, weeklyBrutKg: 0, weeklyFiniKg: 0, surface: 0, palletCount: 0 };
+            }
+
+            // Calcul cumulatif
+            itemsToCalculate.forEach(item => {
+                const totalMeals = item.mealsPerDay * item.daysPerWeek * item.weeksPerYear;
+                globalTotalMeals += totalMeals;
+                const g = grammages[item.publicType];
+
+                for (let k in labels) {
+                    const annualBrut = (totalMeals * g[k]) / 1000;
+                    const annualFini = (totalMeals * g[k] * yields[k]) / 1000;
+                    const weeklyBrutKg = item.mealsPerDay * item.daysPerWeek * g[k];
+                    const weeklyFiniKg = weeklyBrutKg * yields[k];
+                    const palletCount = weeklyBrutKg / palletCapacities[k];
+
+                    catTotals[k].annualBrut += annualBrut;
+                    catTotals[k].annualFini += annualFini;
+                    catTotals[k].weeklyBrutKg += weeklyBrutKg;
+                    catTotals[k].weeklyFiniKg += weeklyFiniKg;
+                    catTotals[k].palletCount += palletCount;
+
+                    totalAnnualFini += annualFini;
+                    totalAnnualBrut += annualBrut;
+                    totalWeeklyFiniKg += weeklyFiniKg;
+                    totalWeeklyBrutKg += weeklyBrutKg;
+                    totalWeeklyPallets += palletCount;
+
+                    if (agriYields[k]) {
+                        const surface = annualBrut / agriYields[k];
+                        catTotals[k].surface += surface;
+                        totalSurfaceAgri += surface;
+                    }
+                }
+            });
+
+            // Sauvegarde pour le PDF
+            currentAggData = {
+                globalTotalMeals, totalAnnualFini, totalAnnualBrut, totalWeeklyPallets, totalSurfaceAgri, catTotals
+            };
+
+            // Mise à jour de l'interface
+            document.getElementById('totalMeals').innerText = Math.round(globalTotalMeals).toLocaleString('fr-FR');
+            
             let finiHtml = "", weeklyFiniHtml = "", brutHtml = "", weeklyBrutHtml = "", logistiqueHtml = "", agriHtml = "";
 
             for (let k in labels) {
-                const annualBrut = (totalMeals * g[k]) / 1000;
-                const annualFini = (totalMeals * g[k] * yields[k]) / 1000;
-                const weeklyBrutKg = mealsPerDay * daysPerWeek * g[k];
-                const weeklyFiniKg = weeklyBrutKg * yields[k];
-                const palletCount = weeklyBrutKg / palletCapacities[k];
-
-                totalAnnualFini += annualFini; 
-                totalAnnualBrut += annualBrut; 
-                totalWeeklyFiniKg += weeklyFiniKg; 
-                totalWeeklyBrutKg += weeklyBrutKg; 
-                totalWeeklyPallets += palletCount;
-
                 const s = productStyles[k];
+                const ct = catTotals[k];
                 
+                // Masquer si aucune donnée (utile si public ne mange pas de tel produit)
+                if (ct.annualBrut === 0) continue;
+
                 // CARTES FINIES
                 finiHtml += `
                     <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 flex flex-col justify-between border-t-4 ${s.borderCls} hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
@@ -485,14 +625,14 @@ Toute modification ou distribution doit conserver cette mention.
                             <div class="font-oswald text-sm font-bold text-gray-500 tracking-wide uppercase">${s.label}</div>
                         </div>
                         <div class="font-georgia text-4xl font-bold ${s.colorCls}">
-                            ${annualFini.toLocaleString('fr-FR', {maximumFractionDigits: 1})} <span class="font-georgia text-base font-normal text-gray-400 italic">tonnes</span>
+                            ${ct.annualFini.toLocaleString('fr-FR', {maximumFractionDigits: 1})} <span class="font-georgia text-base font-normal text-gray-400 italic">tonnes</span>
                         </div>
                     </div>`;
 
                 weeklyFiniHtml += `
                     <div class="flex flex-col border-b border-gray-100 pb-3">
                         <span class="font-oswald ${s.colorCls} tracking-wide text-xs mb-1 uppercase">${s.label}</span>
-                        <span class="text-gray-800 font-bold text-xl">${Math.round(weeklyFiniKg).toLocaleString('fr-FR')} <span class="text-sm font-normal text-gray-400">kg</span></span>
+                        <span class="text-gray-800 font-bold text-xl">${Math.round(ct.weeklyFiniKg).toLocaleString('fr-FR')} <span class="text-sm font-normal text-gray-400">kg</span></span>
                     </div>`;
 
                 // CARTES BRUTES
@@ -503,14 +643,14 @@ Toute modification ou distribution doit conserver cette mention.
                             <div class="font-oswald text-sm font-bold text-gray-500 tracking-wide uppercase">${s.label}</div>
                         </div>
                         <div class="font-georgia text-4xl font-bold ${s.colorCls}">
-                            ${annualBrut.toLocaleString('fr-FR', {maximumFractionDigits: 1})} <span class="font-georgia text-base font-normal text-gray-400 italic">tonnes brutes</span>
+                            ${ct.annualBrut.toLocaleString('fr-FR', {maximumFractionDigits: 1})} <span class="font-georgia text-base font-normal text-gray-400 italic">tonnes brutes</span>
                         </div>
                     </div>`;
 
                 weeklyBrutHtml += `
                     <div class="flex flex-col border-b border-gray-100 pb-3">
                         <span class="font-oswald ${s.colorCls} tracking-wide text-xs mb-1 uppercase">${s.label}</span>
-                        <span class="text-gray-800 font-bold text-xl">${Math.round(weeklyBrutKg).toLocaleString('fr-FR')} <span class="text-sm font-normal text-gray-400">kg</span></span>
+                        <span class="text-gray-800 font-bold text-xl">${Math.round(ct.weeklyBrutKg).toLocaleString('fr-FR')} <span class="text-sm font-normal text-gray-400">kg</span></span>
                     </div>`;
 
                 // LOGISTIQUE
@@ -521,16 +661,14 @@ Toute modification ou distribution doit conserver cette mention.
                             <div class="font-oswald text-sm font-bold text-gray-500 tracking-wide uppercase">${s.label}</div>
                         </div>
                         <div class="flex items-baseline gap-2 mt-auto">
-                            <span class="font-georgia text-4xl font-bold text-gray-800">${palletCount < 0.1 ? "<0.1" : palletCount.toLocaleString('fr-FR', {maximumFractionDigits: 1})}</span>
+                            <span class="font-georgia text-4xl font-bold text-gray-800">${ct.palletCount < 0.1 ? "<0.1" : ct.palletCount.toLocaleString('fr-FR', {maximumFractionDigits: 1})}</span>
                             <span class="font-oswald text-xs text-gray-400 tracking-widest uppercase">PALETTES</span>
                         </div>
-                        <p class="font-georgia text-xs text-gray-400 mt-2 italic">${Math.round(weeklyBrutKg).toLocaleString('fr-FR')} kg par semaine</p>
+                        <p class="font-georgia text-xs text-gray-400 mt-2 italic">${Math.round(ct.weeklyBrutKg).toLocaleString('fr-FR')} kg par semaine</p>
                     </div>`;
 
                 // EMPREINTE AGRICOLE
-                if (agriYields[k]) {
-                    const surface = annualBrut / agriYields[k];
-                    totalSurfaceAgri += surface;
+                if (ct.surface > 0) {
                     agriHtml += `
                         <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 border-t-4 ${s.borderCls} hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
                             <div class="flex items-center space-x-4 mb-4">
@@ -538,7 +676,7 @@ Toute modification ou distribution doit conserver cette mention.
                                 <div class="font-oswald text-sm font-bold text-gray-500 tracking-wide uppercase">${s.label}</div>
                             </div>
                             <div class="font-georgia text-4xl font-bold ${s.colorCls}">
-                                ${surface.toLocaleString('fr-FR', {maximumFractionDigits: 2})} <span class="text-base font-normal text-gray-400 italic">hectares</span>
+                                ${ct.surface.toLocaleString('fr-FR', {maximumFractionDigits: 2})} <span class="text-base font-normal text-gray-400 italic">hectares</span>
                             </div>
                         </div>`;
                 }
@@ -566,23 +704,16 @@ Toute modification ou distribution doit conserver cette mention.
         }
 
         async function generatePDF() {
-            // Initialisation de jsPDF
+            // Empêcher la génération si les données ne sont pas chargées
+            if (!currentAggData) return;
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
             // Couleurs de la charte DIX
-            const dixDark = [64, 95, 89];   // #405F59
-            const dixLight = [84, 158, 57]; // #549e39
+            const dixDark = [64, 95, 89];   
+            const dixLight = [84, 158, 57]; 
             const grayText = [107, 114, 128];
-
-            // Récupération des données du formulaire
-            const mealsPerDay = parseFloat(document.getElementById('mealsPerDay').value);
-            const daysPerWeek = parseFloat(document.getElementById('daysPerWeek').value);
-            const weeksPerYear = parseFloat(document.getElementById('weeksPerYear').value);
-            const totalMealsVal = mealsPerDay * daysPerWeek * weeksPerYear;
-            const publicType = document.getElementById('targetPublic').value;
-            const profileName = document.getElementById('targetPublic').options[document.getElementById('targetPublic').selectedIndex].text;
-            const g = grammages[publicType];
 
             // ----------------------------------------------------
             // PAGE 1 : COUVERTURE
@@ -604,7 +735,15 @@ Toute modification ou distribution doit conserver cette mention.
             doc.setFontSize(16);
             doc.setFont("helvetica", "italic");
             doc.setTextColor(229, 231, 235);
-            doc.text(`Bénéficiaires ciblés : ${profileName}`, 20, 90);
+            
+            let profileText = "";
+            if (savedEstablishments.length > 0) {
+                profileText = `Périmètre : ${savedEstablishments.length} établissement(s) cumulé(s)`;
+            } else {
+                const profileName = document.getElementById('targetPublic').options[document.getElementById('targetPublic').selectedIndex].text;
+                profileText = `Bénéficiaires ciblés : ${profileName}`;
+            }
+            doc.text(profileText, 20, 90);
 
             doc.setFillColor(255, 255, 255);
             doc.roundedRect(20, 110, 100, 30, 3, 3, 'F');
@@ -614,15 +753,14 @@ Toute modification ou distribution doit conserver cette mention.
             doc.text("VOLUME ANNUEL ESTIMÉ", 25, 120);
             doc.setFontSize(22);
             doc.setTextColor(...dixLight);
-            doc.text(`${document.getElementById('totalMeals').innerText} Repas`, 25, 132);
+            doc.text(`${Math.round(currentAggData.globalTotalMeals).toLocaleString('fr-FR')} Repas`, 25, 132);
 
             // ----------------------------------------------------
-            // PAGES DE CONTENU (Génération dynamique)
+            // PAGES DE CONTENU
             // ----------------------------------------------------
             function createContentPage(title, subtitle, type) {
                 doc.addPage();
                 
-                // Header de la page
                 doc.setFillColor(...dixDark);
                 doc.rect(0, 0, 210, 8, 'F');
                 doc.setFontSize(12);
@@ -630,7 +768,6 @@ Toute modification ou distribution doit conserver cette mention.
                 doc.setTextColor(255,255,255);
                 doc.text("DIX", 190, 6);
 
-                // Titres
                 doc.setTextColor(...dixDark);
                 doc.setFontSize(24);
                 doc.text(title, 14, 25);
@@ -646,26 +783,19 @@ Toute modification ou distribution doit conserver cette mention.
                 let totalVal = 0;
 
                 for (let k in labels) {
+                    const ct = currentAggData.catTotals[k];
                     let annualVal = 0, weeklyVal = 0;
-                    if (type === 'fini') {
-                        annualVal = (totalMealsVal * g[k] * yields[k]) / 1000;
-                        weeklyVal = mealsPerDay * daysPerWeek * g[k] * yields[k];
-                    } else if (type === 'brut') {
-                        annualVal = (totalMealsVal * g[k]) / 1000;
-                        weeklyVal = mealsPerDay * daysPerWeek * g[k];
-                    } else if (type === 'agri') {
-                        if (agriYields[k]) {
-                            annualVal = ((totalMealsVal * g[k]) / 1000) / agriYields[k]; 
-                            weeklyVal = 0; 
-                        }
-                    }
+                    
+                    if (type === 'fini') { annualVal = ct.annualFini; weeklyVal = ct.weeklyFiniKg; } 
+                    else if (type === 'brut') { annualVal = ct.annualBrut; weeklyVal = ct.weeklyBrutKg; } 
+                    else if (type === 'agri') { annualVal = ct.surface; weeklyVal = 0; }
 
                     totalVal += annualVal;
                     
                     let unit = type === 'agri' ? " ha" : " t";
                     let wUnit = type === 'agri' ? "-" : Math.round(weeklyVal) + " kg";
                     
-                    if (annualVal > 0 || type !== 'agri') {
+                    if (annualVal > 0) {
                         tableBody.push([
                             labels[k], 
                             annualVal.toLocaleString('fr-FR', {maximumFractionDigits: 1}) + unit, 
@@ -674,7 +804,6 @@ Toute modification ou distribution doit conserver cette mention.
                     }
                 }
 
-                // Encart KPI
                 doc.setFillColor(...dixDark);
                 doc.roundedRect(14, 45, 80, 25, 2, 2, 'F');
                 doc.setFontSize(10);
@@ -684,7 +813,6 @@ Toute modification ou distribution doit conserver cette mention.
                 doc.setFontSize(22);
                 doc.text(`${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ${type === 'agri' ? 'hectares' : 'Tonnes'}`, 19, 64);
 
-                // Tableau de données via autoTable
                 doc.autoTable({
                     startY: 80,
                     head: [['Catégorie', 'Volume Annuel', 'Moyenne Hebdo']],
@@ -702,16 +830,15 @@ Toute modification ou distribution doit conserver cette mention.
             createContentPage("EMPREINTE FONCIÈRE", "Estimation des surfaces agricoles nécessaires", 'agri');
 
             // ----------------------------------------------------
-            // DERNIÈRE PAGE : PIED DE PAGE & MENTIONS LÉGALES
+            // DERNIÈRE PAGE
             // ----------------------------------------------------
             doc.addPage();
-            doc.setFillColor(249, 250, 251); // Fond gris très clair (dix-bg)
+            doc.setFillColor(249, 250, 251); 
             doc.rect(0, 0, 210, 297, 'F');
             
             doc.setFillColor(...dixDark);
             doc.rect(0, 0, 210, 8, 'F');
 
-            // Dessin du "Logo" DIX (Cadre bordé) pour garantir l'affichage PDF
             doc.setDrawColor(...dixDark);
             doc.setLineWidth(1);
             doc.roundedRect(20, 30, 25, 12, 1, 1, 'D');
@@ -745,12 +872,12 @@ Toute modification ou distribution doit conserver cette mention.
             doc.text("Contact : contact@dix-autrement.fr", 20, legalY); legalY += 6;
             doc.text("Web : www.dix-autrement.fr", 20, legalY);
 
-            // Lancement du téléchargement
             doc.save("Rapport_Impact_Relocalisation.pdf");
         }
 
         // Lancement initial
         window.onload = function() {
+            updateEstList();
             calculateAll();
         };
     </script>
