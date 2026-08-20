@@ -77,93 +77,131 @@
     <!-- GRILLE DES OUTILS -->
     <section class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <h2 class="text-3xl font-oswald text-dix-dark mb-10 border-b-2 border-dix-light inline-block pb-2">Les Micro-Outils (Libre Accès)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
                 
-                <!-- Outil 1 -->
-                <div class="tool-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
+                <!-- Outil 1 : Simulateur Impact -->
+                <div class="tool-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden flex flex-col">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-dix-light/10 rounded-bl-full z-0"></div>
-                    <div class="relative z-10">
-                        <div class="w-12 h-12 bg-dix-dark text-white rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    <div class="relative z-10 flex-grow">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 bg-dix-dark text-white rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <span class="bg-dix-light text-white text-xs font-oswald px-2 py-1 rounded tracking-widest uppercase">Interactif</span>
                         </div>
-                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Simulateurs économiques & capacitaires</h3>
+                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Simulateur d'Impact : Filière Alimentaire</h3>
                         <p class="text-sm text-gray-600 leading-relaxed mb-6">
-                            Modélisation de la viabilité des unités de transformation (légumeries, conserveries) et des espaces de distribution. Évaluation des prix de revient en circuits-courts pour garantir une rémunération équitable du producteur.
+                            Estimez instantanément les volumes logistiques, les besoins de production et l'empreinte agricole nécessaires pour approvisionner votre restauration collective. Import CSV compatible data.gouv.fr et génération automatique de rapports (PPTX).
                         </p>
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Modélisation financière</span>
+                        <div class="flex flex-wrap gap-2 mb-8">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Restauration</span>
                             <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Dimensionnement</span>
                         </div>
                     </div>
+                    <a href="simulateur_impact.html" class="block w-full text-center bg-white border-2 border-dix-dark text-dix-dark hover:bg-dix-dark hover:text-white font-oswald py-3 rounded transition-colors uppercase tracking-widest text-sm z-10 relative">
+                        Lancer le simulateur
+                    </a>
                 </div>
 
-                <!-- Outil 2 -->
-                <div class="tool-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
+                <!-- Outil : Simulateur Rémunération -->
+                <div class="tool-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden flex flex-col">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-dix-dark/10 rounded-bl-full z-0"></div>
-                    <div class="relative z-10">
-                        <div class="w-12 h-12 bg-dix-light text-white rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Matrices de gouvernance & Ingénierie juridique</h3>
-                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
-                            Gabarits statutaires pour la création de Sociétés Coopératives d'Intérêt Collectif (SCIC) appliquées aux filières alimentaires. Rédaction de conventions de contractualisation pour protéger les producteurs des asymétries de marché.
-                        </p>
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Communs</span>
-                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Statuts SCIC/SCOP</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Outil 3 -->
-                <div class="tool-card bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-dix-dark/10 rounded-bl-full z-0"></div>
-                    <div class="relative z-10">
-                        <div class="w-12 h-12 bg-dix-dark text-white rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Analyse Spatiale (SIG) & Logistique</h3>
-                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
-                            Outils de cartographie dynamique permettant l'optimisation des flux d'approvisionnement et la modélisation de hubs logistiques partagés inter-fermes. Analyse d'empreinte carbone pour le "dernier kilomètre" rural.
-                        </p>
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">QGIS / Mapping</span>
-                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Décarbonation</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Outil 4 : La Fabrique -->
-                <div class="tool-card bg-dix-light/5 border border-dix-light/20 rounded-2xl p-8 relative overflow-hidden md:col-span-2">
-                    <div class="flex flex-col md:flex-row gap-8 items-center relative z-10">
-                        <div class="md:w-2/3">
-                            <span class="text-dix-light font-oswald tracking-widest text-xs mb-2 block border-b border-dix-light/30 inline-block pb-1">INNOVATION INTERNE</span>
-                            <h3 class="text-3xl font-oswald text-dix-dark mb-4 mt-2">La Fabrique DIX (Budget Participatif)</h3>
-                            <p class="text-sm text-gray-700 leading-relaxed mb-4">
-                                Afin d'investir massivement dans la recherche et le développement d'outils au service des territoires, la coopérative DIX a développé sa propre plateforme de "Budget Participatif". 
-                            </p>
-                            <p class="text-sm text-gray-700 leading-relaxed mb-6">
-                                Ce logiciel sur-mesure permet à la coopérative d'allouer une part de ses excédents financiers (sous forme de "Jetons") pour financer des actions de recherche, des expérimentations ou des modélisations. Les acteurs territoriaux peuvent soumettre leurs défis sur cette plateforme pour qu'ils soient traités par notre collectif d'ingénierie.
-                            </p>
-                            <a href="index.html#dix-lab" class="inline-flex items-center font-oswald text-sm bg-dix-dark text-white px-5 py-2.5 rounded hover:bg-gray-800 transition-colors">
-                                Soumettre une idée à La Fabrique
-                            </a>
-                        </div>
-                        <div class="md:w-1/3">
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 transform rotate-2">
-                                <div class="h-4 bg-gray-100 rounded w-1/2 mb-3"></div>
-                                <div class="h-2 bg-gray-100 rounded w-full mb-2"></div>
-                                <div class="h-2 bg-gray-100 rounded w-3/4 mb-4"></div>
-                                <div class="w-full bg-green-100 rounded-full h-2 mb-2">
-                                    <div class="bg-dix-light h-2 rounded-full" style="width: 75%"></div>
-                                </div>
-                                <div class="text-[10px] text-right text-gray-400 font-oswald">Financement : 75%</div>
+                    <div class="relative z-10 flex-grow">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 bg-dix-light text-white rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
+                            <span class="bg-dix-light text-white text-xs font-oswald px-2 py-1 rounded tracking-widest uppercase">Interactif</span>
+                        </div>
+                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Simulateur d'Arbitrage (ESA vs Micro)</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                            Comparez de manière transparente la rentabilité financière et la protection sociale du statut d'Entrepreneur Salarié Associé (CAE) par rapport à la micro-entreprise, du CA brut jusqu'au Reste-à-Vivre.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-8">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Protection Sociale</span>
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Modèle CAE</span>
                         </div>
                     </div>
+                    <a href="simulateur_dix.html" class="block w-full text-center bg-white border-2 border-dix-dark text-dix-dark hover:bg-dix-dark hover:text-white font-oswald py-3 rounded transition-colors uppercase tracking-widest text-sm z-10 relative">
+                        Lancer le simulateur
+                    </a>
                 </div>
 
             </div>
+
+            <h2 class="text-3xl font-oswald text-dix-dark mb-10 border-b-2 border-dix-light inline-block pb-2">Les Modélisateurs Experts (Sur Demande)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                <!-- Modélisateur 1 -->
+                <div class="tool-card bg-gray-100 border border-gray-200 rounded-2xl p-8 relative overflow-hidden flex flex-col">
+                    <div class="relative z-10 flex-grow opacity-80">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 bg-gray-500 text-white rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            </div>
+                            <span class="bg-gray-300 text-gray-600 text-xs font-oswald px-2 py-1 rounded tracking-widest uppercase">Expert / AMO</span>
+                        </div>
+                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Matrices de gouvernance & SCIC</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                            Gabarits statutaires pour la création de Sociétés Coopératives d'Intérêt Collectif (SCIC) appliquées aux filières alimentaires. Rédaction de conventions pour protéger les producteurs des asymétries de marché.
+                        </p>
+                    </div>
+                    <a href="index.html#contact" class="block w-full text-center bg-gray-300 text-gray-700 hover:bg-gray-400 font-oswald py-3 rounded transition-colors uppercase tracking-widest text-sm z-10 relative">
+                        Demander une démo
+                    </a>
+                </div>
+
+                <!-- Modélisateur 2 -->
+                <div class="tool-card bg-gray-100 border border-gray-200 rounded-2xl p-8 relative overflow-hidden flex flex-col">
+                    <div class="relative z-10 flex-grow opacity-80">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 bg-gray-500 text-white rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                            </div>
+                            <span class="bg-gray-300 text-gray-600 text-xs font-oswald px-2 py-1 rounded tracking-widest uppercase">Expert / AMO</span>
+                        </div>
+                        <h3 class="text-2xl font-oswald text-dix-dark mb-3">Analyse Spatiale (SIG) & Logistique</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                            Outils de cartographie dynamique permettant l'optimisation des flux d'approvisionnement inter-fermes. Analyse d'empreinte carbone pour le "dernier kilomètre" rural.
+                        </p>
+                    </div>
+                    <a href="index.html#contact" class="block w-full text-center bg-gray-300 text-gray-700 hover:bg-gray-400 font-oswald py-3 rounded transition-colors uppercase tracking-widest text-sm z-10 relative">
+                        Demander une démo
+                    </a>
+                </div>
+            </div>
+
+            <!-- La Fabrique (Déjà codée, on la garde ici comme outil interne) -->
+            <div class="tool-card bg-dix-light/5 border border-dix-light/20 rounded-2xl p-8 relative overflow-hidden">
+                <div class="flex flex-col md:flex-row gap-8 items-center relative z-10">
+                    <div class="md:w-2/3">
+                        <span class="text-dix-light font-oswald tracking-widest text-xs mb-2 block border-b border-dix-light/30 inline-block pb-1">INNOVATION INTERNE</span>
+                        <h3 class="text-3xl font-oswald text-dix-dark mb-4 mt-2">La Fabrique DIX (Budget Participatif)</h3>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-4">
+                            Afin d'investir massivement dans la recherche et le développement d'outils au service des territoires, la coopérative DIX a développé sa propre plateforme de "Budget Participatif". 
+                        </p>
+                        <p class="text-sm text-gray-700 leading-relaxed mb-6">
+                            Ce logiciel permet d'allouer une part des excédents financiers pour financer des actions de recherche, des expérimentations ou des modélisations proposées par le réseau.
+                        </p>
+                        <a href="App_Budget_Participatif_DIX.html" class="inline-flex items-center font-oswald text-sm bg-dix-dark text-white px-5 py-2.5 rounded hover:bg-gray-800 transition-colors">
+                            Ouvrir La Fabrique
+                        </a>
+                    </div>
+                    <div class="md:w-1/3">
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 transform rotate-2">
+                            <div class="h-4 bg-gray-100 rounded w-1/2 mb-3"></div>
+                            <div class="h-2 bg-gray-100 rounded w-full mb-2"></div>
+                            <div class="h-2 bg-gray-100 rounded w-3/4 mb-4"></div>
+                            <div class="w-full bg-green-100 rounded-full h-2 mb-2">
+                                <div class="bg-dix-light h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                            <div class="text-[10px] text-right text-gray-400 font-oswald">Financement : 75%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -191,7 +229,7 @@
                 <ul class="space-y-2 text-sm">
                     <li><a href="#" class="hover:text-white transition-colors">Mentions légales</a></li>
                     <li class="mt-4 pt-4 border-t border-gray-800 text-gray-500">
-                        SCOP SAS à capital variable<br>
+                        SCOP CAE SAS à capital variable<br>
                         SIREN 830 937 710
                     </li>
                 </ul>
