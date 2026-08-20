@@ -8,7 +8,8 @@ Toute modification ou distribution doit conserver cette mention.
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dimensionner la relocalisation de la Restauration collective - DIX</title>
+    <title>DIX.MENSION | Simulateur d'Impact - DIX</title>
+    
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -113,8 +114,11 @@ Toute modification ou distribution doit conserver cette mention.
 
         <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-200 pb-8">
             <div>
-                <h1 class="text-3xl tracking-wide text-dix-dark">Dimensionner la relocalisation de la Restauration collective</h1>
-                <p class="font-georgia text-dix-light font-bold text-lg mt-2">Du convive au foncier agricole.</p>
+                <h1 class="text-3xl tracking-wide text-dix-dark flex items-center gap-3">
+                    <span class="font-bold text-dix-light border-2 border-dix-light px-2 py-1 rounded">DIX.MENSION</span> 
+                    Simulateur d'Impact
+                </h1>
+                <p class="font-georgia text-dix-dark font-bold text-lg mt-3">Dimensionner la relocalisation de la Restauration collective : du convive au foncier agricole.</p>
                 <p class="font-georgia text-gray-500 text-sm mt-1 italic">Outil coopératif de dimensionnement fonctionnel & logistique.</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-4 items-center">
@@ -197,6 +201,9 @@ Toute modification ou distribution doit conserver cette mention.
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                             Ajouter au cumul
                         </button>
+                        <button onclick="loadDemo()" class="w-full mt-2 text-xs font-oswald text-dix-light hover:text-white border border-dix-light hover:bg-dix-light py-2 rounded transition-colors uppercase tracking-widest">
+                            + Charger un cas type (Démo)
+                        </button>
                     </div>
                 </div>
 
@@ -218,9 +225,11 @@ Toute modification ou distribution doit conserver cette mention.
                 </div>
 
                 <!-- INFO TECHNIQUE -->
-                <div class="p-5 bg-white rounded-2xl shadow-sm border border-gray-200 font-georgia text-sm text-gray-500 italic">
-                    <p class="mb-2">Calculs basés sur les recommandations nutritionnelles (GEMRCN v2015).</p>
-                    <a href="https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/conseil_acheteurs/guides/nutrition/recommandation-nutrition.pdf" target="_blank" class="text-dix-light hover:underline not-italic font-bold">Consulter le guide de référence</a>
+                <div class="p-5 bg-white rounded-2xl shadow-sm border border-gray-200 font-georgia text-sm text-gray-500 italic text-center">
+                    <p class="mb-2">Calculs basés sur les moyennes et recommandations nationales.</p>
+                    <button onclick="document.getElementById('methodeModal').classList.remove('hidden')" class="mt-2 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold font-oswald uppercase tracking-widest py-2 px-3 rounded w-full transition-colors border border-gray-300">
+                        Voir la note méthodologique
+                    </button>
                 </div>
             </aside>
 
@@ -342,15 +351,18 @@ Toute modification ou distribution doit conserver cette mention.
         </div>
     </div>
 
-    <!-- Nouveau Footer Officiel -->
+    <!-- NOUVEAU FOOTER AVEC BADGE CENTRE -->
     <footer class="bg-white border-t border-slate-200 mt-auto py-6 relative z-40">
         <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-            <!-- Logos -->
-            <div class="flex items-center gap-4">
-                <div class="w-px h-10 bg-slate-300 hidden sm:block"></div>
-                <a href="https://www.dix-autrement.fr/" target="_blank" class="hover:opacity-80 transition" title="Visiter le site de DIX Solutions">
-                    <img src="logo-dix.png" alt="Logo DIX Solutions" class="h-12 object-contain">
-                </a>
+            <!-- Logos & Badge -->
+            <div class="flex items-start gap-4">
+                <div class="w-px h-10 bg-slate-300 hidden sm:block mt-2"></div>
+                <div class="flex flex-col gap-3 items-center sm:items-start">
+                    <a href="https://www.dix-autrement.fr/" target="_blank" class="hover:opacity-80 transition" title="Visiter le site de DIX Solutions">
+                        <img src="logo-dix.png" alt="Logo DIX Solutions" class="h-12 object-contain">
+                    </a>
+                    <img src="https://visitor-badge.laobi.icu/badge?page_id=pierrealainmory-hue.simulateur-impact-dix&left_text=Visites&left_color=%23405F59&right_color=%23549e39" alt="Compteur de visites de l'outil" class="opacity-80 hover:opacity-100 transition-opacity h-5 rounded shadow-sm w-fit">
+                </div>
             </div>
             
             <!-- Mentions légales -->
@@ -358,18 +370,57 @@ Toute modification ou distribution doit conserver cette mention.
                 <strong class="text-slate-700">&copy; 2026 DIX - La Coopérative des Transitions Agricoles et Alimentaires des Territoires. Tous droits réservés.</strong><br>
                 Entreprise de l'Économie Sociale et Solidaire (ESS) - SAS au SIREN 830 937 710 | Siège social : 6 Grande Rue, 77320 Chartronges<br>
                 Plateforme expérimentale conçue et propulsée pour le PNR des Préalpes d'Azur.<br>
+                Outil originellement conçu et développé par Pierre-Alain Mory pour la coopérative DIX (Licence AGPL v3).<br>
                 <span class="mt-1 block">
-                    Contact : <a href="mailto:contact@dix-autrement.fr" class="text-[#549e39] font-bold hover:underline">contact@dix-autrement.fr</a> - 
-                    Web : <a href="https://www.dix-autrement.fr/" target="_blank" class="text-[#549e39] font-bold hover:underline">www.dix-autrement.fr</a>
+                    Contact : <a href="mailto:contact@dix-autrement.fr" class="text-dix-light font-bold hover:underline">contact@dix-autrement.fr</a> - 
+                    Web : <a href="https://www.dix-autrement.fr/" target="_blank" class="text-dix-light font-bold hover:underline">www.dix-autrement.fr</a>
                 </span>
             </div>
         </div>
-
-        <!-- Compteur de visites -->
-        <div class="mt-4 pt-4 border-t border-slate-100 flex justify-center">
-            <img src="https://visitor-badge.laobi.icu/badge?page_id=pierrealainmory-hue.simulateur-impact-dix&left_text=Visites&left_color=%23405F59&right_color=%23549e39" alt="Compteur de visites de l'outil" class="opacity-80 hover:opacity-100 transition-opacity h-5 rounded shadow-sm">
-        </div>
     </footer>
+
+    <!-- MODAL METHODOLOGIE -->
+    <div id="methodeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[9999] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col font-georgia">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-2xl">
+                <h3 class="font-oswald text-xl text-dix-dark tracking-wide flex items-center gap-2">
+                    <svg class="w-6 h-6 text-dix-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Notes Méthodologiques & Sources
+                </h3>
+                <button onclick="document.getElementById('methodeModal').classList.add('hidden')" class="text-gray-400 hover:text-red-500 font-bold text-2xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-6 text-sm text-gray-700 leading-relaxed">
+                
+                <div>
+                    <h4 class="font-oswald text-dix-dark mb-2 border-b border-gray-200 pb-1">1. Grammages & Portions</h4>
+                    <p>Le simulateur base ses calculs d'achats sur les recommandations nutritionnelles officielles du <strong>GEMRCN (v2015)</strong>. Ces valeurs déterminent la masse de produit "Brut" nécessaire par repas et par public cible, garantissant ainsi l'équilibre nutritionnel avant transformation.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-oswald text-dix-dark mb-2 border-b border-gray-200 pb-1">2. Coefficients de Rendement (Du Brut au Net)</h4>
+                    <p>Pour passer du volume acheté au volume réellement consommé, des pertes de préparation sont appliquées (épluchage, parage, désossage, réduction à la cuisson). <br>Exemples : Légumes (75%), Viandes/Poissons (80%), Féculents (gain de masse par hydratation : 280%).</p>
+                </div>
+
+                <div>
+                    <h4 class="font-oswald text-dix-dark mb-2 border-b border-gray-200 pb-1">3. Empreinte Foncier Agricole</h4>
+                    <p>Les surfaces nécessaires sont estimées à partir des rendements agronomiques moyens nationaux publiés par l'<strong>Agreste</strong> (Ministère de l'Agriculture) et l'<strong>Idele</strong> (Institut de l'Élevage).<br>
+                    <em>Note : L'empreinte foncière de la viande et des produits laitiers inclut la surface moyenne de prairies nécessaires à l'alimentation du bétail (UGB/ha).</em></p>
+                </div>
+
+                <div class="bg-green-50 border border-green-100 rounded-xl p-4 flex gap-4 items-start">
+                    <svg class="w-6 h-6 text-dix-light flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <div>
+                        <strong class="font-oswald uppercase text-dix-dark block mb-1">Outil Freemium (Variables Verrouillées)</strong>
+                        <p class="text-xs text-gray-600">Cette version publique utilise des constantes nationales pour donner des ordres de grandeur. Dans le cadre de nos missions d'AMO (Assistance à Maîtrise d'Ouvrage), la coopérative DIX déploie une version experte permettant de modifier finement ces coefficients pour s'adapter aux rendements réels des agriculteurs de votre territoire.</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="p-4 border-t border-gray-200 bg-gray-50 text-center rounded-b-2xl">
+                <button onclick="document.getElementById('methodeModal').classList.add('hidden')" class="bg-dix-dark text-white px-6 py-2 rounded-lg font-oswald uppercase tracking-widest text-sm hover:bg-gray-800 transition-colors">Fermer</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // DONNEES TECHNIQUES & STYLES AVEC COULEURS DE RELIEF ASSURÉES
@@ -428,6 +479,19 @@ Toute modification ou distribution doit conserver cette mention.
 
         function escapeHtml(unsafe) {
             return (unsafe || "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // CHARGER LA DÉMO RAPIDE
+        function loadDemo() {
+            savedEstablishments = [
+                {id: Date.now(), name: "Collège Fictif Pasteur", publicType: "secondaire", mealsPerDay: 450, daysPerWeek: 4, weeksPerYear: 36},
+                {id: Date.now()+1, name: "École Élémentaire Curie", publicType: "elementaire", mealsPerDay: 220, daysPerWeek: 4, weeksPerYear: 36},
+                {id: Date.now()+2, name: "Crèche Intercommunale", publicType: "creche", mealsPerDay: 60, daysPerWeek: 5, weeksPerYear: 47}
+            ];
+            localStorage.setItem('dix_sim_ests', JSON.stringify(savedEstablishments));
+            document.getElementById('estName').value = "Saisie en cours"; // Reset current input
+            updateEstList();
+            calculateAll();
         }
 
         function updateEstList() {
@@ -774,27 +838,51 @@ Toute modification ou distribution doit conserver cette mention.
                 fru: '#ea580c', lai: '#0891b2', pain: '#57534e'
             };
 
-            // Fonction pour générer le camembert en image invisible
+            // Fonction pour générer le camembert avec la LÉGENDE
             function createDoughnutChartBase64(dataObj) {
                 const canvas = document.createElement('canvas');
-                canvas.width = 400; canvas.height = 400;
+                canvas.width = 500; // Plus large pour accommoder la légende à droite
+                canvas.height = 300;
                 const ctx = canvas.getContext('2d');
                 let total = 0;
                 for (let k in dataObj) total += dataObj[k].value;
                 if (total === 0) return null;
                 
                 let startAngle = -Math.PI / 2;
+                const centerX = 150;
+                const centerY = 150;
+
+                // 1. Dessiner le Donut
                 for (let k in dataObj) {
                     if (dataObj[k].value <= 0) continue;
                     const sliceAngle = (dataObj[k].value / total) * 2 * Math.PI;
                     ctx.beginPath();
-                    ctx.arc(200, 200, 150, startAngle, startAngle + sliceAngle);
-                    ctx.arc(200, 200, 90, startAngle + sliceAngle, startAngle, true);
+                    ctx.arc(centerX, centerY, 120, startAngle, startAngle + sliceAngle);
+                    ctx.arc(centerX, centerY, 70, startAngle + sliceAngle, startAngle, true);
                     ctx.closePath();
                     ctx.fillStyle = dataObj[k].color;
                     ctx.fill();
                     startAngle += sliceAngle;
                 }
+
+                // 2. Dessiner la légende à droite
+                let legendY = 60;
+                for (let k in dataObj) {
+                    if (dataObj[k].value <= 0) continue;
+                    const pct = Math.round((dataObj[k].value / total) * 100);
+                    
+                    // Carré de couleur
+                    ctx.fillStyle = dataObj[k].color;
+                    ctx.fillRect(300, legendY - 14, 16, 16);
+                    
+                    // Texte (Label + %)
+                    ctx.fillStyle = "#374151"; // Text color
+                    ctx.font = "bold 16px Arial";
+                    ctx.fillText(`${dataObj[k].label} : ${pct}%`, 325, legendY);
+                    
+                    legendY += 35;
+                }
+
                 return canvas.toDataURL('image/png');
             }
 
@@ -808,12 +896,13 @@ Toute modification ou distribution doit conserver cette mention.
             doc.rect(0, 0, 210, 10, 'F');
 
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(24);
+            doc.setFontSize(28);
             doc.setFont("helvetica", "bold");
-            doc.text("SIMULATION D'IMPACT", 20, 50);
+            doc.text("DIX.MENSION", 20, 50);
             
-            doc.setFontSize(40);
-            doc.text("FILIÈRE ALIMENTAIRE", 20, 65);
+            doc.setFontSize(30);
+            doc.text("SIMULATEUR D'IMPACT", 20, 65);
+            doc.text("FILIÈRE ALIMENTAIRE", 20, 78);
 
             doc.setFontSize(16);
             doc.setFont("helvetica", "italic");
@@ -826,17 +915,17 @@ Toute modification ou distribution doit conserver cette mention.
                 const profileName = document.getElementById('targetPublic').options[document.getElementById('targetPublic').selectedIndex].text;
                 profileText = `Bénéficiaires ciblés : ${profileName}`;
             }
-            doc.text(profileText, 20, 90);
+            doc.text(profileText, 20, 100);
 
             doc.setFillColor(255, 255, 255);
-            doc.roundedRect(20, 110, 100, 30, 3, 3, 'F');
+            doc.roundedRect(20, 120, 100, 30, 3, 3, 'F');
             doc.setFontSize(12);
             doc.setFont("helvetica", "bold");
             doc.setTextColor(...dixDark);
-            doc.text("VOLUME ANNUEL ESTIMÉ", 25, 120);
+            doc.text("VOLUME ANNUEL ESTIMÉ", 25, 130);
             doc.setFontSize(22);
             doc.setTextColor(...dixLight);
-            doc.text(`${Math.round(currentAggData.globalTotalMeals).toLocaleString('fr-FR')} Repas`, 25, 132);
+            doc.text(`${Math.round(currentAggData.globalTotalMeals).toLocaleString('fr-FR')} Repas`, 25, 142);
 
             // ----------------------------------------------------
             // PAGES DE CONTENU
@@ -849,7 +938,7 @@ Toute modification ou distribution doit conserver cette mention.
                 doc.setFontSize(12);
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(255,255,255);
-                doc.text("DIX", 190, 6);
+                doc.text("DIX.MENSION", 195, 6, { align: "right" });
 
                 doc.setTextColor(...dixDark);
                 doc.setFontSize(24);
@@ -886,7 +975,7 @@ Toute modification ou distribution doit conserver cette mention.
                             mainVal.toLocaleString('fr-FR', {maximumFractionDigits: 1}) + unit, 
                             wUnit
                         ]);
-                        chartData[k] = { value: mainVal, color: pdfColors[k] };
+                        chartData[k] = { value: mainVal, color: pdfColors[k], label: labels[k] };
                     }
                 }
 
@@ -906,13 +995,14 @@ Toute modification ou distribution doit conserver cette mention.
                 let totalUnit = type === 'agri' ? 'hectares' : (type === 'logistique' ? 'Palettes' : 'Tonnes');
                 doc.text(`${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ${totalUnit}`, 19, 64);
 
-                // Ajout du graphique généré en Canvas
+                // Ajout du graphique avec Légende (plus large)
                 const chartBase64 = createDoughnutChartBase64(chartData);
                 let tableMarginRight = 14;
                 
-                if (chartBase64 && type !== 'agri') {
-                    doc.addImage(chartBase64, 'PNG', 120, 50, 60, 60);
-                    tableMarginRight = 95; // On réduit la largeur du tableau pour laisser la place au graphique
+                if (chartBase64 && type !== 'agri' && type !== 'logistique') {
+                    // On affiche le graphique de x=100 à x=190 (90mm de large)
+                    doc.addImage(chartBase64, 'PNG', 100, 48, 90, 54);
+                    tableMarginRight = 115; // On réduit beaucoup la largeur du tableau pour laisser la place
                 }
 
                 let headerCols = ['Catégorie', 'Volume Annuel', 'Moyenne Hebdo'];
@@ -929,6 +1019,19 @@ Toute modification ou distribution doit conserver cette mention.
                     alternateRowStyles: { fillColor: [249, 250, 251] },
                     margin: { left: 14, right: tableMarginRight }
                 });
+
+                // --- PHRASE DE LECTURE AUTOMATIQUE (BAs de page) ---
+                let readingSentence = "";
+                if (type === 'fini') readingSentence = `Lecture : Pour nourrir ces bénéficiaires sur une année, le volume net de nourriture réellement consommé dans l'assiette est estimé à ${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} tonnes.`;
+                if (type === 'brut') readingSentence = `Lecture : En tenant compte des pertes lors de la préparation (épluchage, parage, cuisson), la cuisine devra commander un volume brut de ${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} tonnes de marchandises.`;
+                if (type === 'logistique') readingSentence = `Lecture : Le transport de ces marchandises brutes génèrera un flux hebdomadaire estimé à ${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} palettes au format standard (80x120), nécessitant un dimensionnement des quais de réception.`;
+                if (type === 'agri') readingSentence = `Lecture : Sur la base des rendements agricoles moyens français, il faudrait sanctuariser ${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} hectares de foncier pour relocaliser à 100% l'approvisionnement brut de cette restauration.`;
+
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.setFont("helvetica", "italic");
+                doc.setFont("helvetica", "normal"); // Reset bold if any
+                doc.text(readingSentence, 14, 275, { maxWidth: 180 });
             }
 
             createContentPage("PRODUITS FINIS", "Volumes nets prêts à consommer par les bénéficiaires", 'fini');
