@@ -11,8 +11,10 @@ Toute modification ou distribution doit conserver cette mention.
     <title>Dimensionner la relocalisation de la Restauration collective - DIX</title>
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PPTX Gen JS -->
-    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    
+    <!-- jsPDF & autoTable (Génération PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     
     <!-- Google Fonts : Oswald & Georgia -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,11 +118,11 @@ Toute modification ou distribution doit conserver cette mention.
                 <p class="font-georgia text-gray-500 text-sm mt-1 italic">Outil coopératif de dimensionnement fonctionnel & logistique.</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-4 items-center">
-                <button onclick="generateSexyPPTX()" class="bg-dix-light hover:bg-[#46862f] text-white py-3 px-6 rounded-xl shadow-lg flex items-center gap-3 transition transform hover:-translate-y-1">
+                <button onclick="generatePDF()" class="bg-dix-light hover:bg-[#46862f] text-white py-3 px-6 rounded-xl shadow-lg flex items-center gap-3 transition transform hover:-translate-y-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                     </svg>
-                    <span>Éditer le rapport d'impact</span>
+                    <span>Éditer le rapport PDF</span>
                 </button>
                 
                 <div class="bg-white border-2 border-dix-light px-6 py-3 rounded-xl shadow-md text-center min-w-[200px]">
@@ -563,86 +565,84 @@ Toute modification ou distribution doit conserver cette mention.
             document.getElementById('totalHa').innerText = totalSurfaceAgri.toLocaleString('fr-FR', {maximumFractionDigits: 2});
         }
 
-        function generateSexyPPTX() {
-            let pptx = new PptxGenJS();
-            pptx.layout = 'LAYOUT_WIDE';
-            pptx.author = 'Coopérative DIX';
-            pptx.company = 'DIX';
-
-            // Charte DIX (Hex Colors for PPTX)
-            const COLOR_DIX_DARK = "405F59";
-            const COLOR_DIX_LIGHT = "549E39";
-            const COLOR_BG = "F9FAFB";
-            const COLOR_TEXT = "1F2937";
-
-            // --- Slide Master (Template Institutionnel DIX) ---
-            pptx.defineSlideMaster({
-                title: "DIX_MASTER",
-                background: { color: COLOR_BG },
-                objects: [
-                    { rect: { x: 0, y: 0, w: '100%', h: 0.15, fill: COLOR_DIX_DARK } }, // Top bar institutionnelle
-                    { rect: { x: 0, y: 7.2, w: '100%', h: 0.3, fill: COLOR_DIX_DARK } }, // Footer bar
-                    { text: { text: "Rapport d'Impact Filière Alimentaire - Coopérative DIX", options: { x: 0.5, y: 7.25, w: 8, h: 0.2, fontSize: 9, color: "FFFFFF", fontFace: "Georgia", italic:true } } },
-                    { slideNumber: { x: 12.8, y: 7.25, w: 0.5, h: 0.2, fontSize: 9, color: "FFFFFF", fontFace: "Oswald" } }
-                ]
-            });
-
-            // --- 1. COVER SLIDE ---
-            let slide1 = pptx.addSlide();
-            slide1.background = { color: COLOR_DIX_DARK };
+        async function generatePDF() {
+            // Initialisation de jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
             
-            slide1.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: 0.15, fill: COLOR_DIX_LIGHT });
-            
-            slide1.addText("SIMULATION D'IMPACT", { 
-                x: 1, y: 2, w: '85%', h: 0.5, 
-                fontSize: 24, color: COLOR_DIX_LIGHT, bold: true, align: "left", fontFace: "Oswald" 
-            });
+            // Couleurs de la charte DIX
+            const dixDark = [64, 95, 89];   // #405F59
+            const dixLight = [84, 158, 57]; // #549e39
+            const grayText = [107, 114, 128];
 
-            slide1.addText("FILIÈRE ALIMENTAIRE", { 
-                x: 1, y: 2.6, w: '85%', h: 1, 
-                fontSize: 54, color: "FFFFFF", bold: true, align: "left", fontFace: "Oswald" 
-            });
-            
-            const profileName = document.getElementById('targetPublic').options[document.getElementById('targetPublic').selectedIndex].text;
-            slide1.addText(`Bénéficiaires ciblés : ${profileName}`, { 
-                x: 1, y: 3.8, w: '85%', h: 0.5, 
-                fontSize: 20, color: "E5E7EB", align: "left", fontFace: "Georgia", italic: true 
-            });
-
-            const annualMeals = document.getElementById('totalMeals').innerText;
-            slide1.addShape(pptx.ShapeType.roundRect, { x: 1, y: 4.8, w: 4, h: 1.5, fill: "FFFFFF", r: 5 });
-            slide1.addText("VOLUME ANNUEL ESTIMÉ", { x: 1.2, y: 5, fontSize: 10, color: COLOR_DIX_DARK, bold: true, fontFace: "Oswald" });
-            slide1.addText(`${annualMeals} Repas`, { x: 1.2, y: 5.4, fontSize: 24, color: COLOR_DIX_LIGHT, bold: true, fontFace: "Georgia" });
-
-            // --- DATA PREPARATION ---
+            // Récupération des données du formulaire
             const mealsPerDay = parseFloat(document.getElementById('mealsPerDay').value);
             const daysPerWeek = parseFloat(document.getElementById('daysPerWeek').value);
             const weeksPerYear = parseFloat(document.getElementById('weeksPerYear').value);
             const totalMealsVal = mealsPerDay * daysPerWeek * weeksPerYear;
             const publicType = document.getElementById('targetPublic').value;
+            const profileName = document.getElementById('targetPublic').options[document.getElementById('targetPublic').selectedIndex].text;
             const g = grammages[publicType];
 
-            // --- FUNCTION CONTENT SLIDES ---
-            function createContentSlide(title, subtitle, type) {
-                let slide = pptx.addSlide({ masterName: "DIX_MASTER" });
-                
-                // Header
-                slide.addText(title, { x: 0.5, y: 0.5, fontSize: 32, bold: true, color: COLOR_DIX_DARK, fontFace: "Oswald" });
-                slide.addText(subtitle, { x: 0.5, y: 1.1, fontSize: 16, color: "6B7280", fontFace: "Georgia", italic: true });
-                slide.addShape(pptx.ShapeType.line, { x: 0.5, y: 1.5, w: 12.3, h: 0, line: { color: "E5E7EB", width: 1 } });
+            // ----------------------------------------------------
+            // PAGE 1 : COUVERTURE
+            // ----------------------------------------------------
+            doc.setFillColor(...dixDark);
+            doc.rect(0, 0, 210, 297, 'F');
+            
+            doc.setFillColor(...dixLight);
+            doc.rect(0, 0, 210, 10, 'F');
 
-                let chartLabels = [];
-                let chartValues = [];
-                // Nuances de verts/terres pour rester dans l'esprit charte
-                let chartColors = ["405F59", "549E39", "8FBC8F", "2E423E", "A5D6A7", "1A2624"]; 
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont("helvetica", "bold");
+            doc.text("SIMULATION D'IMPACT", 20, 50);
+            
+            doc.setFontSize(40);
+            doc.text("FILIÈRE ALIMENTAIRE", 20, 65);
+
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "italic");
+            doc.setTextColor(229, 231, 235);
+            doc.text(`Bénéficiaires ciblés : ${profileName}`, 20, 90);
+
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(20, 110, 100, 30, 3, 3, 'F');
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(...dixDark);
+            doc.text("VOLUME ANNUEL ESTIMÉ", 25, 120);
+            doc.setFontSize(22);
+            doc.setTextColor(...dixLight);
+            doc.text(`${document.getElementById('totalMeals').innerText} Repas`, 25, 132);
+
+            // ----------------------------------------------------
+            // PAGES DE CONTENU (Génération dynamique)
+            // ----------------------------------------------------
+            function createContentPage(title, subtitle, type) {
+                doc.addPage();
                 
-                let tableData = [
-                    [
-                        { text: "Catégorie", options: { bold: true, fill: "F3F4F6", fontFace: "Oswald", color: COLOR_DIX_DARK } },
-                        { text: "Volume Annuel", options: { bold: true, fill: "F3F4F6", align: "right", fontFace: "Oswald", color: COLOR_DIX_DARK } },
-                        { text: "Moyenne Hebdomadaire", options: { bold: true, fill: "F3F4F6", align: "right", fontFace: "Oswald", color: COLOR_DIX_DARK } }
-                    ]
-                ];
+                // Header de la page
+                doc.setFillColor(...dixDark);
+                doc.rect(0, 0, 210, 8, 'F');
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(255,255,255);
+                doc.text("DIX", 190, 6);
+
+                // Titres
+                doc.setTextColor(...dixDark);
+                doc.setFontSize(24);
+                doc.text(title, 14, 25);
+                doc.setFontSize(12);
+                doc.setTextColor(...grayText);
+                doc.setFont("helvetica", "italic");
+                doc.text(subtitle, 14, 33);
+                
+                doc.setDrawColor(229, 231, 235);
+                doc.line(14, 38, 196, 38);
+
+                let tableBody = [];
                 let totalVal = 0;
 
                 for (let k in labels) {
@@ -664,62 +664,89 @@ Toute modification ou distribution doit conserver cette mention.
                     
                     let unit = type === 'agri' ? " ha" : " t";
                     let wUnit = type === 'agri' ? "-" : Math.round(weeklyVal) + " kg";
-                    tableData.push([
-                        { text: labels[k], options: { bold: true, fontFace: "Georgia", color: COLOR_TEXT } },
-                        { text: annualVal.toLocaleString('fr-FR', {maximumFractionDigits: 1}) + unit, options: { align: "right", fontFace: "Georgia" } },
-                        { text: wUnit, options: { align: "right", color: "6B7280", fontFace: "Georgia" } }
-                    ]);
-
-                    if (annualVal > 0) {
-                        chartLabels.push(labels[k]);
-                        chartValues.push(annualVal);
+                    
+                    if (annualVal > 0 || type !== 'agri') {
+                        tableBody.push([
+                            labels[k], 
+                            annualVal.toLocaleString('fr-FR', {maximumFractionDigits: 1}) + unit, 
+                            wUnit
+                        ]);
                     }
                 }
 
-                // 1. CHART
-                if (type !== 'logistique' && chartValues.length > 0) {
-                    let chartData = [{ name: "Volumes", labels: chartLabels, values: chartValues }];
+                // Encart KPI
+                doc.setFillColor(...dixDark);
+                doc.roundedRect(14, 45, 80, 25, 2, 2, 'F');
+                doc.setFontSize(10);
+                doc.setTextColor(255, 255, 255);
+                doc.setFont("helvetica", "bold");
+                doc.text(`TOTAL ${type === 'agri' ? 'FONCIER ESTIMÉ' : 'ANNUEL ESTIMÉ'}`, 19, 53);
+                doc.setFontSize(22);
+                doc.text(`${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ${type === 'agri' ? 'hectares' : 'Tonnes'}`, 19, 64);
 
-                    slide.addChart(pptx.ChartType.doughnut, chartData, {
-                        x: 0.5, y: 1.8, w: 5.5, h: 4.5,
-                        chartColors: chartColors,
-                        dataLabelColor: "FFFFFF",
-                        showLegend: true,
-                        legendPos: 'b',
-                        holeSize: 65,
-                        showTitle: false,
-                        dataLabelFontFace: "Georgia"
-                    });
-                    
-                    slide.addText(Math.round(totalVal).toLocaleString('fr-FR'), { 
-                        x: 2.25, y: 3.8, w: 2, h: 0.5, 
-                        align: "center", fontSize: 26, bold: true, color: COLOR_DIX_DARK, fontFace: "Georgia" 
-                    });
-                    slide.addText(type === 'agri' ? "Hectares" : "Tonnes", { 
-                        x: 2.25, y: 4.2, w: 2, h: 0.5, 
-                        align: "center", fontSize: 12, color: "6B7280", fontFace: "Oswald" 
-                    });
-                }
-
-                // 2. TABLE
-                slide.addTable(tableData, {
-                    x: 6.5, y: 1.8, w: 6.3,
-                    rowH: 0.6,
-                    border: { pt: 1, color: "E5E7EB" },
-                    valign: "middle"
+                // Tableau de données via autoTable
+                doc.autoTable({
+                    startY: 80,
+                    head: [['Catégorie', 'Volume Annuel', 'Moyenne Hebdo']],
+                    body: tableBody,
+                    theme: 'grid',
+                    headStyles: { fillColor: dixDark, textColor: 255, fontStyle: 'bold' },
+                    styles: { font: 'helvetica', fontSize: 11, textColor: 50 },
+                    alternateRowStyles: { fillColor: [249, 250, 251] },
+                    margin: { left: 14, right: 14 }
                 });
-
-                // 3. KPI BOX
-                slide.addShape(pptx.ShapeType.roundRect, { x: 6.5, y: 5.5, w: 6.3, h: 1.2, fill: COLOR_DIX_DARK, r: 4 });
-                slide.addText(`TOTAL ${type === 'agri' ? 'FONCIER ESTIMÉ' : 'ANNUEL ESTIMÉ'}`, { x: 6.7, y: 5.7, fontSize: 10, color: "D1D5DB", bold: true, fontFace: "Oswald" });
-                slide.addText(`${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ${type === 'agri' ? 'hectares' : 'Tonnes'}`, { x: 6.7, y: 6.1, fontSize: 28, color: "FFFFFF", bold: true, fontFace: "Georgia" });
             }
 
-            createContentSlide("PRODUITS FINIS", "Volumes nets prêts à consommer par les bénéficiaires", 'fini');
-            createContentSlide("PRODUITS BRUTS", "Équivalents d'achats nécessaires (entrées structure)", 'brut');
-            createContentSlide("EMPREINTE FONCIÈRE", "Estimation des surfaces agricoles nécessaires pour nos entrepreneur·euse·s", 'agri');
+            createContentPage("PRODUITS FINIS", "Volumes nets prêts à consommer par les bénéficiaires", 'fini');
+            createContentPage("PRODUITS BRUTS", "Équivalents d'achats nécessaires (entrées structure)", 'brut');
+            createContentPage("EMPREINTE FONCIÈRE", "Estimation des surfaces agricoles nécessaires", 'agri');
 
-            pptx.writeFile({ fileName: "Rapport_Impact_DIX_Filiere_Alimentaire.pptx" });
+            // ----------------------------------------------------
+            // DERNIÈRE PAGE : PIED DE PAGE & MENTIONS LÉGALES
+            // ----------------------------------------------------
+            doc.addPage();
+            doc.setFillColor(249, 250, 251); // Fond gris très clair (dix-bg)
+            doc.rect(0, 0, 210, 297, 'F');
+            
+            doc.setFillColor(...dixDark);
+            doc.rect(0, 0, 210, 8, 'F');
+
+            // Dessin du "Logo" DIX (Cadre bordé) pour garantir l'affichage PDF
+            doc.setDrawColor(...dixDark);
+            doc.setLineWidth(1);
+            doc.roundedRect(20, 30, 25, 12, 1, 1, 'D');
+            doc.setFontSize(22);
+            doc.setTextColor(...dixDark);
+            doc.setFont("helvetica", "bold");
+            doc.text("DIX", 24, 39);
+
+            doc.setFontSize(14);
+            doc.text("La Coopérative des Transitions Agricoles et Alimentaires", 20, 55);
+            
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(100, 100, 100);
+            
+            let legalY = 68;
+            doc.text("Entreprise de l'Économie Sociale et Solidaire (ESS) - SAS au SIREN 830 937 710", 20, legalY); legalY += 6;
+            doc.text("Siège social : 6 Grande Rue, 77320 Chartronges", 20, legalY); legalY += 14;
+            
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(...dixDark);
+            doc.text("Plateforme expérimentale conçue et propulsée pour le PNR des Préalpes d'Azur.", 20, legalY); legalY += 12;
+            
+            doc.setFont("helvetica", "italic");
+            doc.setTextColor(100, 100, 100);
+            doc.text("Outil originellement conçu et développé par Pierre-Alain Mory", 20, legalY); legalY += 6;
+            doc.text("pour la coopérative DIX (Licence AGPL v3).", 20, legalY); legalY += 15;
+
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(...dixLight);
+            doc.text("Contact : contact@dix-autrement.fr", 20, legalY); legalY += 6;
+            doc.text("Web : www.dix-autrement.fr", 20, legalY);
+
+            // Lancement du téléchargement
+            doc.save("Rapport_Impact_Relocalisation.pdf");
         }
 
         // Lancement initial
