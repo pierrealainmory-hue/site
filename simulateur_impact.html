@@ -204,7 +204,10 @@ Toute modification ou distribution doit conserver cette mention.
                 <div id="cumulContainer" class="hidden bg-white rounded-2xl shadow-lg border border-gray-100 p-6 border-l-4 border-l-dix-dark">
                     <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
                         <h2 class="text-lg text-dix-dark tracking-wide font-oswald uppercase">Périmètre d'étude</h2>
-                        <span id="badgeCount" class="bg-dix-dark text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="exportSimulation()" class="bg-dix-light text-white text-xs font-bold px-3 py-1 rounded hover:bg-[#46862f] transition shadow-sm" title="Sauvegarder la liste en CSV">↓ CSV</button>
+                            <span id="badgeCount" class="bg-dix-dark text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
+                        </div>
                     </div>
                     <div id="estList" class="space-y-3 mb-4 max-h-48 overflow-y-auto custom-scroll pr-1">
                         <!-- Injected via JS -->
@@ -338,27 +341,28 @@ Toute modification ou distribution doit conserver cette mention.
     </div>
 
     <!-- Nouveau Footer Officiel -->
-    <footer class="bg-white border-t border-slate-200 mt-auto py-6 relative z-40">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+    <footer class="bg-white border-t border-slate-200 mt-auto py-3 relative z-40">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <!-- Logos -->
             <div class="flex items-center gap-4">
-                <div class="w-px h-10 bg-slate-300 hidden sm:block"></div>
+                <div class="w-px h-8 bg-slate-300 hidden sm:block"></div>
                 <a href="https://www.dix-autrement.fr/" target="_blank" class="hover:opacity-80 transition" title="Visiter le site de DIX Solutions">
-                    <img src="https://raw.githubusercontent.com/pierrealainmory-hue/site/main/logo-dix.png" alt="Logo DIX Solutions" class="h-12 object-contain">
+                    <img src="logo-dix.png" alt="Logo DIX Solutions" class="h-10 object-contain">
                 </a>
             </div>
             
             <!-- Mentions légales -->
-            <div class="text-xs text-slate-500 leading-relaxed md:text-right">
-                <strong class="text-slate-700">&copy; 2026 DIX - La Coopérative des Transitions Agricoles et Alimentaires des Territoires. Tous droits réservés.</strong><br>
-                Entreprise de l'Économie Sociale et Solidaire (ESS) - SAS au SIREN 830 937 710 | Siège social : 6 Grande Rue, 77320 Chartronges<br>
-                Plateforme expérimentale conçue et propulsée pour le PNR des Préalpes d'Azur.<br>
-                Outil originellement conçu et développé par Pierre-Alain Mory pour la coopérative DIX (Licence AGPL v3).<br>
-                <span class="mt-1 block">
-                    Contact : <a href="mailto:contact@dix-autrement.fr" class="text-[#549e39] font-bold hover:underline">contact@dix-autrement.fr</a> - 
-                    Web : <a href="https://www.dix-autrement.fr/" target="_blank" class="text-[#549e39] font-bold hover:underline">www.dix-autrement.fr</a>
-                </span>
+            <div class="text-[10px] text-slate-500 leading-tight md:text-right">
+                <strong class="text-slate-700">&copy; 2026 DIX - Coopérative des Transitions. Tous droits réservés.</strong><br>
+                ESS - SAS au SIREN 830 937 710 | 6 Grande Rue, 77320 Chartronges<br>
+                Contact : <a href="mailto:contact@dix-autrement.fr" class="text-[#549e39] font-bold hover:underline">contact@dix-autrement.fr</a> - 
+                Web : <a href="https://www.dix-autrement.fr/" target="_blank" class="text-[#549e39] font-bold hover:underline">www.dix-autrement.fr</a>
             </div>
+        </div>
+
+        <!-- Compteur de visites -->
+        <div class="mt-2 pt-2 border-t border-slate-100 flex justify-center">
+            <img src="https://visitor-badge.laobi.icu/badge?page_id=pierrealainmory-hue.simulateur-impact-dix&left_text=Visites&left_color=%23405F59&right_color=%23549e39" alt="Compteur de visites de l'outil" class="opacity-80 hover:opacity-100 transition-opacity h-4">
         </div>
     </footer>
 
@@ -482,6 +486,20 @@ Toute modification ou distribution doit conserver cette mention.
             }
         }
 
+        function exportSimulation() {
+            if (savedEstablishments.length === 0) return;
+            let csv = "Nom;Public;RepasJour;JoursSemaine;SemainesAn\n";
+            savedEstablishments.forEach(e => {
+                csv += `${e.name};${e.publicType};${e.mealsPerDay};${e.daysPerWeek};${e.weeksPerYear}\n`;
+            });
+            // Utilisation du BOM (\uFEFF) pour forcer Excel à lire l'UTF-8
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Simulation_DIX_Périmetre.csv";
+            link.click();
+        }
+
         // ÉCOUTEURS D'ÉVÉNEMENTS DRAG & DROP
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -516,6 +534,35 @@ Toute modification ou distribution doit conserver cette mention.
             if (lines.length < 2) return; 
             const header = lines[0].toLowerCase(); 
             const separator = header.includes(';') ? ';' : ','; 
+            
+            // DÉTECTION DU FORMAT NÉO-DIX (Export de ce propre simulateur)
+            if (header.includes('nom') && header.includes('public') && header.includes('repasjour')) {
+                let count = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    const row = lines[i].split(separator);
+                    if (row.length >= 5) {
+                        savedEstablishments.push({
+                            id: Date.now() + i, // Sécuriser l'ID unique
+                            name: row[0].trim(),
+                            publicType: row[1].trim(),
+                            mealsPerDay: parseFloat(row[2]) || 0,
+                            daysPerWeek: parseFloat(row[3]) || 0,
+                            weeksPerYear: parseFloat(row[4]) || 0
+                        });
+                        count++;
+                    }
+                }
+                localStorage.setItem('dix_sim_ests', JSON.stringify(savedEstablishments));
+                updateEstList();
+                calculateAll();
+                document.getElementById('fileInfo').classList.remove('hidden'); 
+                document.getElementById('rowCount').innerText = count; 
+                document.getElementById('estName').value = "Saisie en cours"; // Reset
+                return;
+            }
+
+            // ANCIEN FORMAT PUBLIC (data.gouv.fr)
             const cols = header.split(separator).map(c => c.trim().replace(/"/g, '')); 
             const idxRepas = cols.findIndex(c => c.includes('repas') && c.includes('jour')); 
             
@@ -715,6 +762,35 @@ Toute modification ou distribution doit conserver cette mention.
             const dixLight = [84, 158, 57]; 
             const grayText = [107, 114, 128];
 
+            const pdfColors = {
+                leg: '#059669', vpo: '#e11d48', fec: '#d97706',
+                fru: '#ea580c', lai: '#0891b2', pain: '#57534e'
+            };
+
+            // Fonction pour générer le camembert en image invisible
+            function createDoughnutChartBase64(dataObj) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 400; canvas.height = 400;
+                const ctx = canvas.getContext('2d');
+                let total = 0;
+                for (let k in dataObj) total += dataObj[k].value;
+                if (total === 0) return null;
+                
+                let startAngle = -Math.PI / 2;
+                for (let k in dataObj) {
+                    if (dataObj[k].value <= 0) continue;
+                    const sliceAngle = (dataObj[k].value / total) * 2 * Math.PI;
+                    ctx.beginPath();
+                    ctx.arc(200, 200, 150, startAngle, startAngle + sliceAngle);
+                    ctx.arc(200, 200, 90, startAngle + sliceAngle, startAngle, true);
+                    ctx.closePath();
+                    ctx.fillStyle = dataObj[k].color;
+                    ctx.fill();
+                    startAngle += sliceAngle;
+                }
+                return canvas.toDataURL('image/png');
+            }
+
             // ----------------------------------------------------
             // PAGE 1 : COUVERTURE
             // ----------------------------------------------------
@@ -781,26 +857,29 @@ Toute modification ou distribution doit conserver cette mention.
 
                 let tableBody = [];
                 let totalVal = 0;
+                let chartData = {};
 
                 for (let k in labels) {
                     const ct = currentAggData.catTotals[k];
-                    let annualVal = 0, weeklyVal = 0;
+                    let mainVal = 0, secondaryVal = 0;
                     
-                    if (type === 'fini') { annualVal = ct.annualFini; weeklyVal = ct.weeklyFiniKg; } 
-                    else if (type === 'brut') { annualVal = ct.annualBrut; weeklyVal = ct.weeklyBrutKg; } 
-                    else if (type === 'agri') { annualVal = ct.surface; weeklyVal = 0; }
+                    if (type === 'fini') { mainVal = ct.annualFini; secondaryVal = ct.weeklyFiniKg; } 
+                    else if (type === 'brut') { mainVal = ct.annualBrut; secondaryVal = ct.weeklyBrutKg; } 
+                    else if (type === 'logistique') { mainVal = ct.palletCount; secondaryVal = ct.weeklyBrutKg; }
+                    else if (type === 'agri') { mainVal = ct.surface; secondaryVal = 0; }
 
-                    totalVal += annualVal;
+                    totalVal += mainVal;
                     
-                    let unit = type === 'agri' ? " ha" : " t";
-                    let wUnit = type === 'agri' ? "-" : Math.round(weeklyVal) + " kg";
+                    let unit = type === 'agri' ? " ha" : (type === 'logistique' ? " pal/sem" : " t");
+                    let wUnit = type === 'agri' ? "-" : Math.round(secondaryVal) + " kg";
                     
-                    if (annualVal > 0) {
+                    if (mainVal > 0) {
                         tableBody.push([
                             labels[k], 
-                            annualVal.toLocaleString('fr-FR', {maximumFractionDigits: 1}) + unit, 
+                            mainVal.toLocaleString('fr-FR', {maximumFractionDigits: 1}) + unit, 
                             wUnit
                         ]);
+                        chartData[k] = { value: mainVal, color: pdfColors[k] };
                     }
                 }
 
@@ -809,24 +888,45 @@ Toute modification ou distribution doit conserver cette mention.
                 doc.setFontSize(10);
                 doc.setTextColor(255, 255, 255);
                 doc.setFont("helvetica", "bold");
-                doc.text(`TOTAL ${type === 'agri' ? 'FONCIER ESTIMÉ' : 'ANNUEL ESTIMÉ'}`, 19, 53);
+                
+                let boxTitle = "TOTAL ANNUEL ESTIMÉ";
+                if(type === 'agri') boxTitle = "TOTAL FONCIER ESTIMÉ";
+                if(type === 'logistique') boxTitle = "FLUX HEBDOMADAIRE ESTIMÉ";
+                
+                doc.text(boxTitle, 19, 53);
                 doc.setFontSize(22);
-                doc.text(`${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ${type === 'agri' ? 'hectares' : 'Tonnes'}`, 19, 64);
+                
+                let totalUnit = type === 'agri' ? 'hectares' : (type === 'logistique' ? 'Palettes' : 'Tonnes');
+                doc.text(`${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ${totalUnit}`, 19, 64);
+
+                // Ajout du graphique généré en Canvas
+                const chartBase64 = createDoughnutChartBase64(chartData);
+                let tableMarginRight = 14;
+                
+                if (chartBase64 && type !== 'agri') {
+                    doc.addImage(chartBase64, 'PNG', 120, 50, 60, 60);
+                    tableMarginRight = 95; // On réduit la largeur du tableau pour laisser la place au graphique
+                }
+
+                let headerCols = ['Catégorie', 'Volume Annuel', 'Moyenne Hebdo'];
+                if (type === 'logistique') headerCols = ['Catégorie', 'Flux (Palettes)', 'Moyenne Hebdo'];
+                if (type === 'agri') headerCols = ['Catégorie', 'Empreinte (Hectares)', '-'];
 
                 doc.autoTable({
                     startY: 80,
-                    head: [['Catégorie', 'Volume Annuel', 'Moyenne Hebdo']],
+                    head: [headerCols],
                     body: tableBody,
                     theme: 'grid',
                     headStyles: { fillColor: dixDark, textColor: 255, fontStyle: 'bold' },
                     styles: { font: 'helvetica', fontSize: 11, textColor: 50 },
                     alternateRowStyles: { fillColor: [249, 250, 251] },
-                    margin: { left: 14, right: 14 }
+                    margin: { left: 14, right: tableMarginRight }
                 });
             }
 
             createContentPage("PRODUITS FINIS", "Volumes nets prêts à consommer par les bénéficiaires", 'fini');
             createContentPage("PRODUITS BRUTS", "Équivalents d'achats nécessaires (entrées structure)", 'brut');
+            createContentPage("FLUX LOGISTIQUE", "Estimation de l'empreinte logistique et transport", 'logistique');
             createContentPage("EMPREINTE FONCIÈRE", "Estimation des surfaces agricoles nécessaires", 'agri');
 
             // ----------------------------------------------------
