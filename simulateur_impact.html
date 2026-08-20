@@ -329,7 +329,9 @@ Toute modification ou distribution doit conserver cette mention.
 
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
                         <h2 class="text-xl text-dix-dark tracking-wide mb-2">Détail de l'Empreinte Foncière</h2>
-                        <p class="font-georgia text-gray-500 italic text-sm mb-6 pb-4 border-b border-gray-100">Cette estimation permet d'anticiper le besoin foncier pour l'installation de nos futur·e·s Entrepreneur·euse·s Salarié·e·s agricoles au sein de la coopérative.</p>
+                        <p class="font-georgia text-gray-500 italic text-sm mb-6 pb-4 border-b border-gray-100">
+                            Cette estimation permet d'anticiper le besoin foncier pour l'installation de nos futur·e·s Entrepreneur·euse·s Salarié·e·s agricoles au sein de la coopérative. <strong>* Les rendements à l'hectare utilisés pour cette modélisation (y compris les surfaces en prairies pour l'élevage) sont basés sur les moyennes de l'Agreste (Ministère de l'Agriculture) et de l'Idele.</strong>
+                        </p>
                         <div id="container-agriculture" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                             <!-- JS Inject -->
                         </div>
@@ -341,28 +343,31 @@ Toute modification ou distribution doit conserver cette mention.
     </div>
 
     <!-- Nouveau Footer Officiel -->
-    <footer class="bg-white border-t border-slate-200 mt-auto py-3 relative z-40">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+    <footer class="bg-white border-t border-slate-200 mt-auto py-6 relative z-40">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <!-- Logos -->
             <div class="flex items-center gap-4">
-                <div class="w-px h-8 bg-slate-300 hidden sm:block"></div>
+                <div class="w-px h-10 bg-slate-300 hidden sm:block"></div>
                 <a href="https://www.dix-autrement.fr/" target="_blank" class="hover:opacity-80 transition" title="Visiter le site de DIX Solutions">
-                    <img src="logo-dix.png" alt="Logo DIX Solutions" class="h-10 object-contain">
+                    <img src="logo-dix.png" alt="Logo DIX Solutions" class="h-12 object-contain">
                 </a>
             </div>
             
             <!-- Mentions légales -->
-            <div class="text-[10px] text-slate-500 leading-tight md:text-right">
-                <strong class="text-slate-700">&copy; 2026 DIX - Coopérative des Transitions. Tous droits réservés.</strong><br>
-                ESS - SAS au SIREN 830 937 710 | 6 Grande Rue, 77320 Chartronges<br>
-                Contact : <a href="mailto:contact@dix-autrement.fr" class="text-[#549e39] font-bold hover:underline">contact@dix-autrement.fr</a> - 
-                Web : <a href="https://www.dix-autrement.fr/" target="_blank" class="text-[#549e39] font-bold hover:underline">www.dix-autrement.fr</a>
+            <div class="text-xs text-slate-500 leading-relaxed md:text-right">
+                <strong class="text-slate-700">&copy; 2026 DIX - La Coopérative des Transitions Agricoles et Alimentaires des Territoires. Tous droits réservés.</strong><br>
+                Entreprise de l'Économie Sociale et Solidaire (ESS) - SAS au SIREN 830 937 710 | Siège social : 6 Grande Rue, 77320 Chartronges<br>
+                Plateforme expérimentale conçue et propulsée pour le PNR des Préalpes d'Azur.<br>
+                <span class="mt-1 block">
+                    Contact : <a href="mailto:contact@dix-autrement.fr" class="text-[#549e39] font-bold hover:underline">contact@dix-autrement.fr</a> - 
+                    Web : <a href="https://www.dix-autrement.fr/" target="_blank" class="text-[#549e39] font-bold hover:underline">www.dix-autrement.fr</a>
+                </span>
             </div>
         </div>
 
         <!-- Compteur de visites -->
-        <div class="mt-2 pt-2 border-t border-slate-100 flex justify-center">
-            <img src="https://visitor-badge.laobi.icu/badge?page_id=pierrealainmory-hue.simulateur-impact-dix&left_text=Visites&left_color=%23405F59&right_color=%23549e39" alt="Compteur de visites de l'outil" class="opacity-80 hover:opacity-100 transition-opacity h-4">
+        <div class="mt-4 pt-4 border-t border-slate-100 flex justify-center">
+            <img src="https://visitor-badge.laobi.icu/badge?page_id=pierrealainmory-hue.simulateur-impact-dix&left_text=Visites&left_color=%23405F59&right_color=%23549e39" alt="Compteur de visites de l'outil" class="opacity-80 hover:opacity-100 transition-opacity h-5 rounded shadow-sm">
         </div>
     </footer>
 
@@ -413,7 +418,9 @@ Toute modification ou distribution doit conserver cette mention.
         const yields = { leg: 0.75, vpo: 0.80, fec: 2.80, fru: 0.90, lai: 1.0, pain: 1.0 };
         const labels = { leg: "Légumes", vpo: "VPO", fec: "Féculents", fru: "Fruits", lai: "Laitiers", pain: "Pain" };
         const palletCapacities = { leg: 600, vpo: 500, fec: 800, fru: 500, lai: 450, pain: 150 };
-        const agriYields = { leg: 25, fru: 18, fec: 7, pain: 6 };
+        
+        // Mises à jour Agreste : Viande (0.35), Laitiers (9), Pain (6.5)
+        const agriYields = { leg: 25, fru: 18, fec: 7, pain: 6.5, lai: 9, vpo: 0.35 };
 
         // GESTION DU STOCKAGE LOCAL (CUMUL ETABLISSEMENTS)
         let savedEstablishments = JSON.parse(localStorage.getItem('dix_sim_ests')) || [];
