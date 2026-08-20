@@ -1,0 +1,715 @@
+<!-- 
+Copyright (c) 2026 - Pierre-Alain Mory / DIX SCOP CAE
+Ce fichier est régi par les termes de la licence GNU AGPL v3.
+Toute modification ou distribution doit conserver cette mention.
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur d'Impact • Filière Alimentaire - DIX</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PPTX Gen JS -->
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    
+    <!-- Google Fonts : Oswald & Georgia -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Configuration Tailwind spécifique à DIX -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dix-dark': '#405F59', // Vert Foncé Institutionnel
+                        'dix-light': '#549e39', // Vert Clair Action
+                        'dix-bg': '#f9fafb',   // Fond gris très clair
+                        'dix-text': '#1f2937'  // Texte courant
+                    },
+                    fontFamily: {
+                        'oswald': ['Oswald', 'sans-serif'],
+                        'georgia': ['Georgia', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: theme('colors.dix-bg'); 
+            color: theme('colors.dix-text');
+            font-family: 'Georgia', serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        h1, h2, h3, h4, .font-oswald, .tab-btn, button {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .input-group label { 
+            display: block; 
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            font-size: 0.875rem; 
+            color: theme('colors.dix-dark'); 
+            margin-bottom: 0.5rem; 
+            letter-spacing: 0.05em;
+        }
+
+        .tab-btn { 
+            padding: 1rem 1.5rem; 
+            color: #6b7280; 
+            border-bottom: 3px solid transparent; 
+            transition: all 0.2s; 
+            white-space: nowrap; 
+            letter-spacing: 0.05em;
+        }
+
+        .tab-btn.active { 
+            color: theme('colors.dix-dark'); 
+            border-color: theme('colors.dix-dark'); 
+            background-color: #f3f4f6; 
+        }
+
+        .hidden { display: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        input[type="number"], select, input[type="text"] { 
+            border: 1px solid #d1d5db; 
+            border-radius: 0.5rem; 
+            padding: 0.75rem; 
+            width: 100%; 
+            font-family: 'Georgia', serif;
+            color: theme('colors.dix-text'); 
+            background-color: #f9fafb;
+            transition: all 0.2s;
+        }
+        
+        input:focus, select:focus { 
+            border-color: theme('colors.dix-light'); 
+            outline: none; 
+            box-shadow: 0 0 0 2px rgba(84, 158, 57, 0.2);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto flex-grow">
+        <!-- Bouton retour au catalogue -->
+        <a href="outils.html" class="inline-flex items-center text-sm font-oswald text-gray-500 hover:text-dix-light mb-6 transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Retour au catalogue des outils DIX
+        </a>
+
+        <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-200 pb-8">
+            <div>
+                <h1 class="text-3xl tracking-wide text-dix-dark">Simulateur d'Impact • Filière Alimentaire</h1>
+                <p class="font-georgia text-dix-light font-bold text-lg mt-2">DIX, la coopérative des transitions agricoles et alimentaires des territoires.</p>
+                <p class="font-georgia text-gray-500 text-sm mt-1 italic">Outil coopératif de dimensionnement fonctionnel & logistique.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 items-center">
+                <button onclick="generateSexyPPTX()" class="bg-dix-light hover:bg-[#46862f] text-white py-3 px-6 rounded-xl shadow-lg flex items-center gap-3 transition transform hover:-translate-y-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                    </svg>
+                    <span>Éditer le rapport d'impact</span>
+                </button>
+                
+                <div class="bg-white border-2 border-dix-light px-6 py-3 rounded-xl shadow-md text-center min-w-[200px]">
+                    <div class="font-oswald text-dix-dark text-xs tracking-widest mb-1 uppercase">Total Repas Annuels</div>
+                    <div id="totalMeals" class="font-georgia text-2xl font-bold text-dix-light">0</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <aside class="lg:col-span-4 space-y-8">
+                
+                <!-- ZONE D'IMPORT CSV -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 border-l-4 border-l-dix-light">
+                    <h2 class="text-lg text-dix-dark tracking-wide mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        Mutualisation (Import CSV)
+                    </h2>
+                    
+                    <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center transition-all duration-200 bg-gray-50 hover:border-dix-light hover:bg-green-50 cursor-pointer">
+                        <p class="font-georgia text-sm text-gray-500 mb-2">Glissez le fichier de données ici</p>
+                        <input type="file" id="fileInput" accept=".csv" class="hidden" onchange="handleFileSelect(event)">
+                    </div>
+
+                    <div id="fileInfo" class="hidden mt-4 p-3 bg-white rounded-xl border border-gray-200 shadow-sm text-sm font-georgia">
+                        <p class="font-bold text-dix-dark truncate" id="fileName">Fichier chargé</p>
+                        <p class="text-gray-600 mt-1"><span id="rowCount" class="font-bold">0</span> structures identifiées</p>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="https://www.data.gouv.fr/fr/datasets/r/9f437853-aa44-4eff-9a97-5b7828a2b7e8" target="_blank" class="font-georgia text-xs text-gray-400 underline hover:text-dix-light transition-colors">
+                            Source des données publiques (data.gouv.fr)
+                        </a>
+                    </div>
+                </div>
+
+                <!-- PARAMETRES MANUELS -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                    <h2 class="text-lg text-dix-dark tracking-wide mb-6 border-b border-gray-100 pb-3">Critères de dimensionnement</h2>
+                    
+                    <div class="space-y-5">
+                        <div class="input-group">
+                            <label>Public Cible</label>
+                            <select id="targetPublic" onchange="calculateAll()">
+                                <option value="creche">Crèche</option>
+                                <option value="maternelle">Maternelle</option>
+                                <option value="elementaire">Élémentaire</option>
+                                <option value="secondaire" selected>Secondaire</option>
+                                <option value="adulte">Adulte</option>
+                                <option value="senior">Senior</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Bénéficiaire·s / jour</label>
+                            <input type="number" id="mealsPerDay" value="1000" oninput="calculateAll()">
+                        </div>
+                        <div class="input-group">
+                            <label>Jours d'ouverture / semaine</label>
+                            <input type="number" id="daysPerWeek" value="5" oninput="calculateAll()">
+                        </div>
+                        <div class="input-group">
+                            <label>Semaines d'activité / an</label>
+                            <input type="number" id="weeksPerYear" value="36" oninput="calculateAll()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INFO TECHNIQUE -->
+                <div class="p-5 bg-white rounded-2xl shadow-sm border border-gray-200 font-georgia text-sm text-gray-500 italic">
+                    <p class="mb-2">Calculs basés sur les recommandations nutritionnelles (GEMRCN v2015).</p>
+                    <a href="https://www.economie.gouv.fr/files/files/directions_services/daj/marches_publics/conseil_acheteurs/guides/nutrition/recommandation-nutrition.pdf" target="_blank" class="text-dix-light hover:underline not-italic font-bold">Consulter le guide de référence</a>
+                </div>
+            </aside>
+
+            <main class="lg:col-span-8 space-y-8">
+                <!-- NAVIGATION ONGLETS -->
+                <nav class="flex overflow-x-auto border-b border-gray-200 mb-8 bg-white rounded-t-2xl shadow-sm no-scrollbar relative z-10">
+                    <button onclick="switchTab('tab-finis')" id="btn-tab-finis" class="tab-btn active">1. Produits Finis</button>
+                    <button onclick="switchTab('tab-bruts')" id="btn-tab-bruts" class="tab-btn">2. Produits Bruts</button>
+                    <button onclick="switchTab('tab-logistique')" id="btn-tab-logistique" class="tab-btn">3. Flux Logistique</button>
+                    <button onclick="switchTab('tab-agri')" id="btn-tab-agri" class="tab-btn">4. Empreinte Agricole</button>
+                </nav>
+
+                <!-- 1. PRODUITS FINIS -->
+                <div id="tab-finis" class="tab-content space-y-8">
+                    <!-- ENCART TOTAL AVEC CHARTE DIX (Dégradé, Bordure) -->
+                    <div class="bg-gradient-to-br from-dix-dark to-[#2a403c] text-white rounded-2xl p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-xl border-l-8 border-l-dix-light relative overflow-hidden">
+                        <!-- Décoration fond -->
+                        <div class="absolute -right-10 -top-20 w-64 h-64 bg-white opacity-5 rounded-full pointer-events-none"></div>
+                        
+                        <div class="relative z-10">
+                            <h3 class="font-oswald text-dix-light tracking-widest text-sm mb-2 drop-shadow-sm uppercase">Total Volume Net Consommé</h3>
+                            <div class="font-georgia text-5xl font-bold"><span id="totalFini">0</span> <span class="font-georgia text-2xl font-normal text-gray-300 italic">tonnes / an</span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                        <h2 class="text-xl text-dix-dark tracking-wide mb-6">Détail par catégorie (Prêt à consommer)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="container-fini">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-8 border-l-4 border-gray-300 shadow-inner">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-200 pb-4">
+                            <h3 class="font-oswald text-lg text-dix-dark tracking-wide uppercase">Volume hebdomadaire moyen (kg net)</h3>
+                            <span class="font-georgia text-lg font-bold bg-white border border-gray-200 text-dix-dark px-4 py-2 rounded-xl shadow-sm">Total : <span id="totalWeeklyFini" class="text-dix-light">0</span> kg</span>
+                        </div>
+                        <div id="weeklySummaryFini" class="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-8 text-base font-georgia">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. PRODUITS BRUTS -->
+                <div id="tab-bruts" class="tab-content hidden space-y-8">
+                    <!-- ENCART TOTAL -->
+                    <div class="bg-gradient-to-br from-dix-dark to-[#2a403c] text-white rounded-2xl p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-xl border-l-8 border-l-dix-light relative overflow-hidden">
+                        <div class="absolute -right-10 -top-20 w-64 h-64 bg-white opacity-5 rounded-full pointer-events-none"></div>
+                        <div class="relative z-10">
+                            <h3 class="font-oswald text-dix-light tracking-widest text-sm mb-2 drop-shadow-sm uppercase">Total Volume Brut Acheté</h3>
+                            <div class="font-georgia text-5xl font-bold"><span id="totalBrut">0</span> <span class="font-georgia text-2xl font-normal text-gray-300 italic">tonnes / an</span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                        <h2 class="text-xl text-dix-dark tracking-wide mb-6">Équivalent Produits Bruts (Achats)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="container-brut">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-2xl p-8 border-l-4 border-gray-300 shadow-inner">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-200 pb-4">
+                            <h3 class="font-oswald text-lg text-dix-dark tracking-wide uppercase">Volume hebdomadaire moyen (kg Brut)</h3>
+                            <span class="font-georgia text-lg font-bold bg-white border border-gray-200 text-dix-dark px-4 py-2 rounded-xl shadow-sm">Total : <span id="totalWeeklyBrut" class="text-dix-light">0</span> kg</span>
+                        </div>
+                        <div id="weeklySummaryBrut" class="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-8 text-base font-georgia">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. LOGISTIQUE -->
+                <div id="tab-logistique" class="tab-content hidden space-y-8">
+                    <!-- ENCART TOTAL -->
+                    <div class="bg-gradient-to-br from-dix-dark to-[#2a403c] text-white rounded-2xl p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-xl border-l-8 border-l-dix-light relative overflow-hidden">
+                        <div class="absolute -right-10 -top-20 w-64 h-64 bg-white opacity-5 rounded-full pointer-events-none"></div>
+                        <div class="relative z-10 mb-4 sm:mb-0">
+                            <h3 class="font-oswald text-dix-light tracking-widest text-sm mb-2 drop-shadow-sm uppercase">Mutualisation Logistique (Flux Hebdo)</h3>
+                            <div class="font-georgia text-5xl font-bold"><span id="totalPallets">0</span> <span class="font-georgia text-2xl font-normal text-gray-300 italic">palettes / sem.</span></div>
+                        </div>
+                        <div class="text-left sm:text-right relative z-10 sm:border-l sm:border-white/20 sm:pl-6">
+                            <p class="font-oswald text-gray-300 tracking-widest text-sm mb-2 uppercase">VÉHICULE ESTIMÉ</p>
+                            <div class="font-georgia text-2xl font-bold text-dix-light" id="transportTruck">-</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                        <h2 class="text-xl text-dix-dark tracking-wide mb-6">Détail des flux (Palettes 80x120)</h2>
+                        <div id="container-logistique" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. EMPREINTE AGRICOLE -->
+                <div id="tab-agri" class="tab-content hidden space-y-8">
+                    <!-- ENCART TOTAL -->
+                    <div class="bg-gradient-to-br from-dix-dark to-[#2a403c] text-white rounded-2xl p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-xl border-l-8 border-l-dix-light relative overflow-hidden">
+                        <div class="absolute -right-10 -top-20 w-64 h-64 bg-white opacity-5 rounded-full pointer-events-none"></div>
+                        <div class="relative z-10">
+                            <h3 class="font-oswald text-dix-light tracking-widest text-sm mb-2 drop-shadow-sm uppercase">SURFACE AGRICOLE NÉCESSAIRE</h3>
+                            <div class="font-georgia text-5xl font-bold"><span id="totalHa">0</span> <span class="font-georgia text-2xl font-normal text-gray-300 italic">hectares</span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                        <h2 class="text-xl text-dix-dark tracking-wide mb-2">Détail de l'Empreinte Foncière</h2>
+                        <p class="font-georgia text-gray-500 italic text-sm mb-6 pb-4 border-b border-gray-100">Cette estimation permet d'anticiper le besoin foncier pour l'installation de nos futur·e·s Entrepreneur·euse·s Salarié·e·s agricoles au sein de la coopérative.</p>
+                        <div id="container-agriculture" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- MENTION DE PATERNITÉ (INAMOVIBLE) -->
+    <!-- IMPORTANT : La licence AGPL vous interdit formellement de supprimer ou de masquer cette mention légale de paternité. -->
+    <footer class="mt-12 py-8 bg-gray-100 border-t border-gray-200 text-center w-full">
+        <p class="text-sm font-georgia text-gray-600">
+            Outil originellement conçu et développé par <span class="font-bold">Pierre-Alain Mory</span> pour la coopérative <a href="https://www.dix.coop" target="_blank" class="text-dix-dark hover:text-dix-light font-oswald tracking-widest uppercase transition-colors">DIX</a>.<br>
+            <a href="mailto:contact@dix.coop" class="text-xs text-gray-500 hover:text-dix-light mt-2 inline-block">contact@dix.coop</a>
+        </p>
+    </footer>
+
+    <script>
+        // DONNEES TECHNIQUES & STYLES AVEC COULEURS DE RELIEF ASSURÉES
+        // Les classes Tailwind sont écrites en entier pour garantir que le CDN les compile correctement
+        const productStyles = {
+            leg: { 
+                label: "Légumes", 
+                colorCls: "text-emerald-600", bgCls: "bg-emerald-100", borderCls: "border-emerald-500",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.29 21.71l8.19-8.19a6 6 0 1 1 8.49-8.49 6 6 0 0 1-8.49 8.49L2.29 21.71z"/><path d="M15 6l3-3"/><path d="M16.5 7.5L20 4"/><path d="M15 6l-3 3"/></svg>` 
+            },
+            vpo: { 
+                label: "Viandes / Poissons", 
+                colorCls: "text-rose-600", bgCls: "bg-rose-100", borderCls: "border-rose-500",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 5.5a4 4 0 1 1-5.66 5.66l-7.07 7.07a2 2 0 0 0 2.83 2.83l7.07-7.07a4 4 0 0 1 2.83-8.49z"/></svg>` 
+            },
+            fec: { 
+                label: "Féculents", 
+                colorCls: "text-amber-600", bgCls: "bg-amber-100", borderCls: "border-amber-500",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v12H6z"/><path d="M6 14h12"/><path d="M6 18h12"/></svg>` 
+            },
+            fru: { 
+                label: "Fruits", 
+                colorCls: "text-orange-600", bgCls: "bg-orange-100", borderCls: "border-orange-500",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>` 
+            },
+            lai: { 
+                label: "Laitiers", 
+                colorCls: "text-cyan-600", bgCls: "bg-cyan-100", borderCls: "border-cyan-500",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>` 
+            },
+            pain: { 
+                label: "Pain", 
+                colorCls: "text-stone-600", bgCls: "bg-stone-100", borderCls: "border-stone-500",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="5" ry="5"/><path d="M6 7v10"/><path d="M10 7v10"/><path d="M14 7v10"/><path d="M18 7v10"/></svg>` 
+            }
+        };
+
+        const grammages = {
+            creche:      { leg: 0.120, vpo: 0.045, fec: 0.030, fru: 0.060, lai: 0.040, pain: 0.020 },
+            maternelle:  { leg: 0.150, vpo: 0.065, fec: 0.050, fru: 0.080, lai: 0.050, pain: 0.030 },
+            elementaire: { leg: 0.200, vpo: 0.100, fec: 0.065, fru: 0.100, lai: 0.060, pain: 0.040 },
+            secondaire:  { leg: 0.250, vpo: 0.125, fec: 0.090, fru: 0.120, lai: 0.070, pain: 0.050 },
+            adulte:      { leg: 0.230, vpo: 0.125, fec: 0.080, fru: 0.120, lai: 0.060, pain: 0.050 },
+            senior:      { leg: 0.200, vpo: 0.100, fec: 0.060, fru: 0.100, lai: 0.070, pain: 0.040 }
+        };
+        const yields = { leg: 0.75, vpo: 0.80, fec: 2.80, fru: 0.90, lai: 1.0, pain: 1.0 };
+        const labels = { leg: "Légumes", vpo: "VPO", fec: "Féculents", fru: "Fruits", lai: "Laitiers", pain: "Pain" };
+        const palletCapacities = { leg: 600, vpo: 500, fec: 800, fru: 500, lai: 450, pain: 150 };
+        const agriYields = { leg: 25, fru: 18, fec: 7, pain: 6 };
+
+        // ÉCOUTEURS D'ÉVÉNEMENTS DRAG & DROP
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            dropZone.classList.add('dragover', 'border-dix-light', 'bg-green-50'); 
+        });
+        dropZone.addEventListener('dragleave', () => { 
+            dropZone.classList.remove('dragover', 'border-dix-light', 'bg-green-50'); 
+        });
+        dropZone.addEventListener('drop', (e) => { 
+            e.preventDefault(); 
+            dropZone.classList.remove('dragover', 'border-dix-light', 'bg-green-50'); 
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); 
+        });
+
+        function handleFileSelect(event) { 
+            if (event.target.files.length) handleFile(event.target.files[0]); 
+        }
+
+        function handleFile(file) { 
+            document.getElementById('fileName').innerText = file.name; 
+            const reader = new FileReader(); 
+            reader.onload = function(e) { parseCSV(e.target.result); }; 
+            reader.readAsText(file); 
+        }
+
+        function parseCSV(csvText) { 
+            const lines = csvText.split('\n'); 
+            if (lines.length < 2) return; 
+            const header = lines[0].toLowerCase(); 
+            const separator = header.includes(';') ? ';' : ','; 
+            const cols = header.split(separator).map(c => c.trim().replace(/"/g, '')); 
+            const idxRepas = cols.findIndex(c => c.includes('repas') && c.includes('jour')); 
+            
+            let totalRepas = 0, count = 0; 
+            for (let i = 1; i < lines.length; i++) { 
+                if (!lines[i].trim()) continue; 
+                const row = lines[i].split(separator); 
+                if (idxRepas > -1 && row[idxRepas]) { 
+                    const val = parseFloat(row[idxRepas].replace(/\s/g, '').replace(',', '.')); 
+                    if (!isNaN(val)) { totalRepas += val; count++; } 
+                } 
+            } 
+            document.getElementById('fileInfo').classList.remove('hidden'); 
+            document.getElementById('rowCount').innerText = count; 
+            document.getElementById('mealsPerDay').value = Math.round(totalRepas); 
+            calculateAll(); 
+        }
+
+        function switchTab(tabId) { 
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden')); 
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById(tabId).classList.remove('hidden'); 
+            document.getElementById('btn-' + tabId).classList.add('active'); 
+        }
+
+        function calculateAll() {
+            const publicType = document.getElementById('targetPublic').value;
+            const mealsPerDay = parseFloat(document.getElementById('mealsPerDay').value) || 0;
+            const daysPerWeek = parseFloat(document.getElementById('daysPerWeek').value) || 0;
+            const weeksPerYear = parseFloat(document.getElementById('weeksPerYear').value) || 0;
+            const totalMeals = mealsPerDay * daysPerWeek * weeksPerYear;
+            
+            document.getElementById('totalMeals').innerText = Math.round(totalMeals).toLocaleString('fr-FR');
+            
+            const g = grammages[publicType];
+            
+            let totalAnnualFini = 0, totalAnnualBrut = 0, totalWeeklyPallets = 0, totalSurfaceAgri = 0, totalWeeklyFiniKg = 0, totalWeeklyBrutKg = 0;
+            let finiHtml = "", weeklyFiniHtml = "", brutHtml = "", weeklyBrutHtml = "", logistiqueHtml = "", agriHtml = "";
+
+            for (let k in labels) {
+                const annualBrut = (totalMeals * g[k]) / 1000;
+                const annualFini = (totalMeals * g[k] * yields[k]) / 1000;
+                const weeklyBrutKg = mealsPerDay * daysPerWeek * g[k];
+                const weeklyFiniKg = weeklyBrutKg * yields[k];
+                const palletCount = weeklyBrutKg / palletCapacities[k];
+
+                totalAnnualFini += annualFini; 
+                totalAnnualBrut += annualBrut; 
+                totalWeeklyFiniKg += weeklyFiniKg; 
+                totalWeeklyBrutKg += weeklyBrutKg; 
+                totalWeeklyPallets += palletCount;
+
+                const s = productStyles[k];
+                
+                // CARTES FINIES
+                finiHtml += `
+                    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 flex flex-col justify-between border-t-4 ${s.borderCls} hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${s.bgCls} ${s.colorCls}">${s.icon}</div>
+                            <div class="font-oswald text-sm font-bold text-gray-500 tracking-wide uppercase">${s.label}</div>
+                        </div>
+                        <div class="font-georgia text-4xl font-bold ${s.colorCls}">
+                            ${annualFini.toLocaleString('fr-FR', {maximumFractionDigits: 1})} <span class="font-georgia text-base font-normal text-gray-400 italic">tonnes</span>
+                        </div>
+                    </div>`;
+
+                weeklyFiniHtml += `
+                    <div class="flex flex-col border-b border-gray-100 pb-3">
+                        <span class="font-oswald ${s.colorCls} tracking-wide text-xs mb-1 uppercase">${s.label}</span>
+                        <span class="text-gray-800 font-bold text-xl">${Math.round(weeklyFiniKg).toLocaleString('fr-FR')} <span class="text-sm font-normal text-gray-400">kg</span></span>
+                    </div>`;
+
+                // CARTES BRUTES
+                brutHtml += `
+                    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 flex flex-col justify-between border-t-4 ${s.borderCls} hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${s.bgCls} ${s.colorCls}">${s.icon}</div>
+                            <div class="font-oswald text-sm font-bold text-gray-500 tracking-wide uppercase">${s.label}</div>
+                        </div>
+                        <div class="font-georgia text-4xl font-bold ${s.colorCls}">
+                            ${annualBrut.toLocaleString('fr-FR', {maximumFractionDigits: 1})} <span class="font-georgia text-base font-normal text-gray-400 italic">tonnes brutes</span>
+                        </div>
+                    </div>`;
+
+                weeklyBrutHtml += `
+                    <div class="flex flex-col border-b border-gray-100 pb-3">
+                        <span class="font-oswald ${s.colorCls} tracking-wide text-xs mb-1 uppercase">${s.label}</span>
+                        <span class="text-gray-800 font-bold text-xl">${Math.round(weeklyBrutKg).toLocaleString('fr-FR')} <span class="text-sm font-normal text-gray-400">kg</span></span>
+                    </div>`;
+
+                // LOGISTIQUE
+                logistiqueHtml += `
+                    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 flex flex-col border-l-4 ${s.borderCls} hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${s.bgCls} ${s.colorCls}">${s.icon}</div>
+                            <div class="font-oswald text-sm font-bold text-gray-500 tracking-wide uppercase">${s.label}</div>
+                        </div>
+                        <div class="flex items-baseline gap-2 mt-auto">
+                            <span class="font-georgia text-4xl font-bold text-gray-800">${palletCount < 0.1 ? "<0.1" : palletCount.toLocaleString('fr-FR', {maximumFractionDigits: 1})}</span>
+                            <span class="font-oswald text-xs text-gray-400 tracking-widest uppercase">PALETTES</span>
+                        </div>
+                        <p class="font-georgia text-xs text-gray-400 mt-2 italic">${Math.round(weeklyBrutKg).toLocaleString('fr-FR')} kg par semaine</p>
+                    </div>`;
+
+                // EMPREINTE AGRICOLE
+                if (agriYields[k]) {
+                    const surface = annualBrut / agriYields[k];
+                    totalSurfaceAgri += surface;
+                    agriHtml += `
+                        <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 border-t-4 ${s.borderCls} hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${s.bgCls} ${s.colorCls}">${s.icon}</div>
+                                <div class="font-oswald text-sm font-bold text-gray-500 tracking-wide uppercase">${s.label}</div>
+                            </div>
+                            <div class="font-georgia text-4xl font-bold ${s.colorCls}">
+                                ${surface.toLocaleString('fr-FR', {maximumFractionDigits: 2})} <span class="text-base font-normal text-gray-400 italic">hectares</span>
+                            </div>
+                        </div>`;
+                }
+            }
+
+            // Injection des valeurs calculées dans le DOM
+            document.getElementById('container-fini').innerHTML = finiHtml; 
+            document.getElementById('weeklySummaryFini').innerHTML = weeklyFiniHtml; 
+            document.getElementById('totalFini').innerText = totalAnnualFini.toLocaleString('fr-FR', {maximumFractionDigits: 1}); 
+            document.getElementById('totalWeeklyFini').innerText = Math.round(totalWeeklyFiniKg).toLocaleString('fr-FR');
+            
+            document.getElementById('container-brut').innerHTML = brutHtml; 
+            document.getElementById('weeklySummaryBrut').innerHTML = weeklyBrutHtml; 
+            document.getElementById('totalBrut').innerText = totalAnnualBrut.toLocaleString('fr-FR', {maximumFractionDigits: 1}); 
+            document.getElementById('totalWeeklyBrut').innerText = Math.round(totalWeeklyBrutKg).toLocaleString('fr-FR');
+            
+            document.getElementById('container-logistique').innerHTML = logistiqueHtml; 
+            document.getElementById('totalPallets').innerText = totalWeeklyPallets.toLocaleString('fr-FR', {maximumFractionDigits: 1});
+            
+            let transportMsg = totalWeeklyPallets < 1 ? "Utilitaire léger" : totalWeeklyPallets < 6 ? "Fourgon 12m³" : totalWeeklyPallets < 15 ? "Porteur 19t" : "Semi-remorque";
+            document.getElementById('transportTruck').innerText = transportMsg;
+            
+            document.getElementById('container-agriculture').innerHTML = agriHtml; 
+            document.getElementById('totalHa').innerText = totalSurfaceAgri.toLocaleString('fr-FR', {maximumFractionDigits: 2});
+        }
+
+        function generateSexyPPTX() {
+            let pptx = new PptxGenJS();
+            pptx.layout = 'LAYOUT_WIDE';
+            pptx.author = 'Coopérative DIX';
+            pptx.company = 'DIX';
+
+            // Charte DIX (Hex Colors for PPTX)
+            const COLOR_DIX_DARK = "405F59";
+            const COLOR_DIX_LIGHT = "549E39";
+            const COLOR_BG = "F9FAFB";
+            const COLOR_TEXT = "1F2937";
+
+            // --- Slide Master (Template Institutionnel DIX) ---
+            pptx.defineSlideMaster({
+                title: "DIX_MASTER",
+                background: { color: COLOR_BG },
+                objects: [
+                    { rect: { x: 0, y: 0, w: '100%', h: 0.15, fill: COLOR_DIX_DARK } }, // Top bar institutionnelle
+                    { rect: { x: 0, y: 7.2, w: '100%', h: 0.3, fill: COLOR_DIX_DARK } }, // Footer bar
+                    { text: { text: "Rapport d'Impact Filière Alimentaire - Coopérative DIX", options: { x: 0.5, y: 7.25, w: 8, h: 0.2, fontSize: 9, color: "FFFFFF", fontFace: "Georgia", italic:true } } },
+                    { slideNumber: { x: 12.8, y: 7.25, w: 0.5, h: 0.2, fontSize: 9, color: "FFFFFF", fontFace: "Oswald" } }
+                ]
+            });
+
+            // --- 1. COVER SLIDE ---
+            let slide1 = pptx.addSlide();
+            slide1.background = { color: COLOR_DIX_DARK };
+            
+            slide1.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: 0.15, fill: COLOR_DIX_LIGHT });
+            
+            slide1.addText("SIMULATION D'IMPACT", { 
+                x: 1, y: 2, w: '85%', h: 0.5, 
+                fontSize: 24, color: COLOR_DIX_LIGHT, bold: true, align: "left", fontFace: "Oswald" 
+            });
+
+            slide1.addText("FILIÈRE ALIMENTAIRE", { 
+                x: 1, y: 2.6, w: '85%', h: 1, 
+                fontSize: 54, color: "FFFFFF", bold: true, align: "left", fontFace: "Oswald" 
+            });
+            
+            const profileName = document.getElementById('targetPublic').options[document.getElementById('targetPublic').selectedIndex].text;
+            slide1.addText(`Bénéficiaires ciblés : ${profileName}`, { 
+                x: 1, y: 3.8, w: '85%', h: 0.5, 
+                fontSize: 20, color: "E5E7EB", align: "left", fontFace: "Georgia", italic: true 
+            });
+
+            const annualMeals = document.getElementById('totalMeals').innerText;
+            slide1.addShape(pptx.ShapeType.roundRect, { x: 1, y: 4.8, w: 4, h: 1.5, fill: "FFFFFF", r: 5 });
+            slide1.addText("VOLUME ANNUEL ESTIMÉ", { x: 1.2, y: 5, fontSize: 10, color: COLOR_DIX_DARK, bold: true, fontFace: "Oswald" });
+            slide1.addText(`${annualMeals} Repas`, { x: 1.2, y: 5.4, fontSize: 24, color: COLOR_DIX_LIGHT, bold: true, fontFace: "Georgia" });
+
+            // --- DATA PREPARATION ---
+            const mealsPerDay = parseFloat(document.getElementById('mealsPerDay').value);
+            const daysPerWeek = parseFloat(document.getElementById('daysPerWeek').value);
+            const weeksPerYear = parseFloat(document.getElementById('weeksPerYear').value);
+            const totalMealsVal = mealsPerDay * daysPerWeek * weeksPerYear;
+            const publicType = document.getElementById('targetPublic').value;
+            const g = grammages[publicType];
+
+            // --- FUNCTION CONTENT SLIDES ---
+            function createContentSlide(title, subtitle, type) {
+                let slide = pptx.addSlide({ masterName: "DIX_MASTER" });
+                
+                // Header
+                slide.addText(title, { x: 0.5, y: 0.5, fontSize: 32, bold: true, color: COLOR_DIX_DARK, fontFace: "Oswald" });
+                slide.addText(subtitle, { x: 0.5, y: 1.1, fontSize: 16, color: "6B7280", fontFace: "Georgia", italic: true });
+                slide.addShape(pptx.ShapeType.line, { x: 0.5, y: 1.5, w: 12.3, h: 0, line: { color: "E5E7EB", width: 1 } });
+
+                let chartLabels = [];
+                let chartValues = [];
+                // Nuances de verts/terres pour rester dans l'esprit charte
+                let chartColors = ["405F59", "549E39", "8FBC8F", "2E423E", "A5D6A7", "1A2624"]; 
+                
+                let tableData = [
+                    [
+                        { text: "Catégorie", options: { bold: true, fill: "F3F4F6", fontFace: "Oswald", color: COLOR_DIX_DARK } },
+                        { text: "Volume Annuel", options: { bold: true, fill: "F3F4F6", align: "right", fontFace: "Oswald", color: COLOR_DIX_DARK } },
+                        { text: "Moyenne Hebdomadaire", options: { bold: true, fill: "F3F4F6", align: "right", fontFace: "Oswald", color: COLOR_DIX_DARK } }
+                    ]
+                ];
+                let totalVal = 0;
+
+                for (let k in labels) {
+                    let annualVal = 0, weeklyVal = 0;
+                    if (type === 'fini') {
+                        annualVal = (totalMealsVal * g[k] * yields[k]) / 1000;
+                        weeklyVal = mealsPerDay * daysPerWeek * g[k] * yields[k];
+                    } else if (type === 'brut') {
+                        annualVal = (totalMealsVal * g[k]) / 1000;
+                        weeklyVal = mealsPerDay * daysPerWeek * g[k];
+                    } else if (type === 'agri') {
+                        if (agriYields[k]) {
+                            annualVal = ((totalMealsVal * g[k]) / 1000) / agriYields[k]; 
+                            weeklyVal = 0; 
+                        }
+                    }
+
+                    totalVal += annualVal;
+                    
+                    let unit = type === 'agri' ? " ha" : " t";
+                    let wUnit = type === 'agri' ? "-" : Math.round(weeklyVal) + " kg";
+                    tableData.push([
+                        { text: labels[k], options: { bold: true, fontFace: "Georgia", color: COLOR_TEXT } },
+                        { text: annualVal.toLocaleString('fr-FR', {maximumFractionDigits: 1}) + unit, options: { align: "right", fontFace: "Georgia" } },
+                        { text: wUnit, options: { align: "right", color: "6B7280", fontFace: "Georgia" } }
+                    ]);
+
+                    if (annualVal > 0) {
+                        chartLabels.push(labels[k]);
+                        chartValues.push(annualVal);
+                    }
+                }
+
+                // 1. CHART
+                if (type !== 'logistique' && chartValues.length > 0) {
+                    let chartData = [{ name: "Volumes", labels: chartLabels, values: chartValues }];
+
+                    slide.addChart(pptx.ChartType.doughnut, chartData, {
+                        x: 0.5, y: 1.8, w: 5.5, h: 4.5,
+                        chartColors: chartColors,
+                        dataLabelColor: "FFFFFF",
+                        showLegend: true,
+                        legendPos: 'b',
+                        holeSize: 65,
+                        showTitle: false,
+                        dataLabelFontFace: "Georgia"
+                    });
+                    
+                    slide.addText(Math.round(totalVal).toLocaleString('fr-FR'), { 
+                        x: 2.25, y: 3.8, w: 2, h: 0.5, 
+                        align: "center", fontSize: 26, bold: true, color: COLOR_DIX_DARK, fontFace: "Georgia" 
+                    });
+                    slide.addText(type === 'agri' ? "Hectares" : "Tonnes", { 
+                        x: 2.25, y: 4.2, w: 2, h: 0.5, 
+                        align: "center", fontSize: 12, color: "6B7280", fontFace: "Oswald" 
+                    });
+                }
+
+                // 2. TABLE
+                slide.addTable(tableData, {
+                    x: 6.5, y: 1.8, w: 6.3,
+                    rowH: 0.6,
+                    border: { pt: 1, color: "E5E7EB" },
+                    valign: "middle"
+                });
+
+                // 3. KPI BOX
+                slide.addShape(pptx.ShapeType.roundRect, { x: 6.5, y: 5.5, w: 6.3, h: 1.2, fill: COLOR_DIX_DARK, r: 4 });
+                slide.addText(`TOTAL ${type === 'agri' ? 'FONCIER ESTIMÉ' : 'ANNUEL ESTIMÉ'}`, { x: 6.7, y: 5.7, fontSize: 10, color: "D1D5DB", bold: true, fontFace: "Oswald" });
+                slide.addText(`${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ${type === 'agri' ? 'hectares' : 'Tonnes'}`, { x: 6.7, y: 6.1, fontSize: 28, color: "FFFFFF", bold: true, fontFace: "Georgia" });
+            }
+
+            createContentSlide("PRODUITS FINIS", "Volumes nets prêts à consommer par les bénéficiaires", 'fini');
+            createContentSlide("PRODUITS BRUTS", "Équivalents d'achats nécessaires (entrées structure)", 'brut');
+            createContentSlide("EMPREINTE FONCIÈRE", "Estimation des surfaces agricoles nécessaires pour nos entrepreneur·euse·s", 'agri');
+
+            pptx.writeFile({ fileName: "Rapport_Impact_DIX_Filiere_Alimentaire.pptx" });
+        }
+
+        // Lancement initial
+        window.onload = function() {
+            calculateAll();
+        };
+    </script>
+</body>
+</html>
