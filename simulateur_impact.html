@@ -332,7 +332,12 @@ Toute modification ou distribution doit conserver cette mention.
                         <div class="absolute -right-10 -top-20 w-64 h-64 bg-white opacity-5 rounded-full pointer-events-none"></div>
                         <div class="relative z-10">
                             <h3 class="font-oswald text-dix-light tracking-widest text-sm mb-2 drop-shadow-sm uppercase">SURFACE AGRICOLE NÉCESSAIRE</h3>
-                            <div class="font-georgia text-5xl font-bold"><span id="totalHa">0</span> <span class="font-georgia text-2xl font-normal text-gray-300 italic">hectares</span></div>
+                            <div class="font-georgia text-5xl font-bold mb-3"><span id="totalHa">0</span> <span class="font-georgia text-2xl font-normal text-gray-300 italic">hectares</span></div>
+                            <div class="flex flex-wrap gap-4 text-xs font-oswald tracking-widest text-dix-light bg-black/20 p-2.5 rounded-lg border border-white/10">
+                                <span class="flex items-center gap-1">🌱 Cultures arables/maraîchères : <span id="totalCultures" class="text-white font-bold ml-1">0</span> ha</span>
+                                <span class="text-white/30 hidden sm:block">|</span>
+                                <span class="flex items-center gap-1">🐄 Prairies et fourrages : <span id="totalPrairies" class="text-white font-bold ml-1">0</span> ha</span>
+                            </div>
                         </div>
                     </div>
 
@@ -677,7 +682,7 @@ Toute modification ou distribution doit conserver cette mention.
             }
 
             let globalTotalMeals = 0;
-            let totalAnnualFini = 0, totalAnnualBrut = 0, totalWeeklyPallets = 0, totalSurfaceAgri = 0, totalWeeklyFiniKg = 0, totalWeeklyBrutKg = 0;
+            let totalAnnualFini = 0, totalAnnualBrut = 0, totalWeeklyPallets = 0, totalSurfaceAgri = 0, totalSurfacePrairies = 0, totalSurfaceCultures = 0, totalWeeklyFiniKg = 0, totalWeeklyBrutKg = 0;
             
             // Initialisation des compteurs par catégorie
             let catTotals = {};
@@ -714,13 +719,20 @@ Toute modification ou distribution doit conserver cette mention.
                         const surface = annualBrut / agriYields[k];
                         catTotals[k].surface += surface;
                         totalSurfaceAgri += surface;
+                        
+                        // Nuance Prairies vs Cultures
+                        if (k === 'vpo' || k === 'lai') {
+                            totalSurfacePrairies += surface;
+                        } else {
+                            totalSurfaceCultures += surface;
+                        }
                     }
                 }
             });
 
             // Sauvegarde pour le PDF
             currentAggData = {
-                globalTotalMeals, totalAnnualFini, totalAnnualBrut, totalWeeklyPallets, totalSurfaceAgri, catTotals
+                globalTotalMeals, totalAnnualFini, totalAnnualBrut, totalWeeklyPallets, totalSurfaceAgri, totalSurfacePrairies, totalSurfaceCultures, catTotals
             };
 
             // Mise à jour de l'interface
@@ -787,6 +799,7 @@ Toute modification ou distribution doit conserver cette mention.
 
                 // EMPREINTE AGRICOLE
                 if (ct.surface > 0) {
+                    let typeLabel = (k === 'vpo' || k === 'lai') ? "ha de prairies/fourrages" : "ha de cultures";
                     agriHtml += `
                         <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 border-t-4 ${s.borderCls} hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
                             <div class="flex items-center space-x-4 mb-4">
@@ -794,7 +807,7 @@ Toute modification ou distribution doit conserver cette mention.
                                 <div class="font-oswald text-sm font-bold text-gray-500 tracking-wide uppercase">${s.label}</div>
                             </div>
                             <div class="font-georgia text-4xl font-bold ${s.colorCls}">
-                                ${ct.surface.toLocaleString('fr-FR', {maximumFractionDigits: 2})} <span class="text-base font-normal text-gray-400 italic">hectares</span>
+                                ${ct.surface.toLocaleString('fr-FR', {maximumFractionDigits: 2})} <span class="text-sm font-normal text-gray-400 italic">${typeLabel}</span>
                             </div>
                         </div>`;
                 }
@@ -819,6 +832,8 @@ Toute modification ou distribution doit conserver cette mention.
             
             document.getElementById('container-agriculture').innerHTML = agriHtml; 
             document.getElementById('totalHa').innerText = totalSurfaceAgri.toLocaleString('fr-FR', {maximumFractionDigits: 2});
+            if(document.getElementById('totalCultures')) document.getElementById('totalCultures').innerText = totalSurfaceCultures.toLocaleString('fr-FR', {maximumFractionDigits: 2});
+            if(document.getElementById('totalPrairies')) document.getElementById('totalPrairies').innerText = totalSurfacePrairies.toLocaleString('fr-FR', {maximumFractionDigits: 2});
         }
 
         async function generatePDF() {
@@ -966,7 +981,7 @@ Toute modification ou distribution doit conserver cette mention.
 
                     totalVal += mainVal;
                     
-                    let unit = type === 'agri' ? " ha" : (type === 'logistique' ? " pal/sem" : " t");
+                    let unit = type === 'agri' ? (['vpo', 'lai'].includes(k) ? " ha (prairies)" : " ha (cultures)") : (type === 'logistique' ? " pal/sem" : " t");
                     let wUnit = type === 'agri' ? "-" : Math.round(secondaryVal) + " kg";
                     
                     if (mainVal > 0) {
@@ -994,6 +1009,13 @@ Toute modification ou distribution doit conserver cette mention.
                 
                 let totalUnit = type === 'agri' ? 'hectares' : (type === 'logistique' ? 'Palettes' : 'Tonnes');
                 doc.text(`${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ${totalUnit}`, 19, 64);
+                
+                if (type === 'agri') {
+                    doc.setFontSize(9);
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(`Cultures : ${currentAggData.totalSurfaceCultures.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ha  |  Prairies : ${currentAggData.totalSurfacePrairies.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ha`, 19, 70);
+                }
 
                 // Ajout du graphique avec Légende (plus large)
                 const chartBase64 = createDoughnutChartBase64(chartData);
@@ -1025,7 +1047,7 @@ Toute modification ou distribution doit conserver cette mention.
                 if (type === 'fini') readingSentence = `Lecture : Pour nourrir ces bénéficiaires sur une année, le volume net de nourriture réellement consommé dans l'assiette est estimé à ${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} tonnes.`;
                 if (type === 'brut') readingSentence = `Lecture : En tenant compte des pertes lors de la préparation (épluchage, parage, cuisson), la cuisine devra commander un volume brut de ${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} tonnes de marchandises.`;
                 if (type === 'logistique') readingSentence = `Lecture : Le transport de ces marchandises brutes génèrera un flux hebdomadaire estimé à ${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} palettes au format standard (80x120), nécessitant un dimensionnement des quais de réception.`;
-                if (type === 'agri') readingSentence = `Lecture : Sur la base des rendements agricoles moyens français, il faudrait sanctuariser ${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} hectares de foncier pour relocaliser à 100% l'approvisionnement brut de cette restauration.`;
+                if (type === 'agri') readingSentence = `Lecture : Sur la base des rendements agricoles moyens français, il faudrait sanctuariser ${totalVal.toLocaleString('fr-FR', {maximumFractionDigits: 1})} hectares de foncier (dont ${currentAggData.totalSurfaceCultures.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ha de cultures arables/maraîchères et ${currentAggData.totalSurfacePrairies.toLocaleString('fr-FR', {maximumFractionDigits: 1})} ha de surfaces fourragères et prairies) pour relocaliser à 100% l'approvisionnement brut.`;
 
                 doc.setFontSize(10);
                 doc.setTextColor(100, 100, 100);
