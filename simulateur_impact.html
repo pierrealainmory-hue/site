@@ -196,6 +196,7 @@ Toute modification ou distribution doit conserver cette mention.
                         </div>
                         <div class="input-group">
                             <label>Bénéficiaire·s / jour</label>
+                            <!-- La valeur est à 0 par défaut pour éviter les repas fantômes -->
                             <input type="number" id="mealsPerDay" value="0" oninput="calculateAll()">
                         </div>
                         <div class="input-group">
@@ -766,7 +767,8 @@ Toute modification ou distribution doit conserver cette mention.
 
             // Sauvegarde pour le PDF
             currentAggData = {
-                globalTotalMeals, totalAnnualFini, totalAnnualBrut, totalWeeklyPallets, totalSurfaceAgri, totalSurfacePrairies, totalSurfaceCultures, catTotals
+                globalTotalMeals, totalAnnualFini, totalAnnualBrut, totalWeeklyPallets, totalSurfaceAgri, totalSurfacePrairies, totalSurfaceCultures, catTotals,
+                itemsList: itemsToCalculate
             };
 
             // Mise à jour de l'interface
@@ -957,13 +959,7 @@ Toute modification ou distribution doit conserver cette mention.
             doc.setFont("helvetica", "italic");
             doc.setTextColor(229, 231, 235);
             
-            let profileText = "";
-            if (savedEstablishments.length > 0) {
-                profileText = `Périmètre : ${savedEstablishments.length} établissement(s) cumulé(s)`;
-            } else {
-                const profileName = document.getElementById('targetPublic').options[document.getElementById('targetPublic').selectedIndex].text;
-                profileText = `Bénéficiaires ciblés : ${profileName}`;
-            }
+            let profileText = `Périmètre : ${currentAggData.itemsList.length} établissement(s) cumulé(s)`;
             doc.text(profileText, 20, 100);
 
             doc.setFillColor(255, 255, 255);
@@ -975,6 +971,73 @@ Toute modification ou distribution doit conserver cette mention.
             doc.setFontSize(22);
             doc.setTextColor(...dixLight);
             doc.text(`${Math.round(currentAggData.globalTotalMeals).toLocaleString('fr-FR')} Repas`, 25, 142);
+
+            // ----------------------------------------------------
+            // PAGE 2 : PÉRIMÈTRE & ÉTAT DES LIEUX (INFOGRAPHIE)
+            // ----------------------------------------------------
+            doc.addPage();
+            doc.setFillColor(...dixDark);
+            doc.rect(0, 0, 210, 8, 'F');
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(255,255,255);
+            doc.text("DIX.MENSION", 195, 6, { align: "right" });
+
+            doc.setTextColor(...dixDark);
+            doc.setFontSize(24);
+            doc.text("PÉRIMÈTRE D'ÉTUDE", 14, 25);
+            doc.setFontSize(12);
+            doc.setTextColor(...grayText);
+            doc.setFont("helvetica", "italic");
+            doc.text("État des lieux et synthèse des structures intégrées à la simulation", 14, 33);
+            
+            doc.setDrawColor(229, 231, 235);
+            doc.line(14, 38, 196, 38);
+
+            // Infographie KPI
+            doc.setFillColor(249, 250, 251);
+            
+            // Box 1 : Structures
+            doc.roundedRect(14, 45, 42, 25, 2, 2, 'FD');
+            doc.setFontSize(10); doc.setTextColor(...grayText); doc.setFont("helvetica", "bold"); doc.text("STRUCTURES", 35, 53, {align:"center"});
+            doc.setFontSize(18); doc.setTextColor(...dixDark); doc.text(currentAggData.itemsList.length.toString(), 35, 63, {align:"center"});
+            
+            // Box 2 : Repas
+            doc.roundedRect(60, 45, 42, 25, 2, 2, 'FD');
+            doc.setFontSize(10); doc.setTextColor(...grayText); doc.text("REPAS ANNUELS", 81, 53, {align:"center"});
+            doc.setFontSize(18); doc.setTextColor(...dixLight); doc.text(Math.round(currentAggData.globalTotalMeals).toLocaleString('fr-FR'), 81, 63, {align:"center"});
+            
+            // Box 3 : Tonnes
+            doc.roundedRect(106, 45, 42, 25, 2, 2, 'FD');
+            doc.setFontSize(10); doc.setTextColor(...grayText); doc.text("TONNES BRUTES", 127, 53, {align:"center"});
+            doc.setFontSize(18); doc.setTextColor(...dixDark); doc.text(currentAggData.totalAnnualBrut.toLocaleString('fr-FR', {maximumFractionDigits: 1}), 127, 63, {align:"center"});
+
+            // Box 4 : Foncier
+            doc.roundedRect(152, 45, 42, 25, 2, 2, 'FD');
+            doc.setFontSize(10); doc.setTextColor(...grayText); doc.text("SURFACE (HA)", 173, 53, {align:"center"});
+            doc.setFontSize(18); doc.setTextColor(...dixLight); doc.text(currentAggData.totalSurfaceAgri.toLocaleString('fr-FR', {maximumFractionDigits: 1}), 173, 63, {align:"center"});
+
+            // Tableau des structures
+            const dietLabels = { standard: "Standard", egalim: "EGAlim", flexi: "Flexitarien", vege: "Végétarien" };
+            const estBody = currentAggData.itemsList.map(est => [
+                est.name,
+                est.publicType.charAt(0).toUpperCase() + est.publicType.slice(1),
+                est.mealsPerDay.toString(),
+                est.daysPerWeek.toString(),
+                est.weeksPerYear.toString(),
+                dietLabels[est.dietType || "standard"]
+            ]);
+
+            doc.autoTable({
+                startY: 78,
+                head: [['Établissement', 'Public', 'Repas / jour', 'Jours / sem', 'Semaines / an', 'Orientation Menu']],
+                body: estBody,
+                theme: 'grid',
+                headStyles: { fillColor: dixDark, textColor: 255, fontStyle: 'bold' },
+                styles: { font: 'helvetica', fontSize: 10, textColor: 50 },
+                alternateRowStyles: { fillColor: [249, 250, 251] },
+                margin: { left: 14, right: 14 }
+            });
 
             // ----------------------------------------------------
             // PAGES DE CONTENU
@@ -1096,7 +1159,7 @@ Toute modification ou distribution doit conserver cette mention.
             createContentPage("EMPREINTE FONCIÈRE", "Estimation des surfaces agricoles nécessaires", 'agri');
 
             // ----------------------------------------------------
-            // DERNIÈRE PAGE
+            // DERNIÈRE PAGE (MENTIONS LÉGALES & PIED DE PAGE)
             // ----------------------------------------------------
             doc.addPage();
             doc.setFillColor(249, 250, 251); 
@@ -1114,29 +1177,19 @@ Toute modification ou distribution doit conserver cette mention.
             doc.text("DIX", 24, 39);
 
             doc.setFontSize(14);
-            doc.text("La Coopérative des Transitions Agricoles et Alimentaires", 20, 55);
+            doc.text("DIX - LA COOPÉRATIVE DES TRANSITIONS AGRICOLES ET ALIMENTAIRES DES TERRITOIRES", 20, 55);
             
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
             doc.setTextColor(100, 100, 100);
             
-            let legalY = 68;
-            doc.text("Entreprise de l'Économie Sociale et Solidaire (ESS) - SAS au SIREN 830 937 710", 20, legalY); legalY += 6;
-            doc.text("Siège social : 6 Grande Rue, 77320 Chartronges", 20, legalY); legalY += 14;
-            
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(...dixDark);
-            doc.text("Plateforme expérimentale conçue et propulsée pour le PNR des Préalpes d'Azur.", 20, legalY); legalY += 12;
-            
-            doc.setFont("helvetica", "italic");
-            doc.setTextColor(100, 100, 100);
-            doc.text("Outil originellement conçu et développé par Pierre-Alain Mory", 20, legalY); legalY += 6;
-            doc.text("pour la coopérative DIX (Licence AGPL v3).", 20, legalY); legalY += 15;
+            let legalY = 65;
+            doc.text("SCOP SAS à capital variable | Siège social : 6 Grande Rue, 77320 Chartronges | 830 937 710 R.C.S. Meaux", 20, legalY); legalY += 6;
+            doc.text("N° TVA Intracommunautaire : FR 54 830 937 710 | contact@dix-autrement.fr | www.dix.coop", 20, legalY); legalY += 15;
 
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(...dixLight);
-            doc.text("Contact : contact@dix-autrement.fr", 20, legalY); legalY += 6;
-            doc.text("Web : www.dix-autrement.fr", 20, legalY);
+            doc.setFont("helvetica", "italic");
+            doc.setTextColor(150, 150, 150);
+            doc.text("Outil originellement conçu et développé par Pierre-Alain Mory pour la coopérative DIX (Licence AGPL v3).", 20, legalY);
 
             doc.save("Rapport_Impact_Relocalisation.pdf");
         }
