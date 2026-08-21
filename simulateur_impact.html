@@ -167,7 +167,7 @@ Toute modification ou distribution doit conserver cette mention.
 
                 <!-- PARAMETRES MANUELS -->
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                    <h2 class="text-lg text-dix-dark tracking-wide mb-6 border-b border-gray-100 pb-3">Critères de dimensionnement</h2>
+                    <h2 class="text-lg text-dix-dark tracking-wide mb-6 border-b border-gray-100 pb-3">Saisie Manuelle</h2>
                     
                     <div class="space-y-5">
                         <div class="input-group">
@@ -196,7 +196,7 @@ Toute modification ou distribution doit conserver cette mention.
                         </div>
                         <div class="input-group">
                             <label>Bénéficiaire·s / jour</label>
-                            <input type="number" id="mealsPerDay" value="1000" oninput="calculateAll()">
+                            <input type="number" id="mealsPerDay" value="0" oninput="calculateAll()">
                         </div>
                         <div class="input-group">
                             <label>Jours d'ouverture / semaine</label>
@@ -365,7 +365,7 @@ Toute modification ou distribution doit conserver cette mention.
         </div>
     </div>
 
-    <!-- NOUVEAU FOOTER AVEC BADGE CENTRE -->
+    <!-- FOOTER AVEC BADGE CENTRE -->
     <footer class="bg-white border-t border-slate-200 mt-auto py-6 relative z-40">
         <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <!-- Logos & Badge -->
@@ -503,7 +503,8 @@ Toute modification ou distribution doit conserver cette mention.
                 {id: Date.now()+2, name: "Crèche Intercommunale", publicType: "creche", mealsPerDay: 60, daysPerWeek: 5, weeksPerYear: 47, dietType: "vege"}
             ];
             localStorage.setItem('dix_sim_ests', JSON.stringify(savedEstablishments));
-            document.getElementById('estName').value = "Saisie en cours"; // Reset current input
+            document.getElementById('estName').value = ""; 
+            document.getElementById('mealsPerDay').value = "0"; 
             updateEstList();
             calculateAll();
         }
@@ -569,6 +570,8 @@ Toute modification ou distribution doit conserver cette mention.
             if(confirm("Êtes-vous sûr de vouloir effacer tout votre périmètre d'étude ?")) {
                 savedEstablishments = [];
                 localStorage.removeItem('dix_sim_ests');
+                document.getElementById('estName').value = "";
+                document.getElementById('mealsPerDay').value = "0";
                 updateEstList();
                 calculateAll();
             }
@@ -643,11 +646,12 @@ Toute modification ou distribution doit conserver cette mention.
                     }
                 }
                 localStorage.setItem('dix_sim_ests', JSON.stringify(savedEstablishments));
+                document.getElementById('estName').value = ""; 
+                document.getElementById('mealsPerDay').value = "0"; 
                 updateEstList();
                 calculateAll();
                 document.getElementById('fileInfo').classList.remove('hidden'); 
                 document.getElementById('rowCount').innerText = count; 
-                document.getElementById('estName').value = "Saisie en cours"; // Reset
                 return;
             }
 
