@@ -175,6 +175,15 @@ Toute modification ou distribution doit conserver cette mention.
                             <input type="text" id="estName" placeholder="Ex: Collège Jean Moulin" oninput="calculateAll()">
                         </div>
                         <div class="input-group">
+                            <label>Orientation des menus</label>
+                            <select id="dietType" onchange="calculateAll()">
+                                <option value="standard" selected>Standard (Carné)</option>
+                                <option value="egalim">Loi EGAlim (20% Végétarien)</option>
+                                <option value="flexi">Flexitarien (50% Végétarien)</option>
+                                <option value="vege">100% Végétarien</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
                             <label>Public Cible</label>
                             <select id="targetPublic" onchange="calculateAll()">
                                 <option value="creche">Crèche</option>
@@ -489,9 +498,9 @@ Toute modification ou distribution doit conserver cette mention.
         // CHARGER LA DÉMO RAPIDE
         function loadDemo() {
             savedEstablishments = [
-                {id: Date.now(), name: "Collège Fictif Pasteur", publicType: "secondaire", mealsPerDay: 450, daysPerWeek: 4, weeksPerYear: 36},
-                {id: Date.now()+1, name: "École Élémentaire Curie", publicType: "elementaire", mealsPerDay: 220, daysPerWeek: 4, weeksPerYear: 36},
-                {id: Date.now()+2, name: "Crèche Intercommunale", publicType: "creche", mealsPerDay: 60, daysPerWeek: 5, weeksPerYear: 47}
+                {id: Date.now(), name: "Collège Fictif Pasteur", publicType: "secondaire", mealsPerDay: 450, daysPerWeek: 4, weeksPerYear: 36, dietType: "egalim"},
+                {id: Date.now()+1, name: "École Élémentaire Curie", publicType: "elementaire", mealsPerDay: 220, daysPerWeek: 4, weeksPerYear: 36, dietType: "standard"},
+                {id: Date.now()+2, name: "Crèche Intercommunale", publicType: "creche", mealsPerDay: 60, daysPerWeek: 5, weeksPerYear: 47, dietType: "vege"}
             ];
             localStorage.setItem('dix_sim_ests', JSON.stringify(savedEstablishments));
             document.getElementById('estName').value = "Saisie en cours"; // Reset current input
@@ -509,12 +518,14 @@ Toute modification ou distribution doit conserver cette mention.
                 return;
             }
             
+            const dietLabels = { standard: "Standard", egalim: "EGAlim", flexi: "Flexitarien", vege: "100% Végé" };
+
             cumulContainer.classList.remove('hidden');
             container.innerHTML = savedEstablishments.map(e => `
                 <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
                     <div class="truncate pr-2">
                         <p class="text-sm font-bold text-dix-dark truncate font-oswald uppercase tracking-wide">${escapeHtml(e.name)}</p>
-                        <p class="text-[10px] text-gray-500 font-georgia italic">${e.mealsPerDay} repas/j - ${e.publicType}</p>
+                        <p class="text-[10px] text-gray-500 font-georgia italic">${e.mealsPerDay} repas/j - ${e.publicType} | ${dietLabels[e.dietType || 'standard']}</p>
                     </div>
                     <button onclick="removeEstablishment(${e.id})" class="text-gray-400 hover:text-red-500 flex-shrink-0 transition" title="Retirer">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -529,11 +540,12 @@ Toute modification ou distribution doit conserver cette mention.
 
             const name = document.getElementById('estName').value || `Établissement ${savedEstablishments.length + 1}`;
             const publicType = document.getElementById('targetPublic').value;
+            const dietType = document.getElementById('dietType').value;
             const daysPerWeek = parseFloat(document.getElementById('daysPerWeek').value) || 0;
             const weeksPerYear = parseFloat(document.getElementById('weeksPerYear').value) || 0;
 
             savedEstablishments.push({
-                id: Date.now(), name, publicType, mealsPerDay, daysPerWeek, weeksPerYear
+                id: Date.now(), name, publicType, mealsPerDay, daysPerWeek, weeksPerYear, dietType
             });
 
             localStorage.setItem('dix_sim_ests', JSON.stringify(savedEstablishments));
@@ -564,9 +576,9 @@ Toute modification ou distribution doit conserver cette mention.
 
         function exportSimulation() {
             if (savedEstablishments.length === 0) return;
-            let csv = "Nom;Public;RepasJour;JoursSemaine;SemainesAn\n";
+            let csv = "Nom;Public;RepasJour;JoursSemaine;SemainesAn;Regime\n";
             savedEstablishments.forEach(e => {
-                csv += `${e.name};${e.publicType};${e.mealsPerDay};${e.daysPerWeek};${e.weeksPerYear}\n`;
+                csv += `${e.name};${e.publicType};${e.mealsPerDay};${e.daysPerWeek};${e.weeksPerYear};${e.dietType || 'standard'}\n`;
             });
             // Utilisation du BOM (\uFEFF) pour forcer Excel à lire l'UTF-8
             const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -624,7 +636,8 @@ Toute modification ou distribution doit conserver cette mention.
                             publicType: row[1].trim(),
                             mealsPerDay: parseFloat(row[2]) || 0,
                             daysPerWeek: parseFloat(row[3]) || 0,
-                            weeksPerYear: parseFloat(row[4]) || 0
+                            weeksPerYear: parseFloat(row[4]) || 0,
+                            dietType: row[5] ? row[5].trim() : 'standard'
                         });
                         count++;
                     }
@@ -677,7 +690,8 @@ Toute modification ou distribution doit conserver cette mention.
                     publicType: document.getElementById('targetPublic').value,
                     mealsPerDay: currentMealsPerDay,
                     daysPerWeek: parseFloat(document.getElementById('daysPerWeek').value) || 0,
-                    weeksPerYear: parseFloat(document.getElementById('weeksPerYear').value) || 0
+                    weeksPerYear: parseFloat(document.getElementById('weeksPerYear').value) || 0,
+                    dietType: document.getElementById('dietType').value
                 });
             }
 
@@ -694,7 +708,23 @@ Toute modification ou distribution doit conserver cette mention.
             itemsToCalculate.forEach(item => {
                 const totalMeals = item.mealsPerDay * item.daysPerWeek * item.weeksPerYear;
                 globalTotalMeals += totalMeals;
-                const g = grammages[item.publicType];
+                
+                // COPIE des grammages pour ne pas altérer la constante globale
+                let g = { ...grammages[item.publicType] };
+                
+                // APPLICATION DU FACTEUR DE VÉGÉTALISATION
+                let vegeFactor = 0;
+                if (item.dietType === 'egalim') vegeFactor = 0.2; // 1 repas sur 5
+                if (item.dietType === 'flexi') vegeFactor = 0.5;  // 1 repas sur 2
+                if (item.dietType === 'vege') vegeFactor = 1.0;   // 100%
+                
+                if (vegeFactor > 0) {
+                    const transfer = g.vpo * vegeFactor; // Masse de viande retirée
+                    g.vpo = g.vpo - transfer;
+                    // On compense la masse (et protéines) moitié légumes/légumineuses, moitié féculents/céréales
+                    g.leg = g.leg + (transfer * 0.5);
+                    g.fec = g.fec + (transfer * 0.5);
+                }
 
                 for (let k in labels) {
                     const annualBrut = (totalMeals * g[k]) / 1000;
