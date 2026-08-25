@@ -1031,42 +1031,53 @@ Toute modification ou distribution doit conserver cette mention.
                 doc.line(65, 120, 1215, 120);
             }
 
-            // Helper: Footer de Slide
-            function drawSlideFooter(pageNumber) {
-                doc.setDrawColor(209, 213, 219);
-                doc.setLineWidth(1);
+      // --- FONCTION UTILITAIRE : PIED DE PAGE DES SLIDES ---
+            const drawSlideFooter = (pageNum) => {
+                doc.setDrawColor(209, 213, 219); doc.setLineWidth(1);
                 doc.line(65, 660, 1215, 660);
-                doc.setFontSize(18);
-                doc.setTextColor(64, 95, 89);
-                doc.setFont("helvetica", "normal");
+                doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(...dixDark);
                 doc.text("© 2026 DIX - INGÉNIERIE TERRITORIALE", 65, 690);
-                doc.text(`PAGE ${pageNumber}`, 1215, 690, { align: "right" });
-            }
+                doc.text(`PAGE ${pageNum}`, 1215, 690, { align: "right" });
+            };
 
             // --- SLIDE 1 : COUVERTURE ---
-            doc.setFillColor(255, 255, 255);
+            doc.setFillColor(...dixBg);
             doc.rect(0, 0, 1280, 720, 'F');
             
-            if (customLogo) {
-                const maxW = 250, maxH = 120;
-                const ratio = Math.min(maxW / customLogo.width, maxH / customLogo.height);
-                const finalW = customLogo.width * ratio; const finalH = customLogo.height * ratio;
-                doc.addImage(customLogo.data, customLogo.format, 1215 - finalW, 40, finalW, finalH);
+            // Intégration dynamique du Logo (centré en haut)
+            if (logoDataUrl) {
+                try {
+                    // Logo centré : X = 640 - (largeur 200 / 2) = 540
+                    doc.addImage(logoDataUrl, 'PNG', 540, 100, 200, 120, '', 'FAST');
+                } catch (e) {
+                    console.warn("Erreur d'insertion du logo: ", e);
+                }
             }
+            
+            // On ajuste dynamiquement la hauteur du titre si un logo est présent
+            const titleStartY = logoDataUrl ? 340 : 300;
 
-          doc.setFont("helvetica", "bold"); doc.setFontSize(70); doc.setTextColor(64, 95, 89);
-            doc.text("ANALYSE D'IMPACT DIX.MENSION", 640, 320, { align: "center" });
+            doc.setFont("helvetica", "bold"); doc.setFontSize(70); doc.setTextColor(64, 95, 89);
+            doc.text("ANALYSE D'IMPACT DIX.MENSION", 640, titleStartY, { align: "center" });
             
             doc.setFontSize(35); doc.setTextColor(84, 158, 57); doc.setFont("helvetica", "italic");
             
-            // NOUVELLE LOGIQUE : Retour à la ligne automatique pour les longs titres
+            // Retour à la ligne automatique pour les longs titres
             const splitSlideTitle = doc.splitTextToSize(`${currentAggData.projectTitleStr} - Données consolidées`, 1150);
-            doc.text(splitSlideTitle, 640, 380, { align: "center" });
+            doc.text(splitSlideTitle, 640, titleStartY + 60, { align: "center" });
             
             // Calcul dynamique de la hauteur de la date en fonction du nombre de lignes du titre
-            const dateY = 380 + (splitSlideTitle.length * 45);
+            const dateY = titleStartY + 60 + (splitSlideTitle.length * 45);
             doc.text(currentAggData.projectDateStr, 640, dateY, { align: "center" });
             
+            // MENTIONS LÉGALES ET IDENTITÉ DIX (Centrées en bas de la couverture)
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(150, 150, 150); // Gris discret
+            const legalText = "© 2026 DIX - La Coopérative des Transitions Agricoles et Alimentaires des Territoires. Tous droits réservés. Entreprise de l'Économie Sociale et Solidaire (ESS) - SAS au SIREN 830 937 710 | Siège social : 6 Grande Rue, 77320 Chartronges. Outil originellement conçu et développé par Pierre-Alain Mory pour la coopérative DIX (Licence AGPL v3) Contact : contact@dix-autrement.fr - Web : www.dix-autrement.fr";
+            const legalLines = doc.splitTextToSize(legalText, 1150);
+            doc.text(legalLines, 640, 610, { align: "center" });
+
             drawSlideFooter(1);
 
             // --- SLIDE 2 : VOLUME GLOBAL ---
