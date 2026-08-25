@@ -1054,12 +1054,19 @@ Toute modification ou distribution doit conserver cette mention.
                 doc.addImage(customLogo.data, customLogo.format, 1215 - finalW, 40, finalW, finalH);
             }
 
-            doc.setFont("helvetica", "bold"); doc.setFontSize(70); doc.setTextColor(64, 95, 89);
+          doc.setFont("helvetica", "bold"); doc.setFontSize(70); doc.setTextColor(64, 95, 89);
             doc.text("ANALYSE D'IMPACT DIX.MENSION", 640, 320, { align: "center" });
             
             doc.setFontSize(35); doc.setTextColor(84, 158, 57); doc.setFont("helvetica", "italic");
-            doc.text(`${currentAggData.projectTitleStr} - Données consolidées`, 640, 380, { align: "center" });
-            doc.text(currentAggData.projectDateStr, 640, 430, { align: "center" });
+            
+            // NOUVELLE LOGIQUE : Retour à la ligne automatique pour les longs titres
+            const splitSlideTitle = doc.splitTextToSize(`${currentAggData.projectTitleStr} - Données consolidées`, 1150);
+            doc.text(splitSlideTitle, 640, 380, { align: "center" });
+            
+            // Calcul dynamique de la hauteur de la date en fonction du nombre de lignes du titre
+            const dateY = 380 + (splitSlideTitle.length * 45);
+            doc.text(currentAggData.projectDateStr, 640, dateY, { align: "center" });
+            
             drawSlideFooter(1);
 
             // --- SLIDE 2 : VOLUME GLOBAL ---
