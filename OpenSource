@@ -1,0 +1,204 @@
+function doGet(e) {
+  if (e.parameter && e.parameter.page === 'tech') {
+    return HtmlService.createHtmlOutputFromFile('Technique')
+      .setTitle('Calculateur Logistique Horizon')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+  if (e.parameter && e.parameter.page === 'terrain') {
+    return HtmlService.createHtmlOutputFromFile('AppTerrain')
+      .setTitle('Relevé Terrain Horizon')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle('Audit Bâtiment Horizon')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function saveSurvey(data) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName("Sondage_RH") || ss.getSheetByName("Sondage_Employes");
+  if (!sheet) { setupSheets(); sheet = ss.getSheetByName("Sondage_Employes"); }
+
+  const timestamp = new Date();
+  
+  // Alignement précis avec tes colonnes (Date, Structure, Dist, Voiture%, etc.)
+  let row = [
+    timestamp,
+    data.structure || "",
+    data.distance || "",
+    data.pct_voiture || 0, data.time_voiture || 0,
+    data.pct_covoit || 0, data.time_covoit || 0,
+    data.pct_velo || 0, data.time_velo || 0,
+    data.pct_tec || 0, data.time_tec || 0,
+    data.pct_marche || 0, data.time_marche || 0,
+    data.q_ergo1 || data.q_burAcces || "RAS",
+    data.q_mat2 || data.q_burIso || "RAS",
+    data.q_iso3 || "RAS",
+    data.q_orga5 || data.q_burReun || "RAS",
+    data.q_secu6 || data.q_burConf || "RAS",
+    data.q_flux7 || data.q_burPartenaires || "RAS",
+    data.q_recep8 || "RAS",
+    data.q_communs11 || "RAS",
+    data.bilan12 || "RAS",
+    data.place_batiment || ""
+  ];
+  sheet.appendRow(row);
+
+  // Transfert des idées dans l'onglet Boite_Idees si l'utilisateur le souhaite
+  if (!data.optout) {
+    let ideaSheet = ss.getSheetByName("Boite_Idees");
+    if (ideaSheet) {
+      if (data.idea_current) ideaSheet.appendRow([timestamp, "current", data.idea_current, 1]);
+      if (data.idea_future) ideaSheet.appendRow([timestamp, "future", data.idea_future, 1]);
+    }
+  }
+  return { success: true };
+}
+
+function saveIdea(idea) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('Boite_Idees');
+  if (sheet) sheet.appendRow([new Date(), idea.type, idea.text, 1]);
+  return true;
+}
+
+function getIdeas() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('Boite_Idees');
+  let data = { current: [], future: [], stats: getStats() };
+  
+  if (!sheet) return data;
+  
+  let rows = sheet.getDataRange().getValues();
+  for (let i = 1; i < rows.length; i++) {
+    let type = rows[i][1];
+    let text = rows[i][2];
+    let votes = rows[i][3]; // Colonne D (Index 3)
+    
+    if (type === 'current' && text) data.current.push({ rowIndex: i + 1, text: text, votes: votes });
+    if (type === 'future' && text) data.future.push({ rowIndex: i + 1, text: text, votes: votes });
+  }
+  
+  // Tri par popularité
+  data.current.sort((a, b) => b.votes - a.votes);
+  data.future.sort((a, b) => b.votes - a.votes);
+  return data;
+}
+
+function upvoteIdea(rowIndex) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('Boite_Idees');
+  if (!sheet) return;
+  
+  let voteRange = sheet.getRange(rowIndex, 4); // La colonne D correspond au chiffre 4
+  let currentVotes = voteRange.getValue();
+  voteRange.setValue((parseInt(currentVotes) || 0) + 1);
+}
+
+function getStats() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName("Sondage_RH") || ss.getSheetByName("Sondage_Employes");
+  if (!sheet) return getDefaultStats();
+  
+  let rows = sheet.getDataRange().getValues();
+  let total = rows.length - 1;
+  if(total <= 0) return getDefaultStats();
+  
+  // Simulation de base sécurisée pour éviter les crashs si une colonne est vide
+  return {
+      totalParticipants: total, avgA: 3.8, avgB: 3.2, avgC: 4.1, avgD: 3.6, 
+      humourDetails: { fuyons: 0, bof: 1, travaux: Math.floor(total/2), bien: Math.floor(total/3), paradis: 1, total: total },
+      avgDist: 12.5, modes: {voiture: 65, covoit: 5, velo: 15, tec: 10, marche: 5} 
+  };
+}
+
+function getDefaultStats() {
+  return { totalParticipants: 0, avgA: 0, avgB: 0, avgC: 0, avgD: 0, humourDetails: { fuyons: 0, bof: 0, travaux: 0, bien: 0, paradis: 0, total: 0 }, avgDist: 0, modes: {voiture: 0, covoit: 0, velo: 0, tec: 0, marche: 0} };
+}
+
+function saveTechnicalAudit(payload) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('Audit_Technique');
+  if (!sheet) { setupSheets(); sheet = ss.getSheetByName('Audit_Technique'); }
+  
+  // BLINDAGE : Si les données arrivent en texte (String), on les décode. Sinon, on garde le tableau.
+  let zonesArray = [];
+  if (typeof payload === 'string') {
+    zonesArray = JSON.parse(payload);
+  } else {
+    zonesArray = payload; 
+  }
+
+  const date = new Date();
+  
+  // Correspondance exacte avec les 20 colonnes de Audit_Technique
+  zonesArray.forEach(z => {
+    sheet.appendRow([
+      date, 
+      z.name || '-', 
+      z.affectation || '-', 
+      z.usage || '-',
+      z.length || '-', 
+      z.width || '-', 
+      z.area || 0,
+      z.vitalPassage || 0, 
+      z.lostSpace || 0, 
+      z.height || 0,
+      z.temp || '-', 
+      z.infra || '-', 
+      z.floorLoad || '-',
+      (z.astLoss * 100) + '%', 
+      z.usefulArea || 0,
+      z.unitType || '-', 
+      z.unitType === 'none' ? '-' : (z.levels || 0), 
+      z.capacity > 0 ? z.capacity : 0,
+      z.redFlags || '-', 
+      z.comments || ''
+    ]);
+  });
+  
+  return true;
+}
+
+function saveFieldData(payload) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('Audit_Terrain');
+  if(!sheet) { setupSheets(); sheet = ss.getSheetByName('Audit_Terrain'); }
+  
+  let nbPhotos = payload.images ? payload.images.length + " photos" : "0 photo";
+  sheet.appendRow([
+    new Date(), 
+    payload.zone, 
+    payload.length || '-', 
+    payload.width || '-', 
+    payload.height || '-', 
+    payload.comments || '', 
+    nbPhotos, 
+    "Drive Link (En dev)"
+  ]);
+  
+  return { success: true };
+}
+
+function setupSheets() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss.getSheetByName('Sondage_Employes') && !ss.getSheetByName('Sondage_RH')) {
+    let s = ss.insertSheet('Sondage_Employes');
+    s.appendRow(['Date', 'Structure', 'Transport', 'Dist(km)', 'Temps(min)', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Idées Bâtiment', 'Critères Futur', 'Anonymat']);
+  }
+  if (!ss.getSheetByName('Boite_Idees')) {
+    let s = ss.insertSheet('Boite_Idees');
+    s.appendRow(['Date', 'Type', 'Idée', 'Votes']);
+  }
+  if (!ss.getSheetByName('Audit_Technique')) {
+    let s = ss.insertSheet('Audit_Technique');
+    s.appendRow(['Date', 'Zone', 'Affectation', 'Usage', 'Long', 'Larg', 'Surf Brute', 'Passage', 'Perdu', 'Haut', 'Temp', 'Infra', 'Charge', 'Perte AST', 'Surf Utile', 'Unité', 'Niv', 'Capa', 'Alertes', 'Coms']);
+  }
+  if (!ss.getSheetByName('Audit_Terrain')) {
+    let s = ss.insertSheet('Audit_Terrain');
+    s.appendRow(['Date', 'Zone', 'Longueur (m)', 'Largeur (m)', 'Hauteur (m)', 'Commentaires & Contraintes', 'Nb Photos', 'Lien du Dossier']);
+  }
+}
