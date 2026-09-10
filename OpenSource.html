@@ -1,204 +1,388 @@
-function doGet(e) {
-  if (e.parameter && e.parameter.page === 'tech') {
-    return HtmlService.createHtmlOutputFromFile('Technique')
-      .setTitle('Calculateur Logistique Horizon')
-      .addMetaTag('viewport', 'width=device-width, initial-scale=1')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  }
-  if (e.parameter && e.parameter.page === 'terrain') {
-    return HtmlService.createHtmlOutputFromFile('AppTerrain')
-      .setTitle('Relevé Terrain Horizon')
-      .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  }
-  return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('Audit Bâtiment Horizon')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-}
+<!-- 
+Copyright (c) 2026 - Pierre-Alain Mory / DIX SCOP CAE
+Ce fichier est régi par les termes de la licence GNU AGPL v3.
+Toute modification ou distribution doit conserver cette mention.
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modèle Économique & Système d'Exploitation Territorial | DIX SCOP CAE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=Georgia&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dix: { dark: '#405F59', light: '#549e39', bg: '#f9fafb' }
+                    },
+                    fontFamily: {
+                        oswald: ['Oswald', 'sans-serif'],
+                        georgia: ['Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Georgia', serif; background-color: #f9fafb; color: #1f2937; line-height: 1.7; }
+        h1, h2, h3, .font-title { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; }
+        .text-justify-custom { text-align: justify; hyphens: auto; }
+        .custom-scroll::-webkit-scrollbar { height: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="py-12 px-6">
 
-function saveSurvey(data) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName("Sondage_RH") || ss.getSheetByName("Sondage_Employes");
-  if (!sheet) { setupSheets(); sheet = ss.getSheetByName("Sondage_Employes"); }
+    <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+        
+        <!-- EN-TÊTE -->
+        <div class="bg-dix-dark p-8 md:p-12 text-white relative">
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px;"></div>
+            <div class="relative z-10">
+                <span class="text-dix-light font-title tracking-widest text-sm mb-3 block">NOTE DE CADRAGE STRATÉGIQUE</span>
+                <h1 class="text-3xl md:text-4xl font-title mb-4 leading-tight">
+                    Le Système d'Exploitation Territorial : Vision 360° et Viabilité Économique
+                </h1>
+                <p class="text-lg text-gray-200 italic">
+                    Modélisation de la création de valeur de DIX : de l'essaimage organique à l'interopérabilité des outils.
+                </p>
+            </div>
+        </div>
 
-  const timestamp = new Date();
-  
-  // Alignement précis avec tes colonnes (Date, Structure, Dist, Voiture%, etc.)
-  let row = [
-    timestamp,
-    data.structure || "",
-    data.distance || "",
-    data.pct_voiture || 0, data.time_voiture || 0,
-    data.pct_covoit || 0, data.time_covoit || 0,
-    data.pct_velo || 0, data.time_velo || 0,
-    data.pct_tec || 0, data.time_tec || 0,
-    data.pct_marche || 0, data.time_marche || 0,
-    data.q_ergo1 || data.q_burAcces || "RAS",
-    data.q_mat2 || data.q_burIso || "RAS",
-    data.q_iso3 || "RAS",
-    data.q_orga5 || data.q_burReun || "RAS",
-    data.q_secu6 || data.q_burConf || "RAS",
-    data.q_flux7 || data.q_burPartenaires || "RAS",
-    data.q_recep8 || "RAS",
-    data.q_communs11 || "RAS",
-    data.bilan12 || "RAS",
-    data.place_batiment || ""
-  ];
-  sheet.appendRow(row);
+        <div class="p-8 md:p-12 space-y-12">
+            
+            <!-- SECTION 1 : POSTURE 360 ET ESSAIMAGE -->
+            <section>
+                <h2 class="text-2xl text-dix-dark font-title mb-4 border-b-2 border-dix-light inline-block pb-1">1. Posture 360° & Essaimage Organique (Bottom-Up)</h2>
+                <div class="text-justify-custom text-gray-700 space-y-4">
+                    <p>
+                        La coopérative DIX n'est pas un éditeur de logiciels logistiques. Nous sommes un cabinet d'ingénierie (AMO) spécialisé dans la relocalisation des systèmes alimentaires. Notre intervention se fait en deux temps : une phase d'étude et de modélisation (qui fait émerger les projets collectifs), suivie d'une phase de déploiement d'outils sur-mesure pour outiller ces collectifs.
+                    </p>
+                    <p>
+                        Cependant, le déploiement de ces outils ne repose plus sur une approche "Top-Down" (où la collectivité impose un outil aux acteurs). L'écosystème DIX repose sur une architecture <strong>"Bottom-Up" (ascendante) et autonome</strong>. Le portail préexiste en ligne. N'importe quel groupe d'acteurs (même 3 agriculteurs) peut s'inscrire, créer son "Nœud" territorial, et commencer à s'organiser avec les outils libres.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="bg-green-50 border border-green-100 p-5 rounded-xl">
+                            <i class="fa-solid fa-users-rays text-dix-light text-2xl mb-2"></i>
+                            <strong class="font-title text-dix-dark block mb-1">L'Effet Cascade (Étude ➔ Projets)</strong>
+                            <p class="text-sm">Une étude d'ingénierie territoriale (AMO) financée par une Agglomération ne débouche pas sur un outil unique. Elle fait souvent émerger <strong>plusieurs projets autonomes</strong> (ex: une légumerie au Nord, une boucle logistique au Sud). Chaque sous-groupe va devenir un "Nœud" et activer les outils correspondant à son besoin.</p>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl">
+                            <i class="fa-solid fa-money-bill-transfer text-blue-500 text-2xl mb-2"></i>
+                            <strong class="font-title text-blue-900 block mb-1">Co-Financement Indépendant</strong>
+                            <p class="text-sm">Les outils premium ne sont pas réservés aux seules collectivités. Si un groupe de producteurs (CUMA, Association) veut accélérer, il peut <strong>financer lui-même</strong> l'intégration d'un module (ex: la caisse partagée) en se répartissant le coût, sans attendre d'argent public.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-  // Transfert des idées dans l'onglet Boite_Idees si l'utilisateur le souhaite
-  if (!data.optout) {
-    let ideaSheet = ss.getSheetByName("Boite_Idees");
-    if (ideaSheet) {
-      if (data.idea_current) ideaSheet.appendRow([timestamp, "current", data.idea_current, 1]);
-      if (data.idea_future) ideaSheet.appendRow([timestamp, "future", data.idea_future, 1]);
-    }
-  }
-  return { success: true };
-}
+            <!-- SECTION 2 : L'ARCHITECTURE ET L'ENTRÉE PAR L'USAGE -->
+            <section>
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 shadow-sm">
+                    <h2 class="text-2xl text-dix-dark font-title mb-4 border-b-2 border-dix-light inline-block pb-1">2. Architecture : L'OS Territorial et l'Entrée par l'Usage</h2>
+                    <div class="text-justify-custom text-gray-700 space-y-4">
+                        <p>
+                            Sur le terrain, les acteurs souffrent d'une profonde "fatigue numérique" (multiplication des tableurs, applications isolées, portails de connexion vides). Pour lutter contre cet éparpillement, nous concevons un <strong>Système d'Exploitation Territorial (OS)</strong> unifié.
+                        </p>
+                        <p>
+                            L'interface d'accueil de ce système n'est pas un formulaire administratif. C'est une <strong>Carte Interactive Globale</strong> qui valorise le réseau vivant du territoire. Le concept majeur est le "Profilage Progressif" (Entrée par l'usage) :
+                        </p>
+                        <ul class="list-disc pl-5 space-y-2 text-sm mt-4">
+                            <li>L'acteur n'entre pas par une porte globale abstraite. Il clique sur le module dont il a besoin immédiatement (ex: La Bourse pour échanger de la matière).</li>
+                            <li>En remplissant les données pour son usage métier dans ce module précis, il alimente la base de données maître du territoire de manière transparente.</li>
+                            <li>La donnée n'est saisie qu'une seule fois. Si l'outil "La Remise" a besoin du numéro de téléphone du producteur, il interroge l'API centrale qui a été mise à jour lors de l'utilisation de l'outil "DIX.TANCE".</li>
+                            <li><strong>Interopérabilité Tierce :</strong> Si un besoin très spécifique est déjà couvert par un outil tiers ESS (ex: gestion des consignes en verre), nos API ouvertes permettent à cet outil de s'interconnecter. Nous refusons de recoder ce qui existe déjà.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
 
-function saveIdea(idea) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName('Boite_Idees');
-  if (sheet) sheet.appendRow([new Date(), idea.type, idea.text, 1]);
-  return true;
-}
+            <!-- SECTION 3 : MODÈLE DE COMMERCIALISATION -->
+            <section>
+                <h2 class="text-2xl text-dix-dark font-title mb-4 border-b-2 border-dix-light inline-block pb-1">3. Le Modèle de Commercialisation (Freemium & Déploiement)</h2>
+                <div class="text-justify-custom text-gray-700 space-y-4">
+                    <p>
+                        L'ensemble des codes produits par DIX sont protégés sous licence libre (Open Source AGPL v3). Nous refusons la vente de "licences propriétaires" restrictives. Notre modèle économique repose sur l'ingénierie et l'activation de modules au sein de l'OS Territorial.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 border-t-4 border-t-dix-light shadow-sm">
+                            <h3 class="font-title text-dix-dark text-lg mb-2"><i class="fa-solid fa-unlock text-dix-light mr-2"></i> Les Modules "Libres" (Appât)</h3>
+                            <p class="text-sm">Certains outils de base (calculateurs, Bourse) sont accessibles gratuitement. Ils génèrent de l'engagement, enrichissent la base de données et démontrent notre expertise aux acteurs de terrain (essaimage viral).</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 border-t-4 border-t-gray-500 shadow-sm relative overflow-hidden">
+                            <h3 class="font-title text-dix-dark text-lg mb-2"><i class="fa-solid fa-lock text-gray-500 mr-2"></i> Les Modules "Structurants"</h3>
+                            <p class="text-sm">Outils complexes (logistique, caisse) activables par la collectivité ou par le groupe lui-même. <strong>Tarification dégressive</strong> : plus le nombre de modules activés est grand, plus le coût unitaire d'intégration baisse.</p>
+                        </div>
+                    </div>
 
-function getIdeas() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName('Boite_Idees');
-  let data = { current: [], future: [], stats: getStats() };
-  
-  if (!sheet) return data;
-  
-  let rows = sheet.getDataRange().getValues();
-  for (let i = 1; i < rows.length; i++) {
-    let type = rows[i][1];
-    let text = rows[i][2];
-    let votes = rows[i][3]; // Colonne D (Index 3)
-    
-    if (type === 'current' && text) data.current.push({ rowIndex: i + 1, text: text, votes: votes });
-    if (type === 'future' && text) data.future.push({ rowIndex: i + 1, text: text, votes: votes });
-  }
-  
-  // Tri par popularité
-  data.current.sort((a, b) => b.votes - a.votes);
-  data.future.sort((a, b) => b.votes - a.votes);
-  return data;
-}
+                    <div class="bg-dix-dark text-white rounded-xl p-6 mt-6 shadow-md">
+                        <h3 class="font-title text-dix-light text-lg mb-2"><i class="fa-solid fa-screwdriver-wrench mr-2"></i> Le Consortium R&D (La Fabrique)</h3>
+                        <p class="text-sm leading-relaxed">
+                            L'adhésion au consortium R&D est <strong>proportionnelle au nombre de modules activés</strong>. Un territoire qui exploite intensément 5 modules consommera plus de R&D (mises à jour, développement d'API avec des outils tiers) qu'un territoire utilisant un seul module. Cet argent sanctuarisé finance nos ingénieurs pour maintenir l'écosystème unifié et développer des ponts technologiques.
+                        </p>
+                    </div>
+                </div>
+            </section>
 
-function upvoteIdea(rowIndex) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName('Boite_Idees');
-  if (!sheet) return;
-  
-  let voteRange = sheet.getRange(rowIndex, 4); // La colonne D correspond au chiffre 4
-  let currentVotes = voteRange.getValue();
-  voteRange.setValue((parseInt(currentVotes) || 0) + 1);
-}
+            <!-- SECTION 4 : SIMULATION FINANCIÈRE INTERACTIVE -->
+            <section class="bg-white border-2 border-gray-100 rounded-xl shadow-sm relative overflow-hidden mt-12">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-dix-light/10 rounded-bl-full z-0"></div>
+                
+                <div class="p-8 relative z-10">
+                    <h2 class="text-2xl text-dix-dark font-title mb-4 border-b-2 border-dix-light inline-block pb-1">4. Prévisionnel d'Activité sur 5 ans (L'effet "Cascade")</h2>
+                    <p class="text-gray-700 mb-8 italic text-sm">
+                        Simulation démontrant la viabilité financière de la stratégie DIX : l'ingénierie amont génère des groupes autonomes, qui s'équipent en outils, constituant une rente d'infogérance pérenne.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        
+                        <!-- Paramètres (Manettes) -->
+                        <div class="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
+                            
+                            <!-- ÉTAPE 1 : L'Étude Amont -->
+                            <div>
+                                <h3 class="font-title text-dix-dark text-sm border-b pb-1 mb-3">Étape 1 : Le Diagnostic Territorial (AMO)</h3>
+                                <div class="flex justify-between mb-1">
+                                    <label class="text-xs font-bold text-gray-700">Nombre d'études / Territoires (Année 1)</label>
+                                    <span id="valEtudes" class="font-bold text-gray-900">2</span>
+                                </div>
+                                <input type="range" id="rangeEtudes" min="1" max="10" value="2" class="w-full accent-gray-500 cursor-pointer mb-3" oninput="calcOS()">
 
-function getStats() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName("Sondage_RH") || ss.getSheetByName("Sondage_Employes");
-  if (!sheet) return getDefaultStats();
-  
-  let rows = sheet.getDataRange().getValues();
-  let total = rows.length - 1;
-  if(total <= 0) return getDefaultStats();
-  
-  // Simulation de base sécurisée pour éviter les crashs si une colonne est vide
-  return {
-      totalParticipants: total, avgA: 3.8, avgB: 3.2, avgC: 4.1, avgD: 3.6, 
-      humourDetails: { fuyons: 0, bof: 1, travaux: Math.floor(total/2), bien: Math.floor(total/3), paradis: 1, total: total },
-      avgDist: 12.5, modes: {voiture: 65, covoit: 5, velo: 15, tec: 10, marche: 5} 
-  };
-}
+                                <div class="flex justify-between mb-1">
+                                    <label class="text-xs font-bold text-gray-700">Honoraires d'Étude & Modélisation</label>
+                                    <span id="valPrixEtude" class="font-bold text-gray-900">12 000 €</span>
+                                </div>
+                                <input type="range" id="rangePrixEtude" min="5000" max="30000" step="1000" value="12000" class="w-full accent-gray-500 cursor-pointer" oninput="calcOS()">
+                            </div>
 
-function getDefaultStats() {
-  return { totalParticipants: 0, avgA: 0, avgB: 0, avgC: 0, avgD: 0, humourDetails: { fuyons: 0, bof: 0, travaux: 0, bien: 0, paradis: 0, total: 0 }, avgDist: 0, modes: {voiture: 0, covoit: 0, velo: 0, tec: 0, marche: 0} };
-}
+                            <!-- ÉTAPE 2 : L'Essaimage -->
+                            <div class="pt-4 border-t border-gray-200">
+                                <h3 class="font-title text-dix-light text-sm border-b border-green-200 pb-1 mb-3">Étape 2 : Création des Nœuds & Modules</h3>
+                                <div class="flex justify-between mb-1">
+                                    <label class="text-xs font-bold text-gray-700">Groupes autonomes émergeant par territoire</label>
+                                    <span id="valGroupes" class="font-bold text-dix-light text-lg">3</span>
+                                </div>
+                                <input type="range" id="rangeGroupes" min="1" max="10" value="3" class="w-full accent-dix-light cursor-pointer mb-3" oninput="calcOS()">
 
-function saveTechnicalAudit(payload) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName('Audit_Technique');
-  if (!sheet) { setupSheets(); sheet = ss.getSheetByName('Audit_Technique'); }
-  
-  // BLINDAGE : Si les données arrivent en texte (String), on les décode. Sinon, on garde le tableau.
-  let zonesArray = [];
-  if (typeof payload === 'string') {
-    zonesArray = JSON.parse(payload);
-  } else {
-    zonesArray = payload; 
-  }
+                                <div class="flex justify-between mb-1">
+                                    <label class="text-xs font-bold text-gray-700">Modules Premium activés (par groupe)</label>
+                                    <span id="valOutils" class="font-bold text-dix-dark text-lg">2</span>
+                                </div>
+                                <input type="range" id="rangeOutils" min="1" max="10" value="2" class="w-full accent-dix-dark cursor-pointer" oninput="calcOS()">
+                                <p id="discountTag" class="text-[10px] font-bold text-dix-light mt-1">-5% dégressivité appliqués</p>
+                            </div>
 
-  const date = new Date();
-  
-  // Correspondance exacte avec les 20 colonnes de Audit_Technique
-  zonesArray.forEach(z => {
-    sheet.appendRow([
-      date, 
-      z.name || '-', 
-      z.affectation || '-', 
-      z.usage || '-',
-      z.length || '-', 
-      z.width || '-', 
-      z.area || 0,
-      z.vitalPassage || 0, 
-      z.lostSpace || 0, 
-      z.height || 0,
-      z.temp || '-', 
-      z.infra || '-', 
-      z.floorLoad || '-',
-      (z.astLoss * 100) + '%', 
-      z.usefulArea || 0,
-      z.unitType || '-', 
-      z.unitType === 'none' ? '-' : (z.levels || 0), 
-      z.capacity > 0 ? z.capacity : 0,
-      z.redFlags || '-', 
-      z.comments || ''
-    ]);
-  });
-  
-  return true;
-}
+                            <!-- ÉTAPE 3 : Tarification Technique -->
+                            <div class="pt-4 border-t border-gray-200 space-y-4">
+                                <h3 class="font-title text-gray-500 text-sm border-b pb-1 mb-3">Tarifs Unitaires (Base)</h3>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <label class="text-[10px] font-bold text-gray-500 uppercase">Intégration d'un module</label>
+                                        <span id="valAmo" class="text-xs font-bold text-gray-700">2 500 €</span>
+                                    </div>
+                                    <input type="range" id="rangeAmo" min="0" max="5000" step="500" value="2500" class="w-full accent-gray-300 cursor-pointer h-1" oninput="calcOS()">
+                                </div>
 
-function saveFieldData(payload) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName('Audit_Terrain');
-  if(!sheet) { setupSheets(); sheet = ss.getSheetByName('Audit_Terrain'); }
-  
-  let nbPhotos = payload.images ? payload.images.length + " photos" : "0 photo";
-  sheet.appendRow([
-    new Date(), 
-    payload.zone, 
-    payload.length || '-', 
-    payload.width || '-', 
-    payload.height || '-', 
-    payload.comments || '', 
-    nbPhotos, 
-    "Drive Link (En dev)"
-  ]);
-  
-  return { success: true };
-}
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <label class="text-[10px] font-bold text-gray-500 uppercase">Infogérance SaaS (Mois)</label>
+                                        <span id="valSaaS" class="text-xs font-bold text-gray-700">125 €</span>
+                                    </div>
+                                    <input type="range" id="rangeSaaS" min="0" max="300" step="5" value="125" class="w-full accent-gray-300 cursor-pointer h-1" oninput="calcOS()">
+                                </div>
 
-function setupSheets() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  if (!ss.getSheetByName('Sondage_Employes') && !ss.getSheetByName('Sondage_RH')) {
-    let s = ss.insertSheet('Sondage_Employes');
-    s.appendRow(['Date', 'Structure', 'Transport', 'Dist(km)', 'Temps(min)', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Idées Bâtiment', 'Critères Futur', 'Anonymat']);
-  }
-  if (!ss.getSheetByName('Boite_Idees')) {
-    let s = ss.insertSheet('Boite_Idees');
-    s.appendRow(['Date', 'Type', 'Idée', 'Votes']);
-  }
-  if (!ss.getSheetByName('Audit_Technique')) {
-    let s = ss.insertSheet('Audit_Technique');
-    s.appendRow(['Date', 'Zone', 'Affectation', 'Usage', 'Long', 'Larg', 'Surf Brute', 'Passage', 'Perdu', 'Haut', 'Temp', 'Infra', 'Charge', 'Perte AST', 'Surf Utile', 'Unité', 'Niv', 'Capa', 'Alertes', 'Coms']);
-  }
-  if (!ss.getSheetByName('Audit_Terrain')) {
-    let s = ss.insertSheet('Audit_Terrain');
-    s.appendRow(['Date', 'Zone', 'Longueur (m)', 'Largeur (m)', 'Hauteur (m)', 'Commentaires & Contraintes', 'Nb Photos', 'Lien du Dossier']);
-  }
-}
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <label class="text-[10px] font-bold text-gray-500 uppercase">Adhésion R&D (Module / An)</label>
+                                        <span id="valClub" class="text-xs font-bold text-gray-700">500 €</span>
+                                    </div>
+                                    <input type="range" id="rangeClub" min="0" max="2000" step="100" value="500" class="w-full accent-gray-300 cursor-pointer h-1" oninput="calcOS()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Résultats Globaux -->
+                        <div class="space-y-6 flex flex-col justify-center">
+                            
+                            <div class="p-5 border-l-4 border-gray-400 bg-gray-50 rounded-r-xl shadow-sm">
+                                <span class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Revenus d'Ingénierie Amont (Études)</span>
+                                <span id="resEtudes" class="text-2xl font-title text-gray-700">24 000 €</span>
+                            </div>
+
+                            <div class="p-5 border-l-4 border-dix-dark bg-gray-50 rounded-r-xl shadow-sm">
+                                <span class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Déploiement Logiciel (One-Shot Année 1)</span>
+                                <span id="resOneShotOutils" class="text-2xl font-title text-dix-dark">28 500 €</span>
+                            </div>
+
+                            <div class="p-5 border-l-4 border-dix-light bg-dix-light/5 rounded-r-xl shadow-sm">
+                                <span class="block text-[10px] uppercase text-gray-500 font-bold mb-1">Revenus Récurrents (Infogérance + R&D)</span>
+                                <span id="resRecurrent" class="text-2xl font-title text-dix-light">20 000 € / an</span>
+                            </div>
+                            
+                            <div class="mt-4 p-6 bg-gray-800 text-white rounded-xl text-center shadow-lg relative overflow-hidden">
+                                <div class="absolute -right-4 -bottom-4 opacity-10"><i class="fa-solid fa-chart-line text-6xl"></i></div>
+                                <span class="block text-sm uppercase text-gray-400 mb-1 tracking-widest relative z-10">Valeur totale générée (Sur 5 ans)</span>
+                                <span id="resTotal5Ans" class="text-4xl font-title text-white relative z-10">152 500 €</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLEAU PRÉVISIONNEL ET DÉTAIL DES CALCULS -->
+                <div class="border-t border-gray-200 bg-white p-8">
+                    <h3 class="font-title text-dix-dark text-lg mb-4 uppercase tracking-wide">Projection des flux de trésorerie sur 5 ans</h3>
+                    
+                    <div class="overflow-x-auto custom-scroll mb-8">
+                        <table class="w-full text-left text-sm font-georgia text-gray-700 border-collapse">
+                            <thead class="bg-gray-100 text-dix-dark font-title text-xs tracking-widest uppercase">
+                                <tr>
+                                    <th class="px-4 py-3 border border-gray-200">Postes de revenus</th>
+                                    <th class="px-4 py-3 border border-gray-200 text-right">Année 1</th>
+                                    <th class="px-4 py-3 border border-gray-200 text-right">Année 2</th>
+                                    <th class="px-4 py-3 border border-gray-200 text-right">Année 3</th>
+                                    <th class="px-4 py-3 border border-gray-200 text-right">Année 4</th>
+                                    <th class="px-4 py-3 border border-gray-200 text-right text-dix-light">Année 5</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3 border border-gray-200 font-bold">Études & AMO (Amorçage)</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right" id="tab-amo-1">24 000 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right text-gray-400">0 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right text-gray-400">0 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right text-gray-400">0 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right text-gray-400">0 €</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 border border-gray-200 font-bold">Déploiement (Intégration)</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right" id="tab-dep-1">28 500 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right text-gray-400">0 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right text-gray-400">0 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right text-gray-400">0 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right text-gray-400">0 €</td>
+                                </tr>
+                                <tr class="bg-dix-light/5">
+                                    <td class="px-4 py-3 border border-gray-200 font-bold text-dix-light">Infogérance SaaS & Consortium R&D</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right font-bold text-dix-light" id="tab-rec-1">20 000 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right font-bold text-dix-light" id="tab-rec-2">20 000 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right font-bold text-dix-light" id="tab-rec-3">20 000 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right font-bold text-dix-light" id="tab-rec-4">20 000 €</td>
+                                    <td class="px-4 py-3 border border-gray-200 text-right font-bold text-dix-light" id="tab-rec-5">20 000 €</td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="bg-gray-800 text-white font-title text-lg">
+                                <tr>
+                                    <th class="px-4 py-3 border border-gray-700">Chiffre d'Affaires Annuel</th>
+                                    <th class="px-4 py-3 border border-gray-700 text-right" id="tab-tot-1">72 500 €</th>
+                                    <th class="px-4 py-3 border border-gray-700 text-right" id="tab-tot-2">20 000 €</th>
+                                    <th class="px-4 py-3 border border-gray-700 text-right" id="tab-tot-3">20 000 €</th>
+                                    <th class="px-4 py-3 border border-gray-700 text-right" id="tab-tot-4">20 000 €</th>
+                                    <th class="px-4 py-3 border border-gray-700 text-right text-dix-light" id="tab-tot-5">20 000 €</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Encart Transparence des Calculs -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                        <h4 class="font-title text-blue-900 text-sm uppercase tracking-wide mb-3 flex items-center gap-2"><i class="fa-solid fa-calculator"></i> Transparence & Détail des Formules</h4>
+                        <ul class="text-xs text-blue-800 space-y-3 font-mono">
+                            <li><strong class="text-blue-900">1. Nombre de projets générés :</strong> <span id="calc-projets">2 Études × 3 Groupes = 6 Projets déployés sur le terrain.</span></li>
+                            <li><strong class="text-blue-900">2. Règle de Dégressivité (SaaS & Intégration) :</strong> <span id="calc-degres">-5% par module supplémentaire activé par le même groupe (Plafonné à -30%). Tarif de base remisé appliqué = 95%.</span></li>
+                            <li><strong class="text-blue-900">3. Honoraires d'Étude (AMO) :</strong> <span id="calc-etude">2 Études × 12 000 € = 24 000 €.</span></li>
+                            <li><strong class="text-blue-900">4. Déploiement Logiciel (One-Shot) :</strong> <span id="calc-deploiement">6 Projets × 2 Outils × 2 375 € (Tarif remisé) = 28 500 €.</span></li>
+                            <li><strong class="text-blue-900">5. Rente SaaS (Annuelle) :</strong> <span id="calc-saas">6 Projets × 2 Outils × 119 €/mois × 12 mois = 17 100 €/an.</span></li>
+                            <li><strong class="text-blue-900">6. Financement R&D (Annuel) :</strong> <span id="calc-rd">6 Projets × 2 Outils × 500 € = 6 000 €/an. (Financement strictement proportionnel pour alimenter "La Fabrique").</span></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- Script de calcul mis à jour : Modèle en Cascade sur 5 ans -->
+                <script>
+                    function calcOS() {
+                        const format = (v) => new Intl.NumberFormat('fr-FR').format(v);
+                        
+                        const etudes = parseInt(document.getElementById('rangeEtudes').value);
+                        const prixEtude = parseInt(document.getElementById('rangePrixEtude').value);
+                        const groupesParEtude = parseInt(document.getElementById('rangeGroupes').value);
+                        const totalGroupes = etudes * groupesParEtude;
+                        const outilsParGroupe = parseInt(document.getElementById('rangeOutils').value);
+                        
+                        const amoBase = parseInt(document.getElementById('rangeAmo').value);
+                        const saasMensuelBase = parseInt(document.getElementById('rangeSaaS').value);
+                        const clubUnitaire = parseInt(document.getElementById('rangeClub').value);
+
+                        // Calcul de la dégressivité : -5% par module supplémentaire (au-delà du 1er), plafonné à -30%
+                        const discountRate = Math.min((outilsParGroupe - 1) * 0.05, 0.30);
+                        const discountMultiplier = 1 - discountRate;
+                        
+                        // Affichage Paramètres
+                        document.getElementById('valEtudes').innerText = etudes;
+                        document.getElementById('valPrixEtude').innerText = format(prixEtude) + ' €';
+                        document.getElementById('valGroupes').innerText = groupesParEtude;
+                        document.getElementById('valOutils').innerText = outilsParGroupe;
+                        
+                        const discountTag = document.getElementById('discountTag');
+                        if (discountRate > 0) {
+                            discountTag.innerText = `Dégressivité : -${Math.round(discountRate * 100)}% appliqués sur l'intégration et le SaaS`;
+                        } else {
+                            discountTag.innerText = `Aucune dégressivité (1 seul module)`;
+                        }
+
+                        document.getElementById('valAmo').innerText = format(amoBase) + ' €';
+                        document.getElementById('valSaaS').innerText = format(saasMensuelBase) + ' € / mois';
+                        document.getElementById('valClub').innerText = format(clubUnitaire) + ' € / an';
+
+                        // --- MATHÉMATIQUES ---
+                        const amoRemise = amoBase * discountMultiplier;
+                        const saasMensuelRemise = saasMensuelBase * discountMultiplier;
+
+                        const totalEtudes = etudes * prixEtude;
+                        const totalDeploiement = totalGroupes * outilsParGroupe * amoRemise;
+
+                        const saasAnnuel = totalGroupes * outilsParGroupe * (saasMensuelRemise * 12);
+                        const clubAnnuel = totalGroupes * outilsParGroupe * clubUnitaire;
+                        const recurrentAnnuel = saasAnnuel + clubAnnuel;
+                        
+                        const annee1 = totalEtudes + totalDeploiement + recurrentAnnuel;
+                        const total5Ans = totalEtudes + totalDeploiement + (recurrentAnnuel * 5);
+
+                        // Mises à jour des blocs KPI
+                        document.getElementById('resEtudes').innerText = format(Math.round(totalEtudes)) + ' €';
+                        document.getElementById('resOneShotOutils').innerText = format(Math.round(totalDeploiement)) + ' €';
+                        document.getElementById('resRecurrent').innerText = format(Math.round(recurrentAnnuel)) + ' € / an';
+                        document.getElementById('resTotal5Ans').innerText = format(Math.round(total5Ans)) + ' €';
+
+                        // Mises à jour du Tableau 5 ans
+                        document.getElementById('tab-amo-1').innerText = format(Math.round(totalEtudes)) + ' €';
+                        document.getElementById('tab-dep-1').innerText = format(Math.round(totalDeploiement)) + ' €';
+                        
+                        for(let i=1; i<=5; i++) {
+                            document.getElementById(`tab-rec-${i}`).innerText = format(Math.round(recurrentAnnuel)) + ' €';
+                            document.getElementById(`tab-tot-${i}`).innerText = format(Math.round(i === 1 ? annee1 : recurrentAnnuel)) + ' €';
+                        }
+
+                        // Mises à jour du Détail des Formules
+                        document.getElementById('calc-projets').innerText = `${etudes} Études × ${groupesParEtude} Groupes = ${totalGroupes} Projets déployés sur le terrain.`;
+                        document.getElementById('calc-degres').innerText = `-5% par module supplémentaire activé (Plafonné à -30%). Tarif de base remisé appliqué = ${Math.round(discountMultiplier * 100)}%.`;
+                        document.getElementById('calc-etude').innerText = `${etudes} Études × ${format(prixEtude)} € = ${format(Math.round(totalEtudes))} €.`;
+                        document.getElementById('calc-deploiement').innerText = `${totalGroupes} Projets × ${outilsParGroupe} Outils × ${format(Math.round(amoRemise))} € (Tarif remisé) = ${format(Math.round(totalDeploiement))} €.`;
+                        document.getElementById('calc-saas').innerText = `${totalGroupes} Projets × ${outilsParGroupe} Outils × ${format(Math.round(saasMensuelRemise))} €/mois × 12 mois = ${format(Math.round(saasAnnuel))} €/an.`;
+                        document.getElementById('calc-rd').innerText = `${totalGroupes} Projets × ${outilsParGroupe} Outils × ${format(clubUnitaire)} € = ${format(Math.round(clubAnnuel))} €/an. (Financement strictement proportionnel pour alimenter "La Fabrique").`;
+                    }
+                    window.addEventListener('load', calcOS);
+                </script>
+            </section>
+
+        </div>
+    </div>
+
+</body>
+</html>
