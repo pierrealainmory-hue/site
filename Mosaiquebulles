@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D.I.X. Autrement - Réseau Logos</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500&family=Georgia&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        :root {
+            --dix-dark-green: #405F59;
+            --dix-light-green: #549e39;
+            --dix-white-grey: #f3f3f3;
+        }
+        body { 
+            font-family: 'Georgia', serif; 
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .font-oswald { 
+            font-family: 'Oswald', sans-serif; 
+            text-transform: uppercase;
+        }
+
+        #graph-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Styles des Liens */
+        .link {
+            stroke: #e2e8f0;
+            stroke-width: 1.5px;
+            transition: stroke 0.3s ease;
+        }
+        
+        /* Styles des Noeuds */
+        .node circle {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* Noeud Central DIX */
+        .node-root circle {
+            fill: white;
+            stroke: var(--dix-dark-green);
+            stroke-width: 4px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Noeuds Catégories */
+        .node-category circle {
+            fill: var(--dix-light-green);
+            stroke: white;
+            stroke-width: 2px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+        .node-category:hover circle {
+            fill: var(--dix-dark-green);
+            stroke-width: 4px;
+            transform: scale(1.05);
+        }
+
+        /* Noeuds Projets (Logos) */
+        .node-project circle {
+            fill: white;
+            stroke: var(--dix-white-grey);
+            stroke-width: 2px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+        .node-project:hover circle {
+            stroke: var(--dix-light-green);
+            stroke-width: 4px;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1));
+            z-index: 10;
+        }
+
+        /* Textes */
+        .node-text {
+            font-family: 'Oswald', sans-serif;
+            text-anchor: middle;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* NOUVEAU : Style spécifique avec Halo Blanc pour les catégories */
+        .category-label {
+            font-family: 'Oswald', sans-serif;
+            text-anchor: middle;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 13px;
+            font-weight: 500;
+            fill: var(--dix-dark-green);
+            /* Le secret de la lisibilité : un contour blanc épais qui passe DERRIÈRE le texte */
+            paint-order: stroke fill;
+            stroke: white;
+            stroke-width: 5px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Tooltip HTML */
+        #tooltip {
+            position: absolute;
+            opacity: 0;
+            background: white;
+            border: 2px solid var(--dix-light-green);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            color: var(--dix-dark-green);
+            pointer-events: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: opacity 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .loader-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader" class="loader-container">
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--dix-light-green)] mb-4"></div>
+        <p class="font-oswald text-[10px] text-gray-400">Structuration de l'écosystème...</p>
+    </div>
+
+    <div id="graph-container" class="hidden">
+        <!-- Le SVG D3 sera injecté ici -->
+    </div>
+    
+    <div id="tooltip"></div>
+
+    <script>
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSm_4bPCRFK_gGVkxP-ZeTHzLauhQtqNg_zG2chKNuY8-iyDAuHjc_CQbpBCU4LY9-GRi1579CsUkhr/pub?gid=917397259&single=true&output=csv";
+        const COLS = { LOGO: 2, CLIENT: 3, TYPE: 4 };
+
+        let graphNodes = [];
+        let graphLinks = [];
+        let activeCategory = null; 
+
+        let svg, simulation, linkGroup, nodeGroup;
+        let width, height;
+        const ROOT_ID = "root_dix";
+
+        function cleanUrl(text) {
+            if (!text) return null;
+            let url = text.trim();
+            const match = url.match(/["'](http[^"']+)["']/i);
+            return match ? match[1] : (url.startsWith('http') ? url : null);
+        }
+
+        window.onload = function() {
+            Papa.parse(CSV_URL, {
+                download: true,
+                header: false,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    if (!results.data || results.data.length < 2) return;
+                    processData(results.data.slice(1));
+                }
+            });
+        };
+
+        function processData(rows) {
+            const dataWithLogos = rows.map(row => ({
+                logo: cleanUrl(row[COLS.LOGO]),
+                client: row[COLS.CLIENT] || "Client",
+                type: (row[COLS.TYPE] || "Autres").trim()
+            })).filter(item => item.logo && item.logo.length > 10);
+
+            const grouped = dataWithLogos.reduce((acc, curr) => {
+                if (!acc[curr.type]) acc[curr.type] = [];
+                if (!acc[curr.type].find(i => i.client.toLowerCase() === curr.client.toLowerCase())) {
+                    acc[curr.type].push(curr);
+                }
+                return acc;
+            }, {});
+
+            // 1. Noeud central (Très gros pour bien voir le logo DIX)
+            graphNodes.push({
+                id: ROOT_ID,
+                type: 'root',
+                label: 'D.I.X.',
+                radius: 65 
+            });
+
+            // 2. Noeuds catégories et projets
+            Object.keys(grouped).forEach(type => {
+                const projects = grouped[type];
+                const catId = `cat_${type}`;
+                
+                // NOUVEAU : Rayon dynamique basé sur le nombre de projets (min 20, plus grand si beaucoup de projets)
+                const catRadius = Math.max(25, 20 + (projects.length * 2.5));
+
+                graphNodes.push({
+                    id: catId,
+                    type: 'category',
+                    label: type,
+                    radius: catRadius,
+                    projectCount: projects.length
+                });
+
+                // Lien Racine -> Catégorie (plus ou moins long pour varier l'espace)
+                graphLinks.push({
+                    source: ROOT_ID,
+                    target: catId,
+                    type: 'root-cat',
+                    // On éloigne plus les grosses catégories
+                    baseDistance: 150 + (projects.length * 10) + (Math.random() * 50)
+                });
+
+                projects.forEach((proj, idx) => {
+                    const projId = `proj_${type}_${idx}`;
+                    
+                    // Rayon des projets variable pour un effet organique (bulles entre 35 et 50px)
+                    // Cela permet de TRES bien voir les logos
+                    const projRadius = 35 + (Math.random() * 15);
+
+                    graphNodes.push({
+                        id: projId,
+                        type: 'project',
+                        parent: catId,
+                        label: proj.client,
+                        logo: proj.logo,
+                        radius: projRadius
+                    });
+                    
+                    // Lien Catégorie -> Projet (longueur très variable pour éviter l'effet "collier de perles parfait")
+                    graphLinks.push({
+                        source: catId,
+                        target: projId,
+                        type: 'cat-proj',
+                        baseDistance: 100 + (Math.random() * 80)
+                    });
+                });
+            });
+
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('graph-container').classList.remove('hidden');
+            
+            initGraph();
+        }
+
+        function initGraph() {
+            const container = document.getElementById('graph-container');
+            width = container.clientWidth;
+            height = container.clientHeight || window.innerHeight;
+
+            svg = d3.select("#graph-container").append("svg")
+                .attr("viewBox", [0, 0, width, height])
+                .call(d3.zoom().scaleExtent([0.3, 3]).on("zoom", (event) => {
+                    svg.select("g.master-group").attr("transform", event.transform);
+                }))
+                .on("click", (e) => {
+                    if(e.target.tagName === 'svg') {
+                        activeCategory = null;
+                        updateGraph();
+                    }
+                });
+
+            const masterGroup = svg.append("g").attr("class", "master-group");
+            
+            linkGroup = masterGroup.append("g").attr("class", "links");
+            nodeGroup = masterGroup.append("g").attr("class", "nodes");
+
+            // MOTEUR PHYSIQUE OPTIMISÉ POUR DESENGORGER L'ESPACE
+            simulation = d3.forceSimulation()
+                // Force des liens (utilisation des longueurs variables calculées plus haut)
+                .force("link", d3.forceLink().id(d => d.id).distance(d => d.baseDistance))
+                
+                // Répulsion magnétique très forte pour écarter tout le monde
+                .force("charge", d3.forceManyBody().strength(d => {
+                    if (d.type === 'root') return -3000;
+                    if (d.type === 'category') return -1200;
+                    return -400; // Forte répulsion entre les projets aussi
+                }))
+                
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                
+                // Collision : on rajoute un "bouclier" invisible (padding) autour des catégories
+                // pour être sûr que le texte ne soit pas caché par les logos
+                .force("collide", d3.forceCollide().radius(d => {
+                    if (d.type === 'category') return d.radius + 60; // Grand bouclier très large pour protéger le texte
+                    return d.radius + 5; 
+                }).iterations(3));
+
+            if (window.parent) {
+                window.parent.postMessage({ type: 'dix-mosaique-resize', height: height }, '*');
+            }
+
+            updateGraph();
+        }
+
+        function updateGraph() {
+            // AFFICHER TOUTES LES BULLES EN MÊME TEMPS
+            const visibleNodes = graphNodes;
+            const visibleLinks = graphLinks;
+
+            // Mise à jour des Liens
+            const links = linkGroup.selectAll("line").data(visibleLinks, d => d.source.id + "-" + d.target.id);
+            links.exit().remove();
+            const linkEnter = links.enter().append("line")
+                .attr("class", "link")
+                .attr("stroke-dasharray", d => d.type === 'root-cat' ? "0" : "3 5"); 
+            
+            const linkMerged = linkEnter.merge(links);
+
+            // Mise à jour des Noeuds
+            const nodes = nodeGroup.selectAll("g.node").data(visibleNodes, d => d.id);
+            nodes.exit().transition().duration(350).style("opacity", 0).remove();
+
+            const nodeEnter = nodes.enter().append("g")
+                .attr("class", d => `node node-${d.type}`)
+                .style("opacity", 0) // Pour apparition en fondu
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended))
+                .on("click", handleNodeClick)
+                .on("mouseover", handleMouseOver)
+                .on("mouseout", handleMouseOut);
+
+            nodeEnter.transition().duration(350).style("opacity", 1);
+
+            // Ajout des cercles de base
+            nodeEnter.append("circle")
+                .attr("r", d => d.radius);
+
+            nodeEnter.each(function(d) {
+                const group = d3.select(this);
+                
+                if (d.type === 'root') {
+                    // Logo D.I.X au centre
+                    const imgSize = d.radius * 1.5;
+                    group.append("image")
+                        .attr("href", "logo.png") // Changez ce lien par l'URL officielle du logo DIX si besoin
+                        .attr("x", -imgSize/2)
+                        .attr("y", -imgSize/2)
+                        .attr("width", imgSize)
+                        .attr("height", imgSize)
+                        .attr("preserveAspectRatio", "xMidYMid meet")
+                        .on("error", function() {
+                            // Sécurité : si l'image n'est pas trouvée, on met le texte
+                            d3.select(this).style("display", "none");
+                            group.append("text")
+                                .attr("class", "node-text")
+                                .attr("font-size", "24px")
+                                .attr("fill", "var(--dix-dark-green)")
+                                .attr("dominant-baseline", "central")
+                                .text("D.I.X.");
+                        });
+                } 
+                else if (d.type === 'category') {
+                    // Texte de la catégorie placé nettement en dessous de la bulle avec le halo blanc
+                    group.append("text")
+                        .attr("class", "category-label")
+                        .attr("y", d.radius + 20) // S'adapte à la taille dynamique de la bulle
+                        .text(d.label);
+                } 
+                else if (d.type === 'project') {
+                    // ClipPath pour que l'image ne déborde pas de la bulle ronde
+                    const clipId = `clip-${d.id}`;
+                    group.append("clipPath")
+                        .attr("id", clipId)
+                        .append("circle")
+                        .attr("r", d.radius - 3);
+
+                    // Fond blanc opaque sous le logo
+                    group.append("circle")
+                        .attr("r", d.radius - 3)
+                        .style("fill", "white");
+
+                    // Le logo ! (xMidYMid meet = On voit TOUT le logo sans qu'il soit coupé)
+                    const imgSize = d.radius * 1.7; 
+                    group.append("image")
+                        .attr("href", d.logo)
+                        .attr("x", -imgSize/2)
+                        .attr("y", -imgSize/2)
+                        .attr("width", imgSize)
+                        .attr("height", imgSize)
+                        .attr("clip-path", `url(#${clipId})`)
+                        .attr("preserveAspectRatio", "xMidYMid meet");
+                }
+            });
+
+            const nodeMerged = nodeEnter.merge(nodes);
+
+            // Relancer la simulation physique
+            simulation.nodes(visibleNodes).on("tick", ticked);
+            simulation.force("link").links(visibleLinks);
+            simulation.alpha(1).restart();
+
+            function ticked() {
+                linkMerged
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                nodeMerged
+                    .attr("transform", d => `translate(${d.x},${d.y})`);
+            }
+        }
+
+        function handleNodeClick(event, d) {
+            // Le clic est désactivé puisque tout est visible par défaut !
+        }
+
+        const tooltip = document.getElementById('tooltip');
+
+        function handleMouseOver(event, d) {
+            if (d.type === 'project') {
+                tooltip.style.opacity = 1;
+                tooltip.innerHTML = d.label;
+                tooltip.style.left = (event.pageX + 15) + "px";
+                tooltip.style.top = (event.pageY - 15) + "px";
+            } else if (d.type === 'category') {
+                tooltip.style.opacity = 1;
+                tooltip.innerHTML = d.label; // Affiche juste le nom de la catégorie au lieu de "Voir les projets"
+                tooltip.style.left = (event.pageX + 15) + "px";
+                tooltip.style.top = (event.pageY - 15) + "px";
+            }
+        }
+
+        function handleMouseOut(event, d) {
+            tooltip.style.opacity = 0;
+        }
+
+        // Physique : Drag & Drop
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        window.addEventListener('resize', () => {
+            const container = document.getElementById('graph-container');
+            width = container.clientWidth;
+            height = container.clientHeight || window.innerHeight;
+            svg.attr("viewBox", [0, 0, width, height]);
+            simulation.force("center", d3.forceCenter(width / 2, height / 2));
+            simulation.alpha(0.3).restart();
+        });
+    </script>
+</body>
+</html>
