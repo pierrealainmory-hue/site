@@ -328,9 +328,18 @@
         }
 
         function updateGraph() {
-            // AFFICHER TOUTES LES BULLES EN MÊME TEMPS
-            const visibleNodes = graphNodes;
-            const visibleLinks = graphLinks;
+            const visibleNodes = graphNodes.filter(n => 
+                n.type === 'root' || 
+                n.type === 'category' || 
+                (n.type === 'project' && n.parent === activeCategory)
+            );
+
+            const visibleNodeIds = new Set(visibleNodes.map(n => n.id));
+
+            const visibleLinks = graphLinks.filter(l => 
+                visibleNodeIds.has(typeof l.source === 'object' ? l.source.id : l.source) && 
+                visibleNodeIds.has(typeof l.target === 'object' ? l.target.id : l.target)
+            );
 
             // Mise à jour des Liens
             const links = linkGroup.selectAll("line").data(visibleLinks, d => d.source.id + "-" + d.target.id);
@@ -439,7 +448,19 @@
         }
 
         function handleNodeClick(event, d) {
-            // Le clic est désactivé puisque tout est visible par défaut !
+            event.stopPropagation(); 
+
+            if (d.type === 'category') {
+                if (activeCategory === d.id) {
+                    activeCategory = null; // Refermer
+                } else {
+                    activeCategory = d.id; // Ouvrir la nouvelle
+                }
+                updateGraph();
+            } else if (d.type === 'root') {
+                activeCategory = null;
+                updateGraph();
+            }
         }
 
         const tooltip = document.getElementById('tooltip');
@@ -452,7 +473,7 @@
                 tooltip.style.top = (event.pageY - 15) + "px";
             } else if (d.type === 'category') {
                 tooltip.style.opacity = 1;
-                tooltip.innerHTML = d.label; // Affiche juste le nom de la catégorie au lieu de "Voir les projets"
+                tooltip.innerHTML = activeCategory === d.id ? "Refermer" : "Voir les projets";
                 tooltip.style.left = (event.pageX + 15) + "px";
                 tooltip.style.top = (event.pageY - 15) + "px";
             }
