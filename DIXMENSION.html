@@ -1,4 +1,4 @@
-<!-- Copyright (c) 2026 - Pierre-Alain Mory / DIX SCOP CAECe fichier est régi par les termes de la licence GNU AGPL v3.Toute modification ou distribution doit conserver cette mention.-->
+<!-- Copyright (c) 2026 - Pierre-Alain Mory / DIX SCOP CAE. Ce fichier est régi par les termes de la licence GNU AGPL v3. Toute modification ou distribution doit conserver cette mention. -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -15,12 +15,9 @@
     
     <!-- html2canvas (INDISPENSABLE pour la capture de la carte Leaflet et graphiques) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <!-- PapaParse pour lire les gros CSV du Gouvernement sans erreur -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    
-    <!-- Tom Select (Remplacement des datalist pour multisélection propre) -->
-    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
     
     <!-- Leaflet JS & CSS pour la cartographie -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -31,6 +28,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Tom Select (Remplacement des datalist) -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    
     <!-- Configuration Tailwind spécifique à DIX -->
     <script>
         tailwind.config = {
@@ -38,7 +39,7 @@
                 extend: {
                     colors: {
                         'dix-dark': '#405F59', // Vert Foncé Institutionnel
-                        'dix-light': '#bfde9f', // Nouveau Vert Clair Pistache (remplace #549e39)
+                        'dix-light': '#bfde9f', // Vert Clair Action (Pistache)
                         'dix-bg': '#f9fafb',   // Fond gris très clair
                         'dix-text': '#1f2937'  // Texte courant
                     },
@@ -50,57 +51,52 @@
             }
         }
     </script>
-    
     <style>
-        body { background-color: theme('colors.dix-bg'); color: theme('colors.dix-text'); font-family: 'Georgia', serif; display: flex; flex-direction: column; min-height: 100vh; }
-        h1, h2, h3, h4, .font-oswald, .tab-btn, button { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
-        .input-group label { display: block; font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 0.875rem; color: theme('colors.dix-dark'); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+        /* SÉCURISATION DES COULEURS : Utilisation des codes Hexa pour contourner les limites du CDN Tailwind */
+        body { background-color: #f9fafb; color: #1f2937; font-family: 'Georgia', serif; display: flex; flex-direction: column; min-height: 100vh; }
+        h1, h2, h3, h4, .font-oswald, .tab-btn, button, .filter-btn-label { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+        .input-group label { display: block; font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 0.875rem; color: #405F59; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
         
-        /* Boutons de Filtres façon pilule */
+        /* Boutons de Filtres façon pilule (Chevauchement corrigé + Vert Pistache Forcé) */
         .filter-btn-check { display: none; }
-        .filter-btn-label { display: block; padding: 0.4rem 1rem; border: 1px solid #d1d5db; border-radius: 9999px; cursor: pointer; transition: all 0.2s; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space: nowrap; text-align: center; }
-        .filter-btn-label:hover { border-color: theme('colors.dix-light'); background-color: #f0f7eb; }
-        
-        /* Remplacement du texte blanc par du texte foncé pour accessibilité sur fond clair */
-        .filter-btn-check:checked + .filter-btn-label { background: #bfde9f !important; color: #1f2937 !important; border-color: #bfde9f !important; font-weight: bold; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        
-        /* Personnalisation Tom Select pour matcher avec Tailwind et le design DIX */
-        .ts-control { border-radius: 0.5rem; border: 1px solid #d1d5db; padding: 0.65rem 0.75rem; font-family: 'Georgia', serif; font-size: 0.875rem; background-color: #f9fafb; transition: all 0.2s; min-height: 46px; }
-        .ts-control.focus { border-color: theme('colors.dix-light'); box-shadow: 0 0 0 2px rgba(191, 222, 159, 0.2); }
-        .ts-dropdown { border-radius: 0.5rem; border: 1px solid #d1d5db; font-family: 'Georgia', serif; font-size: 0.875rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); margin-top: 4px; }
-        .ts-dropdown .active { background-color: #f0f7eb; color: theme('colors.dix-dark'); }
-        .ts-wrapper.multi .ts-control > div { background: theme('colors.dix-light'); color: theme('colors.dix-dark'); border-radius: 0.25rem; border: 1px solid #a8cc87; padding: 0.15rem 0.5rem; font-weight: bold; margin-bottom: 2px; }
-        .ts-control > input { font-family: 'Georgia', serif; }
+        .filter-btn-label { display: block; padding: 0.35rem 0.75rem; border: 1px solid #d1d5db; border-radius: 9999px; cursor: pointer; transition: all 0.2s; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space: nowrap; }
+        .filter-btn-label:hover { border-color: #bfde9f; }
+        .filter-btn-check:checked + .filter-btn-label { background: #bfde9f !important; color: #405F59 !important; border-color: #bfde9f !important; font-weight: bold; }
         
         .tab-btn { padding: 1rem 1.5rem; color: #6b7280; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.05em; }
-        .tab-btn.active { color: theme('colors.dix-dark'); border-color: theme('colors.dix-dark'); background-color: #f3f4f6; }
+        .tab-btn.active { color: #405F59; border-color: #405F59; background-color: #f3f4f6; }
         .hidden { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        input[type="number"], select, input[type="text"], input[type="date"], .datalist-input { border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.75rem; width: 100%; font-family: 'Georgia', serif; color: theme('colors.dix-text'); background-color: #f9fafb; transition: all 0.2s; }
-        
-        /* Ombres de focus adaptées avec le nouveau RGB (191, 222, 159) du pistache */
-        input:focus, select:focus, .datalist-input:focus { border-color: theme('colors.dix-light'); outline: none; box-shadow: 0 0 0 2px rgba(191, 222, 159, 0.2); }
+        input[type="number"], select, input[type="text"], input[type="date"] { border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.75rem; width: 100%; font-family: 'Georgia', serif; color: #1f2937; background-color: #f9fafb; transition: all 0.2s; }
+        input:focus, select:focus { border-color: #bfde9f; outline: none; box-shadow: 0 0 0 2px rgba(191, 222, 159, 0.3); }
         
         .inline-edit-input { width: 100%; background: transparent; border: 1px solid transparent; padding: 0.25rem; border-radius: 0.25rem; font-family: 'Georgia', serif; transition: all 0.2s; }
         .inline-edit-input:hover, .inline-edit-select:hover { border-color: #d1d5db; background: #fff; }
-        .inline-edit-input:focus { border-color: theme('colors.dix-light'); background: #fff; outline: none; }
+        .inline-edit-input:focus { border-color: #bfde9f; background: #fff; outline: none; }
         .inline-edit-select { padding: 0.25rem; background: transparent; border: 1px solid transparent; width: 100%; border-radius: 0.25rem; cursor: pointer; font-family: 'Georgia', serif; }
         
         #loader { background: rgba(255,255,255,0.95); z-index: 100; display: none; }
         #tour-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 40; transition: opacity 0.3s; }
-        #tour-tooltip { display: none; position: fixed; z-index: 50; background: white; padding: 1.5rem; border-radius: 1rem; width: 350px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border-left: 4px solid theme('colors.dix-light'); }
-        
-        /* Ombre du tutoriel adaptée avec le nouveau RGB (191, 222, 159) */
+        #tour-tooltip { display: none; position: fixed; z-index: 50; background: white; padding: 1.5rem; border-radius: 1rem; width: 350px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border-left: 4px solid #bfde9f; }
         .tour-highlight { position: relative; z-index: 45; background: white; box-shadow: 0 0 0 4px white, 0 0 0 8px rgba(191, 222, 159, 0.4); border-radius: inherit; pointer-events: auto; }
         
         /* Filtre Noir et Blanc doux pour la carte Esri */
         .bw-map { filter: grayscale(100%) opacity(0.7) contrast(1.1); }
+        
+        /* Surcharge Tom Select pour coller à la charte DIX */
+        .ts-control { font-family: 'Georgia', serif !important; border-radius: 0.5rem !important; border: 1px solid #d1d5db !important; padding: 0.75rem !important; background-color: #f9fafb !important; }
+        .ts-control.focus { border-color: #bfde9f !important; box-shadow: 0 0 0 2px rgba(191, 222, 159, 0.3) !important; }
+        .ts-wrapper.multi .ts-control > div { background: #bfde9f !important; color: #405F59 !important; border: none !important; border-radius: 4px !important; font-family: 'Georgia', serif !important; font-weight: bold !important;}
+        
+        /* Styling pour l'accordéon natif */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
     </style>
 </head>
 <body class="bg-dix-bg text-dix-text font-georgia flex flex-col min-h-screen relative">
-
+    
     <!-- Loader -->
     <div id="loader" class="fixed inset-0 flex flex-col items-center justify-center z-[100] hidden">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-dix-light mb-4"></div>
@@ -111,7 +107,7 @@
         <header class="mb-8 border-b border-gray-200 pb-8 flex flex-col gap-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h1 class="text-3xl tracking-wide text-dix-dark flex items-center gap-3">
-                    <span class="font-bold text-dix-light border-2 border-dix-light px-2 py-1 rounded">DIX.MENSION</span> 
+                    <span class="font-bold text-dix-dark bg-dix-light border-2 border-dix-light px-2 py-1 rounded">DIX.MENSION</span> 
                     Simulateur de volumes alimentaires
                 </h1>
                 
@@ -120,14 +116,13 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                         <span>Rapport (A4)</span>
                     </button>
-                    <!-- Changement text-white vers text-dix-dark et ajustement du hover -->
-                    <button onclick="generateSlidesPDF()" class="bg-dix-light hover:bg-[#a8cc87] text-dix-dark py-2 px-5 rounded-xl shadow-sm flex items-center gap-2 transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider font-oswald font-bold" id="tour-step-4">
+                    <button onclick="generateSlidesPDF()" class="bg-dix-light text-dix-dark hover:bg-[#a8cc87] py-2 px-5 rounded-xl shadow-sm flex items-center gap-2 transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider font-oswald font-bold" id="tour-step-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
                         <span>Présentation (Slides)</span>
                     </button>
                     <div class="bg-white border-2 border-dix-light px-4 py-1.5 rounded-xl shadow-sm text-center min-w-[150px] ml-2">
                         <div class="font-oswald text-dix-dark text-[10px] tracking-widest mb-0.5 uppercase">Repas Annuels</div>
-                        <div id="totalMeals" class="font-georgia text-xl font-bold text-dix-light">0</div>
+                        <div id="totalMeals" class="font-georgia text-xl font-bold text-dix-dark">0</div>
                     </div>
                 </div>
             </div>
@@ -140,7 +135,7 @@
                     
                     <div>
                         <button id="tour-btn" onclick="startTour()" class="relative bg-white border-2 border-dix-light text-dix-dark py-1.5 px-4 rounded-full shadow-sm flex items-center gap-2 transition font-oswald text-sm uppercase tracking-wider hover:bg-gray-50 inline-flex">
-                            <svg class="h-4 w-4 text-dix-light" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <svg class="h-4 w-4 text-dix-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             Mode d'emploi
                         </button>
                     </div>
@@ -162,7 +157,6 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-10">
             <!-- COLONNE GAUCHE : PARAMÈTRES GLOBAUX -->
             <aside class="md:col-span-4 space-y-6">
-                
                 <!-- Personnalisation Projet -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 border-l-4 border-l-dix-dark" id="tour-step-1">
                     <h2 class="text-lg text-dix-dark tracking-wide mb-4 font-oswald border-b border-gray-100 pb-2">Informations du Livrable</h2>
@@ -217,26 +211,26 @@
                         
                         <h3 class="text-sm font-oswald text-dix-dark uppercase border-b-2 border-gray-100 pb-1 mt-4">2. Affinez votre périmètre</h3>
                         
-                        <!-- Zone Géo -->
+                        <!-- Zone Géo (Avec Tom Select) -->
                         <div class="bg-gray-50 p-4 rounded-xl space-y-4">
                             <h4 class="text-xs font-oswald text-gray-500 uppercase flex items-center gap-1"><span class="text-red-500">📍</span> Ciblage géographique</h4>
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="input-group">
-                                    <label>Région</label>
-                                    <select id="filter-region" multiple placeholder="Toutes..."></select>
+                                    <label>Région(s)</label>
+                                    <select id="filter-region" multiple placeholder="Sélectionnez..."></select>
                                 </div>
                                 <div class="input-group">
-                                    <label>Département</label>
-                                    <select id="filter-dept" multiple placeholder="Tous..."></select>
+                                    <label>Département(s)</label>
+                                    <select id="filter-dept" multiple placeholder="Sélectionnez..."></select>
                                 </div>
                             </div>
                             <div class="input-group">
                                 <label>EPCI (Intercommunalité)</label>
-                                <select id="filter-epci" multiple placeholder="Rechercher..."></select>
+                                <select id="filter-epci" multiple placeholder="Chercher un EPCI..."></select>
                             </div>
                             <div class="input-group">
-                                <label>Commune</label>
-                                <select id="filter-city" multiple placeholder="Rechercher ou sélectionner..."></select>
+                                <label>Commune(s)</label>
+                                <select id="filter-city" multiple placeholder="Chercher une commune..."></select>
                             </div>
                         </div>
                         
@@ -262,23 +256,27 @@
                                 <div><input type="checkbox" id="mg-con" value="conceded" class="filter-btn-check"><label for="mg-con" class="filter-btn-label">Concédée (DSP)</label></div>
                             </div>
                             
-                            <label class="block font-oswald text-[10px] text-gray-400 uppercase mb-2 flex items-center gap-1">
-                                Type de site
-                                <!-- Correction de la zone de survol (padding et marges) pour éviter que l'info-bulle ne clignote -->
-                                <span class="relative group cursor-pointer inline-flex items-center p-1 -m-1">
-                                    <svg class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    <div class="absolute z-[60] hidden group-hover:block bg-white p-4 shadow-2xl border border-gray-200 rounded-lg w-72 text-xs normal-case text-gray-700 left-6 top-0 font-georgia">
-                                        <strong class="text-orange-600 font-oswald text-sm block mb-2">⚠️ RISQUE DE DOUBLE-COMPTAGE</strong>
-                                        <p class="mb-2 leading-tight">Sur un même territoire, une <b>Centrale</b> produit les repas et ses <b>Satellites</b> les consomment. Sélectionner les deux en même temps doublera vos volumes !</p>
-                                        <ul class="space-y-1.5 mt-2 border-t border-gray-100 pt-2 text-[11px]">
-                                            <li><b class="text-dix-dark">Autonome :</b> Cuisinés et consommés sur place.</li>
-                                            <li><b class="text-dix-dark">Satellite :</b> Lieu de consommation (repas livrés).</li>
-                                            <li><b class="text-dix-dark">Centrale pure :</b> Usine de production (sans salle à manger).</li>
-                                            <li><b class="text-dix-dark">Centrale + Conso :</b> Cuisinés sur place, pour eux-mêmes ET pour des satellites.</li>
-                                        </ul>
-                                    </div>
-                                </span>
-                            </label>
+                            <!-- AVERTISSEMENT "TYPE DE SITE" SÉCURISÉ (ACCORDÉON CLIQUABLE) -->
+                            <details class="mb-3 group cursor-pointer">
+                                <summary class="font-oswald text-[10px] text-gray-400 uppercase flex items-center gap-1 outline-none list-none select-none">
+                                    Type de site
+                                    <svg class="h-4 w-4 text-orange-500 group-open:text-orange-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span class="text-[9px] lowercase italic font-georgia text-orange-400 ml-1 opacity-80 group-open:hidden">(Cliquer pour lire l'aide)</span>
+                                </summary>
+                                <div class="bg-orange-50 p-3 mt-2 border border-orange-200 rounded-lg text-xs text-gray-700 font-georgia shadow-sm">
+                                    <strong class="text-orange-600 font-oswald text-sm block mb-1">⚠️ RISQUE DE DOUBLE-COMPTAGE</strong>
+                                    Sur un territoire, une <b>Centrale pure</b> produit et ses <b>Satellites</b> consomment. Choisissez une approche pour ne pas doubler les volumes :<br>
+                                    <ul class="mt-2 space-y-1">
+                                        <li>• <b>Autonome</b> : Cuisine et repas sur place.</li>
+                                        <li>• <b>Satellite</b> : Repas sur place (livré).</li>
+                                        <li>• <b>Centrale pure</b> : Cuisine uniquement.</li>
+                                        <li>• <b>Centrale + Conso</b> : Cuisine et repas sur place.</li>
+                                    </ul>
+                                </div>
+                            </details>
+
                             <div class="flex flex-wrap gap-3 text-xs font-georgia" id="filter-prod-checkboxes">
                                 <div><input type="checkbox" id="prod-aut" value="site" class="filter-btn-check" title="Cuisine autonome"><label for="prod-aut" class="filter-btn-label">Autonome</label></div>
                                 <div><input type="checkbox" id="prod-sat" value="site_cooked_elsewhere" class="filter-btn-check" title="Lieu de consommation"><label for="prod-sat" class="filter-btn-label">Satellite</label></div>
@@ -286,9 +284,8 @@
                                 <div><input type="checkbox" id="prod-mix" value="central_serving" class="filter-btn-check" title="Production + Conso"><label for="prod-mix" class="filter-btn-label">Centrale + Conso</label></div>
                             </div>
                         </div>
-                        
-                        <!-- Changement text-white vers text-dix-dark et ajustement du hover -->
-                        <button onclick="executeImport()" class="w-full bg-dix-light hover:bg-[#a8cc87] text-dix-dark font-bold font-oswald tracking-widest text-lg uppercase py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 mt-4">
+
+                        <button onclick="executeImport()" class="w-full bg-dix-light hover:bg-[#a8cc87] text-dix-dark font-oswald font-bold tracking-widest text-lg uppercase py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 mt-4">
                             Importer la sélection
                         </button>
                     </div>
@@ -297,7 +294,6 @@
 
             <!-- COLONNE DROITE : RÉSULTATS ANALYTIQUES -->
             <main class="md:col-span-8">
-                
                 <!-- ZONE SYNTHÈSE PAR TYPOLOGIE -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                     <div class="bg-gray-50 border-b border-gray-200 p-4">
@@ -309,7 +305,7 @@
                                 <tr>
                                     <th class="py-2 px-4">Secteur / Public</th>
                                     <th class="py-2 px-4 text-right">Repas Annuels</th>
-                                    <th class="py-2 px-4 text-right text-dix-light">Dont Directe</th>
+                                    <th class="py-2 px-4 text-right text-dix-dark">Dont Directe</th>
                                     <th class="py-2 px-4 text-right text-red-500">Dont Concédée</th>
                                     <th class="py-2 px-4 text-right">Volume Brut Estimé</th>
                                 </tr>
@@ -326,7 +322,6 @@
                     <div class="bg-gradient-to-br from-dix-dark to-[#2a403c] text-white rounded-t-2xl p-4 flex flex-col shadow-lg border-l-8 border-l-dix-light">
                         <h3 class="font-oswald text-dix-light tracking-widest text-sm mb-1 uppercase">Cartographie des Repas par Commune</h3>
                         <p class="font-georgia text-sm text-gray-300">Répartition des volumes de repas sur le territoire étudié.</p>
-                        
                         <div class="flex gap-4 mt-2 text-xs font-oswald tracking-wider">
                             <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-dix-light inline-block"></span> Majorité Gestion Directe</span>
                             <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-600 inline-block"></span> Majorité Gestion Concédée</span>
@@ -405,12 +400,12 @@
                     <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-georgia normal-case">Éditable</span>
                 </h2>
                 <div class="flex gap-3 items-center">
-                    <!-- NOUVEAU: Bouton d'import CSV -->
-                    <label for="csvUpload" class="cursor-pointer bg-white border border-dix-light text-dix-dark font-oswald text-xs px-3 py-1.5 rounded hover:bg-[#f0f7eb] transition flex items-center gap-1 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> Importer CSV
+                    <!-- BOUTON : Importer CSV -->
+                    <label class="cursor-pointer bg-white border border-dix-dark text-dix-dark font-oswald text-xs px-3 py-1.5 rounded hover:bg-gray-50 transition flex items-center gap-1 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> Importer CSV
+                        <input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="importCustomCSV(event)">
                     </label>
-                    <input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="importCustomCSV(event)">
-                    
+
                     <button onclick="exportCSV()" class="bg-white border border-gray-300 text-gray-700 font-oswald text-xs px-3 py-1.5 rounded hover:bg-gray-100 transition flex items-center gap-1 shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> Exporter CSV
                     </button>
@@ -425,8 +420,14 @@
                             <th class="px-4 py-3 cursor-pointer hover:bg-gray-200 transition w-40" onclick="sortTable('city')" title="Trier par Commune">Commune ↕</th>
                             <th class="px-4 py-3 w-36 cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('publicType')" title="Trier par Public">Public ↕</th>
                             <th class="px-4 py-3 w-28 text-center cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('mealsPerDay')" title="Trier par Volume">Repas/Jour ↕</th>
-                            <!-- INFO-BULLE MISE À JOUR -->
-                            <th class="px-4 py-3 w-28 text-center cursor-help" title="Corrigé dynamiquement : Maternelle/Élémentaire (144j), Crèche/Secondaire (180j), Adulte/Sénior (260j), ou ratio calculé à partir du volume annuel réel.">Jours / An ℹ️</th>
+                            
+                           <!-- INFO-BULLE JOURS/AN SÉCURISÉE (POP-UP AU CLIC) -->
+                            <th class="px-4 py-3 w-28 text-center cursor-pointer hover:bg-gray-200 transition" 
+                                onclick="alert('💡 CALCUL DES JOURS / AN\n\nSi le registre de l\'État est incomplet, le simulateur applique ces valeurs par défaut :\n• 144j (Maternelle/Élémentaire)\n• 180j (Crèche/Secondaire)\n• 260j (Adulte/Sénior)\n\nCependant, si le registre précise à la fois le volume annuel et journalier, l\'outil calcule le nombre de jours d\'ouverture exact (Annuel / Journalier).')" 
+                                title="Cliquez pour comprendre le calcul">
+                                <span class="border-b border-dashed border-gray-400 pb-0.5">Jours / An ℹ️</span>
+                            </th>
+                            
                             <th class="px-4 py-3 w-32 text-center cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('managementType')">Gestion ↕</th>
                             <th class="px-4 py-3 w-16 text-center">Act.</th>
                         </tr>
@@ -441,6 +442,7 @@
     <footer class="mt-auto bg-white border-t border-gray-200 py-6 text-center text-sm text-gray-500 font-georgia">
         <p>© 2026 <strong>DIX - La Coopérative des Transitions Agricoles et Alimentaires des Territoires</strong>. Tous droits réservés.</p>
         <p class="text-xs text-gray-400 mt-1">SCOP SAS à capital variable | Siège social : 6 Grande Rue, 77320 Chartronges | 830 937 710 R.C.S. Meaux | contact@dix.coop</p>
+        
         <p class="text-[10px] text-gray-400 font-oswald uppercase mt-2 tracking-wider">Sources des données : Registre National des Cantines (data.gouv.fr), Agreste, GEM-RCN.</p>
         
         <!-- Badge d'utilisation -->
@@ -459,6 +461,7 @@
             lai: { label: "Laitiers", colorCls: "text-cyan-600", bgCls: "bg-cyan-100", borderCls: "border-cyan-500" },
             pain: { label: "Pain", colorCls: "text-stone-600", bgCls: "bg-stone-100", borderCls: "border-stone-500" }
         };
+
         const grammages = {
             creche:      { leg: 0.120, vpo: 0.045, fec: 0.030, fru: 0.060, lai: 0.040, pain: 0.020 },
             maternelle:  { leg: 0.150, vpo: 0.065, fec: 0.050, fru: 0.080, lai: 0.050, pain: 0.030 },
@@ -467,11 +470,12 @@
             adulte:      { leg: 0.230, vpo: 0.125, fec: 0.080, fru: 0.120, lai: 0.060, pain: 0.050 },
             senior:      { leg: 0.200, vpo: 0.100, fec: 0.060, fru: 0.100, lai: 0.070, pain: 0.040 }
         };
+
         const yields = { leg: 0.75, vpo: 0.80, fec: 2.80, fru: 0.90, lai: 1.0, pain: 1.0 };
         const labels = { leg: "Légumes", vpo: "VPO", fec: "Féculents", fru: "Fruits", lai: "Laitiers", pain: "Pain" };
         const palletCapacities = { leg: 600, vpo: 500, fec: 800, fru: 500, lai: 450, pain: 150 };
         const agriYields = { leg: 25, fru: 18, fec: 7, pain: 6.5, lai: 9, vpo: 0.35 };
-        
+
         // Variables globales PDF (Couleurs et Textes institutionnels)
         const pdfColors = { leg: '#059669', vpo: '#e11d48', fec: '#d97706', fru: '#ea580c', lai: '#0891b2', pain: '#57534e' };
         
@@ -479,31 +483,32 @@
         
         const legalTextA4 = "DIX - LA COOPÉRATIVE DES TRANSITIONS AGRICOLES ET ALIMENTAIRES DES TERRITOIRES\nSCOP SAS à capital variable | Siège social : 6 Grande Rue, 77320 Chartronges | 830 937 710 R.C.S. Meaux\nN° TVA Intracommunautaire : FR 54 830 937 710 | contact@dix-autrement.fr | www.dix.coop";
         const legalTextSlides = "© 2026 DIX - LA COOPÉRATIVE DES TRANSITIONS AGRICOLES ET ALIMENTAIRES DES TERRITOIRES (Sources: data.gouv.fr, Agreste, GEM-RCN)";
-        
+
         let savedEstablishments = JSON.parse(localStorage.getItem('dix_sim_ests')) || [];
         let rawCSVData = []; 
         let logoDataUrl = null;
-        let tsInstances = {}; // Stockage des instances Tom Select
-        
+
+        // Instances de Tom Select
+        let tsRegion, tsDept, tsEpci, tsCity;
+
         document.getElementById('projectDate').valueAsDate = new Date();
-        
+
         function escapeHtml(unsafe) { 
             return (unsafe || "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); 
         }
-        
-        // Formateur de nombres : Force l'utilisation d'un espace standard " " pour éviter le bug du "/" dans jsPDF
+
         function formatNb(num, decimals = 0) {
             if (num === undefined || num === null || isNaN(num)) return "0";
             return Number(num).toLocaleString('fr-FR', { maximumFractionDigits: decimals }).replace(/[\u202F\u00A0]/g, ' ');
         }
-        
+
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.remove('hidden');
             document.getElementById('btn-' + tabId).classList.add('active');
         }
-        
+
         function handleLogoUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -517,7 +522,7 @@
                 reader.readAsDataURL(file);
             }
         }
-        
+
         // --- GESTION DE L'IMPORT ET DES FILTRES DATA.GOUV.FR ---
         async function fetchLatestCSV() {
             const btn = document.getElementById('btn-fetch-api');
@@ -560,7 +565,7 @@
                 textSpan.innerText = "Télécharger les données";
             }
         }
-        
+
         function deducePublicType(sectorList, name) {
             if (!sectorList && !name) return 'adulte';
             const s = (sectorList || "").toLowerCase();
@@ -578,58 +583,54 @@
             
             return 'adulte';
         }
-        
+
         function resetImport() {
             rawCSVData = [];
-            
-            // Nettoyage visuel des sélecteurs multiples
-            if(tsInstances.region) {
-                tsInstances.region.clear(); tsInstances.region.clearOptions();
-                tsInstances.dept.clear(); tsInstances.dept.clearOptions();
-                tsInstances.epci.clear(); tsInstances.epci.clearOptions();
-                tsInstances.city.clear(); tsInstances.city.clearOptions();
-            }
-            
             document.getElementById('step2-filters').classList.add('hidden');
             document.getElementById('step1-import').classList.remove('hidden');
         }
-        
-        function buildFilters() {
+
+        function initTomSelect(elId, dataKey) {
             const getUnique = (key) => [...new Set(rawCSVData.map(d => d[key]).filter(Boolean))].sort();
+            let options = getUnique(dataKey).map(v => ({ value: v, text: v }));
             
-            const loadOptions = (tsInstance, data) => {
-                tsInstance.clear();
-                tsInstance.clearOptions();
-                tsInstance.addOptions(data.map(v => ({value: v, text: v})));
-            };
-            
-            loadOptions(tsInstances.region, getUnique('region_lib'));
-            loadOptions(tsInstances.dept, getUnique('department_lib'));
-            loadOptions(tsInstances.epci, getUnique('epci_lib'));
-            loadOptions(tsInstances.city, getUnique('city'));
+            if (window['ts' + elId]) window['ts' + elId].destroy();
+            window['ts' + elId] = new TomSelect('#' + elId, {
+                options: options,
+                create: false,
+                plugins: ['remove_button'],
+                placeholder: 'Sélectionner...',
+                maxItems: null, // Permet la sélection multiple
+            });
         }
-        
+
+        function buildFilters() {
+            initTomSelect('filter-region', 'region_lib');
+            initTomSelect('filter-dept', 'department_lib');
+            initTomSelect('filter-epci', 'epci_lib');
+            initTomSelect('filter-city', 'city');
+        }
+
         function executeImport() {
-            const reg = tsInstances.region.getValue();
-            const dep = tsInstances.dept.getValue();
-            const epci = tsInstances.epci.getValue();
-            const city = tsInstances.city.getValue();
+            const regs = window['tsfilter-region'] ? window['tsfilter-region'].getValue() : [];
+            const deps = window['tsfilter-dept'] ? window['tsfilter-dept'].getValue() : [];
+            const epcis = window['tsfilter-epci'] ? window['tsfilter-epci'].getValue() : [];
+            const cities = window['tsfilter-city'] ? window['tsfilter-city'].getValue() : [];
             
             const checkedBoxes = Array.from(document.querySelectorAll('#filter-public-checkboxes input:checked')).map(cb => cb.value);
             const checkedMgmt = Array.from(document.querySelectorAll('#filter-mgmt-checkboxes input:checked')).map(cb => cb.value);
             const checkedProd = Array.from(document.querySelectorAll('#filter-prod-checkboxes input:checked')).map(cb => cb.value);
-            
-            if(reg.length === 0 && dep.length === 0 && epci.length === 0 && city.length === 0) {
+
+            if(regs.length === 0 && deps.length === 0 && epcis.length === 0 && cities.length === 0) {
                 alert("Veuillez remplir au moins un critère géographique pour ne pas importer toute la France.");
                 return;
             }
-            
+
             let filtered = rawCSVData.filter(row => {
-                // Modification de la logique pour supporter les tableaux (sélections multiples)
-                if (reg.length > 0 && !reg.includes(row.region_lib)) return false;
-                if (dep.length > 0 && !dep.includes(row.department_lib)) return false;
-                if (epci.length > 0 && !epci.includes(row.epci_lib)) return false;
-                if (city.length > 0 && !city.includes(row.city)) return false;
+                if (regs.length > 0 && !regs.includes(row.region_lib)) return false;
+                if (deps.length > 0 && !deps.includes(row.department_lib)) return false;
+                if (epcis.length > 0 && !epcis.includes(row.epci_lib)) return false;
+                if (cities.length > 0 && !cities.includes(row.city)) return false;
                 
                 if (checkedBoxes.length > 0) {
                     const typeDeduit = deducePublicType(row.sector_list, row.name);
@@ -641,7 +642,7 @@
                 
                 return true;
             });
-            
+
             let imported = 0;
             filtered.forEach(row => {
                 const isSatellite = row.production_type === 'site_cooked_elsewhere';
@@ -651,19 +652,19 @@
                 if(isSatellite) tags.push("Satellite");
                 if(row.production_type === 'central' || row.production_type === 'central_serving') tags.push("Cuisine Centrale");
                 if(tags.length > 0) finalName += ` [${tags.join(', ')}]`;
-                
+
                 const pType = deducePublicType(row.sector_list, row.name);
                 
                 let defaultDays = 260;
                 if (pType === 'maternelle' || pType === 'elementaire') defaultDays = 144;
                 else if (pType === 'secondaire' || pType === 'creche') defaultDays = 180;
-                
+
                 let daily = parseFloat(row.daily_meal_count) || 0;
                 let yearly = parseFloat(row.yearly_meal_count) || 0;
                 
                 let finalDays = defaultDays;
                 let finalDaily = 0;
-                
+
                 if (yearly > 0) {
                     let calculatedDays = daily > 0 ? Math.round(yearly / daily) : defaultDays;
                     if (calculatedDays < 50 || calculatedDays > 365) calculatedDays = defaultDays;
@@ -674,9 +675,9 @@
                     finalDaily = daily;
                     finalDays = defaultDays;
                 }
-                
+
                 let mgmt = row.management_type === 'direct' ? 'Directe' : (row.management_type === 'conceded' ? 'Concédée' : 'Inconnue');
-                
+
                 if(finalDaily > 0 || yearly > 0) {
                     savedEstablishments.push({
                         id: Date.now() + Math.random(),
@@ -691,7 +692,7 @@
                     imported++;
                 }
             });
-            
+
             if(imported > 0) {
                 alert(`Succès ! ${imported} établissements correspondant à vos filtres ont été ajoutés.`);
                 saveData();
@@ -699,7 +700,45 @@
                 alert("Aucun établissement ne correspond à cette combinaison de filtres.");
             }
         }
-        
+
+        // --- IMPORT CSV PERSONNALISÉ (EXCEL) ---
+        function importCustomCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    let imported = 0;
+                    results.data.forEach(row => {
+                        // Adaptation aux colonnes exportées (Etablissement;Commune;Public;RepasJour;JoursAn;Gestion)
+                        if(row.Etablissement && row.RepasJour) {
+                            savedEstablishments.push({
+                                id: Date.now() + Math.random(),
+                                name: row.Etablissement,
+                                city: row.Commune || "N/A",
+                                insee: "", // On perd l'INSEE à l'export simple, géocodage par nom de ville.
+                                publicType: row.Public || 'adulte',
+                                mealsPerDay: parseFloat(row.RepasJour) || 0,
+                                daysPerYear: parseInt(row.JoursAn) || 260,
+                                managementType: row.Gestion || 'Inconnue'
+                            });
+                            imported++;
+                        }
+                    });
+
+                    if(imported > 0) {
+                        alert(`Succès ! ${imported} établissements ont été ré-importés depuis votre fichier Excel.`);
+                        saveData();
+                    } else {
+                        alert("Erreur: Le fichier CSV ne semble pas avoir le bon format d'en-tête (Etablissement, RepasJour, etc.).");
+                    }
+                    event.target.value = ''; // Reset de l'input file
+                }
+            });
+        }
+
         // --- FONCTIONS CLASSIQUES DE L'OUTIL ---
         function removeEst(id) { savedEstablishments = savedEstablishments.filter(e => e.id !== id); saveData(); }
         
@@ -711,7 +750,7 @@
                 saveData(); 
             }
         }
-        
+
         function renderTable() {
             const tbody = document.getElementById('estTableBody');
             tbody.innerHTML = savedEstablishments.map(e => {
@@ -743,7 +782,7 @@
                 </tr>
             `}).join('');
         }
-        
+
         function saveData() {
             localStorage.setItem('dix_sim_ests', JSON.stringify(savedEstablishments));
             renderTable(); calculateAll();
@@ -751,7 +790,7 @@
         
         let currentSortCol = 'city';
         let currentSortAsc = true;
-        
+
         function sortTable(col) {
             if (currentSortCol === col) {
                 currentSortAsc = !currentSortAsc;
@@ -774,11 +813,10 @@
             
             saveData(); 
         }
-        
+
         function calculateAll() {
             let globalTotalMeals = 0; let totalAnnualFini = 0, totalAnnualBrut = 0, totalWeeklyPallets = 0, totalSurfaceAgri = 0;
             let totalSurfaceCultures = 0, totalSurfacePrairies = 0;
-            
             let catTotals = {}; for (let k in labels) catTotals[k] = { annualFini: 0, annualBrut: 0, weeklyBrutKg: 0, weeklyFiniKg: 0, surface: 0, palletCount: 0 };
             
             let summaryBySector = {};
@@ -797,10 +835,11 @@
                 else if (item.managementType === 'Concédée') summaryBySector[pType].conceded += totalMeals;
                 
                 let localBrutKg = 0;
+
                 for (let k in labels) {
                     const annualBrut = (totalMeals * g[k]) / 1000;
                     localBrutKg += (totalMeals * g[k]); 
-                    
+
                     const annualFini = (totalMeals * g[k] * yields[k]) / 1000;
                     const weeklyBrutKg = (annualBrut * 1000) / 52;
                     const weeklyFiniKg = (annualFini * 1000) / 52;
@@ -812,7 +851,7 @@
                     catTotals[k].palletCount += weeklyBrutKg / palletCapacities[k];
                     
                     totalAnnualFini += annualFini; totalAnnualBrut += annualBrut; totalWeeklyPallets += (weeklyBrutKg / palletCapacities[k]);
-                    
+
                     if (agriYields[k]) {
                         const surface = annualBrut / agriYields[k]; 
                         catTotals[k].surface += surface; 
@@ -839,7 +878,7 @@
                 projectTitleStr: document.getElementById('projectTitle').value || "Simulation DIX.MENSION",
                 projectDateStr: document.getElementById('projectDate').value ? new Date(document.getElementById('projectDate').value).toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR')
             };
-            
+
             const typeLabels = { creche: "Crèche", maternelle: "Maternelle", elementaire: "Élémentaire", secondaire: "Secondaire", adulte: "Adulte", senior: "Sénior / EHPAD" };
             
             let validSectors = Object.keys(summaryBySector).filter(k => summaryBySector[k].meals > 0);
@@ -851,7 +890,7 @@
                 sumConceded += summaryBySector[k].conceded;
                 sumBrut += summaryBySector[k].brutTons;
             });
-            
+
             let summaryHtml = validSectors.map(k => {
                 let pctGlobal = sumMeals > 0 ? ((summaryBySector[k].meals / sumMeals) * 100).toFixed(1) : 0;
                 let pctDirect = summaryBySector[k].meals > 0 ? ((summaryBySector[k].direct / summaryBySector[k].meals) * 100).toFixed(0) : 0;
@@ -864,7 +903,7 @@
                             ${formatNb(Math.round(summaryBySector[k].meals))}
                             <span class="text-xs text-gray-400 ml-1 inline-block w-10">(${formatNb(pctGlobal, 1)}%)</span>
                         </td>
-                        <td class="py-2 px-4 text-right font-georgia text-dix-light text-xs">
+                        <td class="py-2 px-4 text-right font-georgia text-dix-dark text-xs">
                             ${formatNb(Math.round(summaryBySector[k].direct))}
                             <span class="text-gray-400 ml-1 inline-block w-8">(${pctDirect}%)</span>
                         </td>
@@ -872,7 +911,7 @@
                             ${formatNb(Math.round(summaryBySector[k].conceded))}
                             <span class="text-gray-400 ml-1 inline-block w-8">(${pctConceded}%)</span>
                         </td>
-                        <td class="py-2 px-4 text-right font-georgia text-dix-light font-bold">${formatNb(summaryBySector[k].brutTons, 1)} t</td>
+                        <td class="py-2 px-4 text-right font-georgia text-dix-dark font-bold">${formatNb(summaryBySector[k].brutTons, 1)} t</td>
                     </tr>
                 `;
             }).join('');
@@ -888,7 +927,7 @@
                             ${formatNb(Math.round(sumMeals))}
                             <span class="text-xs text-gray-500 ml-1 inline-block w-10">(100%)</span>
                         </td>
-                        <td class="py-3 px-4 text-right font-georgia text-dix-light text-xs">
+                        <td class="py-3 px-4 text-right font-georgia text-dix-dark text-xs">
                             ${formatNb(Math.round(sumDirect))}
                             <span class="text-gray-500 ml-1 inline-block w-8">(${totalPctDirect}%)</span>
                         </td>
@@ -907,97 +946,49 @@
             document.getElementById('totalMeals').innerText = formatNb(Math.round(globalTotalMeals));
             
             let finiHtml = "", brutHtml = "", logistiqueHtml = "", agriHtml = "";
+
             for (let k in labels) {
                 const s = productStyles[k]; const ct = catTotals[k];
                 if (ct.annualBrut === 0) continue;
-                
+
                 let cardHtml = (val, unit) => `<div class="bg-white rounded-xl border border-gray-100 p-5 border-t-4 ${s.borderCls}">
                     <div class="font-oswald text-xs font-bold text-gray-500 uppercase mb-2">${s.label}</div>
                     <div class="font-georgia text-2xl font-bold ${s.colorCls}">${formatNb(val, 1)} <span class="text-sm italic text-gray-400">${unit}</span></div></div>`;
-                
+
                 finiHtml += cardHtml(ct.annualFini, 't/an');
                 brutHtml += cardHtml(ct.annualBrut, 't/an');
                 logistiqueHtml += cardHtml(ct.palletCount, 'pal/sem');
                 agriHtml += cardHtml(ct.surface, 'ha');
             }
-            
+
             document.getElementById('container-fini').innerHTML = finiHtml; document.getElementById('totalFini').innerText = formatNb(totalAnnualFini, 1);
             document.getElementById('container-brut').innerHTML = brutHtml; document.getElementById('totalBrut').innerText = formatNb(totalAnnualBrut, 1);
             document.getElementById('container-logistique').innerHTML = logistiqueHtml; document.getElementById('totalPallets').innerText = formatNb(totalWeeklyPallets, 1);
             document.getElementById('container-agriculture').innerHTML = agriHtml; document.getElementById('totalHa').innerText = formatNb(totalSurfaceAgri, 1);
-            
+
             updateMap();
         }
-        
+
         function exportCSV() {
             if (savedEstablishments.length === 0) return alert("Aucune donnée à exporter.");
+
             let csv = "Etablissement;Commune;Public;RepasJour;JoursAn;Gestion\n";
             savedEstablishments.forEach(e => {
                 let j = e.daysPerYear || Math.round((e.weeksPerYear||36) * (e.daysPerWeek||5));
                 csv += `"${e.name.replace(/"/g, '""')}";"${e.city}";${e.publicType};${e.mealsPerDay};${j};${e.managementType || 'Inconnue'}\n`;
             });
+
             const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = `DIX_MENSION_Perimetre.csv`;
             link.click();
         }
-        
-        // --- NOUVEAU: Fonction d'import d'un fichier CSV local / retravaillé ---
-        function importCustomCSV(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // On utilise PapaParse (déjà chargé dans l'outil) pour lire le fichier
-            Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                delimiter: ";", // Le point-virgule est le standard généré par notre fonction d'export
-                complete: function(results) {
-                    let importedCount = 0;
-                    results.data.forEach(row => {
-                        // Tolérance pour les entêtes au cas où Excel modifie les accents
-                        const name = row['Etablissement'] || row['Établissement'];
-                        const city = row['Commune'];
-                        const pType = row['Public'];
-                        const meals = parseFloat(row['RepasJour']);
-                        const days = parseInt(row['JoursAn']);
-                        const mgmt = row['Gestion'];
-
-                        if (name && !isNaN(meals)) {
-                            savedEstablishments.push({
-                                id: Date.now() + Math.random(), // Nouvel ID unique
-                                name: name,
-                                city: city || "N/A",
-                                insee: "", // L'INSEE n'est pas exporté, le géocodage Leaflet se fera par nom de commune (fallback intégré)
-                                publicType: pType || "adulte",
-                                mealsPerDay: meals,
-                                daysPerYear: isNaN(days) ? 260 : days,
-                                managementType: mgmt || "Inconnue"
-                            });
-                            importedCount++;
-                        }
-                    });
-                    
-                    if (importedCount > 0) {
-                        alert(`Import réussi ! ${importedCount} établissements ont été ajoutés à la modélisation.`);
-                        saveData(); // Sauvegarde locale + recalculs
-                    } else {
-                        alert("Le fichier ne semble pas correspondre au format d'export de l'outil (Colonnes attendues: Etablissement;Commune;Public;RepasJour;JoursAn;Gestion).");
-                    }
-                    // Reset de l'input pour pouvoir réimporter le même fichier si l'utilisateur l'a modifié entre temps
-                    event.target.value = '';
-                },
-                error: function(err) {
-                    alert("Erreur technique lors de la lecture du fichier : " + err);
-                }
-            });
-        }
 
         // --- MOTEUR CARTOGRAPHIQUE (LEAFLET) ---
         let map = null;
         let cityCoordinates = {}; 
-        
+
         async function updateMap() {
             if (!map) {
                 // preferCanvas est CRITIQUE pour permettre la capture de Leaflet par html2canvas
@@ -1013,28 +1004,28 @@
             }
             
             setTimeout(() => map.invalidateSize(), 100);
-            
+
             let cityData = {};
+
             savedEstablishments.forEach(est => {
                 let city = est.city || "Inconnue";
                 if (!cityData[city]) cityData[city] = { meals: 0, direct: 0, conceded: 0, insee: est.insee, details: {} };
                 
                 let days = est.daysPerYear || Math.round((est.weeksPerYear||36) * (est.daysPerWeek||5));
                 let meals = est.mealsPerDay * days;
-                
                 cityData[city].meals += meals;
                 
                 if(!cityData[city].details[est.publicType]) cityData[city].details[est.publicType] = 0;
                 cityData[city].details[est.publicType] += meals;
-                
+
                 if (est.managementType === 'Directe') cityData[city].direct += meals;
                 else cityData[city].conceded += meals;
             });
-            
+
             map.eachLayer((layer) => { if (layer instanceof L.CircleMarker) layer.remove(); });
-            
+
             let bounds = [];
-            
+
             for (let city in cityData) {
                 if(city === "Inconnue" || city === "N/A" || city.trim() === "") continue;
                 let cData = cityData[city];
@@ -1052,22 +1043,21 @@
                         }
                     } catch(e) { console.warn("Géocodage impossible pour la ville de", city); }
                 }
-                
+
                 if (cityCoordinates[city]) {
                     let radius = Math.max(10, Math.sqrt(cData.meals) / 12); 
                     let isDirect = cData.direct >= cData.conceded;
                     
                     let typeLabels = { creche: "Crèche", maternelle: "Maternelle", elementaire: "Élémentaire", secondaire: "Secondaire", adulte: "Adulte", senior: "Sénior" };
                     let detailsHtml = Object.keys(cData.details).map(k => `<li>${typeLabels[k]} : ${formatNb(Math.round(cData.details[k]))}</li>`).join('');
-                    
-                    // Code hex mis à jour pour correspondre à dix-light (#bfde9f)
+
                     let popupContent = `
                         <div class="font-georgia text-sm p-1 min-w-[200px]">
                             <b class="font-oswald uppercase text-dix-dark text-lg">${city}</b><br>
                             <hr class="my-2 border-gray-200">
                             <b class="text-base">${formatNb(Math.round(cData.meals))} Repas / an</b><br>
                             <div class="flex justify-between text-xs mt-1 mb-2">
-                                <span style="color:#bfde9f" class="font-bold">Directe : ${formatNb(Math.round(cData.direct))}</span>
+                                <span style="color:#405F59" class="font-bold">Directe : ${formatNb(Math.round(cData.direct))}</span>
                                 <span style="color:#e11d48" class="font-bold">Concédée : ${formatNb(Math.round(cData.conceded))}</span>
                             </div>
                             <ul class="list-disc pl-4 text-gray-500 mt-2">
@@ -1075,8 +1065,7 @@
                             </ul>
                         </div>
                     `;
-                    
-                    // Code hex mis à jour pour le marqueur pistache
+
                     let markerColor = isDirect ? '#bfde9f' : '#e11d48';
                     
                     L.circleMarker(cityCoordinates[city], {
@@ -1092,23 +1081,16 @@
                     bounds.push(cityCoordinates[city]);
                 }
             }
-            
+
             if (bounds.length > 0) {
                 map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
             }
         }
-        
+
         // --- L'APPEL INITIAL ---
         window.onload = function() { 
             renderTable(); 
             calculateAll(); 
-            
-            // Initialisation de Tom Select sur les champs géographiques
-            const tsConfig = { plugins: ['remove_button'], hidePlaceholder: true, maxOptions: 100 };
-            tsInstances.region = new TomSelect('#filter-region', { ...tsConfig, placeholder: "Toutes..." });
-            tsInstances.dept = new TomSelect('#filter-dept', { ...tsConfig, placeholder: "Tous..." });
-            tsInstances.epci = new TomSelect('#filter-epci', { ...tsConfig, placeholder: "Rechercher..." });
-            tsInstances.city = new TomSelect('#filter-city', { ...tsConfig, placeholder: "Rechercher ou sélectionner..." });
             
             // Gestion du bouton de tutoriel mémorisé
             if(!localStorage.getItem('dix_tour_seen')) {
@@ -1116,7 +1098,7 @@
                 if(btn) btn.classList.add('animate-pulse', 'bg-green-50', 'ring-4', 'ring-green-100');
             }
         };
-        
+
         // --- TUTORIEL DYNAMIQUE ---
         let currentTourStep = -1;
         const tourData = [
@@ -1126,7 +1108,7 @@
             { id: 'tour-step-3', title: "3. Édition du Périmètre", text: "Les données de l'État sont parfois incomplètes (jours d'ouverture manquants, gestion non renseignée).<br><br><b>Corrigez directement les valeurs en cliquant dans ce tableau</b>, toute la simulation se mettra à jour en temps réel !" },
             { id: 'tour-step-4', title: "4. Exports Professionnels", text: "Une fois votre périmètre consolidé, générez en 1 clic vos supports de présentation complets (Rapport A4 ou Slides) incluant tous les graphiques et la cartographie !" }
         ];
-        
+
         function ensureTourElements() {
             let overlay = document.getElementById('tour-overlay');
             if (!overlay) {
@@ -1142,7 +1124,7 @@
             }
             return { overlay, tooltip };
         }
-        
+
         function startTour() {
             localStorage.setItem('dix_tour_seen', 'true');
             const tourBtn = document.getElementById('tour-btn');
@@ -1155,7 +1137,7 @@
             currentTourStep = 0;
             renderTourStep();
         }
-        
+
         function renderTourStep() {
             document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
             
@@ -1163,11 +1145,10 @@
                 endTour();
                 return;
             }
-            
+
             const step = tourData[currentTourStep];
             const { tooltip } = ensureTourElements();
             
-            // Changement text-white vers text-dix-dark sur le bouton Suivant/Terminer et hover
             tooltip.innerHTML = `
                 <h3 class="font-oswald text-xl text-dix-dark mb-3 uppercase">${step.title}</h3>
                 <p class="font-georgia text-gray-600 text-sm mb-6 leading-relaxed">${step.text}</p>
@@ -1175,11 +1156,11 @@
                     <span class="text-xs text-gray-400 font-oswald">${currentTourStep + 1} / ${tourData.length}</span>
                     <div class="flex gap-2">
                         <button onclick="endTour()" class="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-800 font-oswald uppercase transition">Quitter</button>
-                        <button onclick="nextTourStep()" class="px-4 py-1.5 text-xs bg-dix-light text-dix-dark font-bold rounded font-oswald uppercase shadow hover:bg-[#a8cc87] transition">${currentTourStep === tourData.length - 1 ? 'Terminer' : 'Suivant'}</button>
+                        <button onclick="nextTourStep()" class="px-4 py-1.5 text-xs bg-dix-light text-dix-dark rounded font-oswald uppercase shadow hover:bg-[#a8cc87] transition font-bold">${currentTourStep === tourData.length - 1 ? 'Terminer' : 'Suivant'}</button>
                     </div>
                 </div>
             `;
-            
+
             if(step.id) {
                 const target = document.getElementById(step.id);
                 if (target) {
@@ -1192,9 +1173,8 @@
             tooltip.style.left = '50%';
             tooltip.style.transform = 'translate(-50%, -50%)';
         }
-        
+
         function nextTourStep() { currentTourStep++; renderTourStep(); }
-        
         function endTour() {
             const overlay = document.getElementById('tour-overlay');
             const tooltip = document.getElementById('tour-tooltip');
@@ -1202,7 +1182,7 @@
             if(tooltip) tooltip.style.display = 'none';
             document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
         }
-        
+
         // --- GÉNÉRATION DES PDF (A4 & SLIDES) ---
         
         // Générateur d'anneau vierge pour jsPDF (Sans la légende texte pour garder un rendu HD)
@@ -1210,27 +1190,32 @@
             const canvas = document.createElement('canvas');
             canvas.width = width; canvas.height = height;
             const ctx = canvas.getContext('2d');
+
             let total = 0;
             for (let k in dataObj) total += dataObj[k].value;
             if (total === 0) return null;
+
             let startAngle = -Math.PI / 2;
             const centerX = width / 2;
             const centerY = height / 2;
-            
+
             for (let k in dataObj) {
                 if (dataObj[k].value <= 0) continue;
                 const sliceAngle = (dataObj[k].value / total) * 2 * Math.PI;
+
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
                 ctx.arc(centerX, centerY, radius * 0.6, startAngle + sliceAngle, startAngle, true);
                 ctx.closePath();
+
                 ctx.fillStyle = dataObj[k].color;
                 ctx.fill();
+
                 startAngle += sliceAngle;
             }
             return canvas.toDataURL('image/png');
         }
-        
+
         // Capture robuste de la carte Leaflet
         async function captureMapImage() {
             const mapEl = document.getElementById('map');
@@ -1243,7 +1228,7 @@
             if (map) map.invalidateSize();
             // Délai obligatoire pour s'assurer que Leaflet a bien affiché les tuiles
             await new Promise(resolve => setTimeout(resolve, 800));
-            
+
             try {
                 const canvas = await html2canvas(mapEl, { 
                     useCORS: true, 
@@ -1260,7 +1245,7 @@
                 return null;
             }
         }
-        
+
         async function generatePDF() {
             if (!window.dixAggData || window.dixAggData.perimeter.length === 0) {
                 alert("Veuillez d'abord importer des données avant de générer le rapport.");
@@ -1269,20 +1254,19 @@
             
             document.getElementById('loader').style.display = 'flex';
             document.getElementById('loader-text').innerText = "Génération du rapport PDF en cours...";
-            
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+
             const mapImage = await captureMapImage();
-            
             const agg = window.dixAggData;
             const projTitle = agg.projectTitleStr;
             const projDate = agg.projectDateStr;
             
             const dixDarkRGB = [64, 95, 89];
-            // Changement RGB : #bfde9f = rgb(191, 222, 159)
-            const dixLightRGB = [191, 222, 159]; 
+            const dixLightRGB = [191, 222, 159]; // Vert Pistache
             const grayText = [107, 114, 128];
-            
+
             // --- PAGE DE GARDE ---
             doc.setFillColor(...dixDarkRGB); doc.rect(0, 0, 210, 297, 'F');
             doc.setFillColor(...dixLightRGB); doc.rect(0, 0, 210, 15, 'F');
@@ -1310,19 +1294,19 @@
             doc.setFillColor(255, 255, 255); doc.roundedRect(20, 95 + offset, 140, 45, 3, 3, 'F');
             doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB);
             doc.text("VOLUME GLOBAL DE LA DEMANDE", 25, 107 + offset);
-            doc.setFontSize(26); doc.setTextColor(...dixDarkRGB); // Correction accessibilité PDF : foncé sur blanc
+            doc.setFontSize(26); doc.setTextColor(...dixDarkRGB); // Forcé en foncé pour la lisibilité sur PDF blanc
             doc.text(`${formatNb(agg.totalMeals)} Repas / an`, 25, 122 + offset);
             doc.setFontSize(11); doc.setTextColor(100,100,100); doc.setFont("helvetica", "normal");
             doc.text(`Soit environ ${formatNb(agg.totalBrut, 1)} tonnes de denrées brutes.`, 25, 132 + offset);
-            
+
             doc.setFontSize(10); doc.setTextColor(220, 220, 220); doc.setFont("helvetica", "italic");
             doc.text(doc.splitTextToSize(preambleText, 170), 20, 160 + offset);
-            
+
             // --- TEMPLATE MASTER ---
             const applyHeaderFooter = (pageTitle, subtitle) => {
                 doc.addPage();
                 doc.setFillColor(...dixDarkRGB); doc.rect(0, 0, 210, 12, 'F');
-                doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(255,255,255);
+                doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixLightRGB);
                 doc.text("DIX.MENSION | LA COOPÉRATIVE DES TRANSITIONS", 14, 8);
                 
                 doc.setFontSize(22); doc.setTextColor(...dixDarkRGB); doc.text(pageTitle, 14, 28);
@@ -1336,7 +1320,7 @@
                 doc.text("SCOP SAS à capital variable | Siège social : 6 Grande Rue, 77320 Chartronges | 830 937 710 R.C.S. Meaux | contact@dix.coop", 14, 289);
                 doc.setFontSize(9); doc.text(`Page ${doc.internal.getNumberOfPages()}`, 196, 289, {align: "right"});
             };
-            
+
             // --- PAGE 2 : CARTE & SYNTHÈSE ---
             applyHeaderFooter("CARTOGRAPHIE DU TERRITOIRE", "Répartition géographique et synthèse par typologie");
             
@@ -1346,6 +1330,7 @@
                 const imgRatio = imgProps.width / imgProps.height;
                 let drawW = 182;
                 let drawH = drawW / imgRatio;
+
                 if (drawH > 90) { 
                     drawH = 90;
                     drawW = 90 * imgRatio;
@@ -1353,7 +1338,7 @@
                 let xPos = 14 + (182 - drawW) / 2; 
                 
                 doc.addImage(mapImage, 'JPEG', xPos, 45, drawW, drawH);
-                doc.setDrawColor(...dixLightRGB); doc.setLineWidth(0.5); doc.rect(xPos, 45, drawW, drawH, 'S');
+                doc.setDrawColor(...dixDarkRGB); doc.setLineWidth(0.5); doc.rect(xPos, 45, drawW, drawH, 'S');
                 
                 mapEndY = 45 + drawH;
                 
@@ -1379,7 +1364,7 @@
                 let pctGlobal = sumMeals > 0 ? ((agg.sectors[k].meals / agg.totalMeals) * 100).toFixed(1) : 0;
                 let pctDirect = agg.sectors[k].meals > 0 ? ((agg.sectors[k].direct / agg.sectors[k].meals) * 100).toFixed(0) : 0;
                 let pctConceded = agg.sectors[k].meals > 0 ? ((agg.sectors[k].conceded / agg.sectors[k].meals) * 100).toFixed(0) : 0;
-                
+
                 summaryBody.push([ 
                     typeLabels[k], 
                     `${formatNb(Math.round(agg.sectors[k].meals))} (${formatNb(pctGlobal, 1)}%)`, 
@@ -1391,6 +1376,7 @@
             
             let totalPctDirect = sumMeals > 0 ? ((sumDirect / sumMeals) * 100).toFixed(0) : 0;
             let totalPctConceded = sumMeals > 0 ? ((sumConceded / sumMeals) * 100).toFixed(0) : 0;
+
             summaryBody.push([ 
                 "TOTAL", 
                 `${formatNb(Math.round(sumMeals))} (100%)`, 
@@ -1398,16 +1384,16 @@
                 `${formatNb(Math.round(sumConceded))} (${totalPctConceded}%)`, 
                 `${formatNb(sumBrut, 1)} t` 
             ]);
-            
+
             doc.autoTable({
                 startY: mapEndY + 12, head: [['Secteur', 'Repas / An', 'Dont Directe', 'Dont Concédée', 'Volume Brut']], body: summaryBody,
                 theme: 'grid', headStyles: { fillColor: dixDarkRGB, textColor: 255, fontStyle: 'bold' }, styles: { font: 'helvetica', fontSize: 10, textColor: 50 }, margin: { left: 14, right: 14 }
             });
-            
+
             // --- PAGES DE GRAPHIQUES ---
             function createContentPage(title, subtitle, type) {
                 applyHeaderFooter(title, subtitle);
-                
+
                 let tableBody = []; let totalVal = 0; let chartData = {};
                 for (let k in labels) {
                     const ct = agg.catTotals[k];
@@ -1434,7 +1420,6 @@
                 
                 let boxTitle = type === 'agri' ? "TOTAL FONCIER ESTIMÉ" : (type === 'logistique' ? "FLUX HEBDO ESTIMÉ" : "TOTAL ANNUEL ESTIMÉ");
                 doc.text(boxTitle, 19, 58);
-                
                 doc.setFontSize(20); doc.setTextColor(...dixDarkRGB);
                 let totalUnit = type === 'agri' ? 'ha' : (type === 'logistique' ? 'Palettes' : 'Tonnes');
                 doc.text(`${formatNb(totalVal, 1)} ${totalUnit}`, 19, 68);
@@ -1443,11 +1428,12 @@
                     doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(100, 100, 100);
                     doc.text(`Cultures: ${formatNb(agg.totalCultures, 1)} ha | Prairies: ${formatNb(agg.totalPrairies, 1)} ha`, 19, 74);
                 }
-                
+
                 // Génération HD de l'anneau et Légende tracée en texte vectoriel pour éviter toute coupure
                 const chartBase64 = createSlideDoughnutChartBase64(chartData, 400, 400, 160);
                 if (chartBase64 && type !== 'agri' && type !== 'logistique') {
                     doc.addImage(chartBase64, 'PNG', 100, 42, 40, 40);
+                    
                     let yLegend = 48;
                     for (let k in chartData) {
                         const item = chartData[k];
@@ -1464,13 +1450,14 @@
                         yLegend += 6;
                     }
                 }
-                
+
                 let headerCols = type === 'agri' ? ['Catégorie', 'Empreinte (Hectares)', '-'] : (type === 'logistique' ? ['Catégorie', 'Flux (Palettes)', 'Moy. Hebdo (kg)'] : ['Catégorie', 'Annuel', 'Mensuel', 'Moy. Hebdo']);
+                
                 doc.autoTable({
                     startY: 85, head: [headerCols], body: tableBody, theme: 'grid',
                     headStyles: { fillColor: dixDarkRGB, textColor: 255, fontStyle: 'bold' }, styles: { font: 'helvetica', fontSize: 11, textColor: 50 }, margin: { left: 14, right: 14 }
                 });
-                
+
                 let readingSentence = "";
                 if (type === 'fini') readingSentence = `Lecture : Le volume net de nourriture réellement consommé dans l'assiette.`;
                 if (type === 'brut') readingSentence = `Lecture : En tenant compte des pertes de préparation, la cuisine devra commander un volume brut d'environ ${formatNb(totalVal, 1)} tonnes.`;
@@ -1480,47 +1467,48 @@
                 doc.setFontSize(10); doc.setTextColor(...grayText); doc.setFont("helvetica", "italic");
                 doc.text(doc.splitTextToSize(readingSentence, 180), 14, doc.lastAutoTable.finalY + 10);
             }
-            
+
             createContentPage("PRODUITS FINIS", "Volumes nets prêts à consommer par les bénéficiaires", 'fini');
             createContentPage("PRODUITS BRUTS", "Équivalents d'achats nécessaires (entrées structure)", 'brut');
             createContentPage("FLUX LOGISTIQUE", "Estimation de l'empreinte logistique et transport", 'logistique');
             createContentPage("EMPREINTE FONCIÈRE", "Estimation des surfaces agricoles nécessaires", 'agri');
-            
+
             // --- PAGE FINALE : PÉRIMÈTRE ---
             applyHeaderFooter("PÉRIMÈTRE D'ÉTUDE", "Liste détaillée des établissements intégrés à la simulation");
             
             let estBody = agg.perimeter.map(est => [ est.name, est.city, est.publicType, Math.round(est.mealsPerDay).toString(), est.daysPerYear.toString(), est.managementType ]);
+            
             doc.autoTable({
                 startY: 45, head: [['Établissement', 'Commune', 'Public', 'Repas/j', 'Jours/an', 'Gestion']], body: estBody,
                 theme: 'grid', headStyles: { fillColor: dixDarkRGB, textColor: 255 }, styles: { font: 'helvetica', fontSize: 9, textColor: 50 }, margin: { left: 14, right: 14 }
             });
-            
+
             let fileName = projTitle.replace(/\s+/g, '_') || "DIX_MENSION";
             doc.save(`${fileName}_Rapport.pdf`);
-            
+
             document.getElementById('loader').style.display = 'none';
         }
-        
+
         async function generateSlidesPDF() {
             if (!window.dixAggData || window.dixAggData.perimeter.length === 0) return alert("Veuillez d'abord importer des données.");
             
             document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "Génération de la présentation en cours...";
-            
+            document.getElementById('loader-text').innerText = "Génération de la presentation en cours...";
+
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1280, 720] });
+
                 const mapImage = await captureMapImage();
-                
                 const agg = window.dixAggData;
                 
                 const dixDarkRGB = [64, 95, 89];
-                // Changement RGB : #bfde9f = rgb(191, 222, 159)
-                const dixLightRGB = [191, 222, 159]; 
+                const dixLightRGB = [191, 222, 159]; // Pistache
                 const grayText = [107, 114, 128];
+
                 const projTitle = agg.projectTitleStr;
                 const projDate = agg.projectDateStr;
-                
+
                 const drawFooter = (pageNum) => {
                     doc.setDrawColor(209, 213, 219); doc.setLineWidth(1); doc.line(65, 655, 1215, 655);
                     doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.setTextColor(...grayText);
@@ -1529,7 +1517,7 @@
                     doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB);
                     doc.text(`PAGE ${pageNum}`, 1215, 685, { align: "right" });
                 };
-                
+
                 const drawHeader = (title, subtitle) => {
                     doc.setFontSize(40); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
                     doc.text(title, 65, 100);
@@ -1537,18 +1525,19 @@
                     doc.setFontSize(20); doc.setTextColor(...grayText); doc.setFont("helvetica", "italic");
                     doc.text(subtitle, 65, 155);
                 };
-                
+
                 // SLIDE 1: TITRE
                 doc.setFillColor(249, 250, 251); doc.rect(0, 0, 1280, 720, 'F');
                 let titleStartY = 300;
                 
-                if (logoDataUrl) {
-                     const logoProps = doc.getImageProperties(logoDataUrl);
+                if (logoDataUrl) { 
+                    const logoProps = doc.getImageProperties(logoDataUrl);
                     const lRatio = logoProps.width / logoProps.height;
                     let lW = 250; let lH = lW / lRatio;
                     // Blocage hauteur pour éviter les déformations et les conflits
                     if (lH > 140) { lH = 140; lW = lH * lRatio; }
                     let lX = 640 - (lW / 2); // Centrage dynamique
+                    
                     doc.addImage(logoDataUrl, 'PNG', lX, 80, lW, lH, '', 'FAST'); 
                     titleStartY = 80 + lH + 50; 
                 }
@@ -1561,27 +1550,24 @@
                 doc.text(splitTitle, 640, titleStartY + 50, { align: "center" });
                 
                 const slideOffset = splitTitle.length * 40;
-                // Correction d'accessibilité sur présentation : Vert foncé pour la date au lieu du vert clair
                 doc.setFontSize(20); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "italic");
                 doc.text(`Modélisation générée le ${projDate}`, 640, titleStartY + 60 + slideOffset, { align: "center" });
                 
                 drawFooter(1);
-                
+
                 // SLIDE 2: PRÉAMBULE
                 doc.addPage(); doc.setFillColor(255,255,255); doc.rect(0, 0, 1280, 720, 'F');
                 drawHeader("PRÉAMBULE MÉTHODOLOGIQUE", "Cadre et limites de la modélisation DIX.MENSION");
-                
                 doc.setFillColor(249, 250, 251); doc.roundedRect(65, 200, 1150, 420, 15, 15, 'F');
                 doc.setFontSize(24); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "normal");
                 const splitPreamble = doc.splitTextToSize(preambleText, 1050);
                 doc.text(splitPreamble, 115, 260, { lineHeightFactor: 1.6 });
-                
                 drawFooter(2);
-                
+
                 // SLIDE 3: CARTE & VOLUMES
                 doc.addPage(); doc.setFillColor(255,255,255); doc.rect(0, 0, 1280, 720, 'F');
                 drawHeader("CARTOGRAPHIE DU TERRITOIRE", "Répartition géographique et volumes globaux");
-                
+
                 if (mapImage) {
                     const imgProps = doc.getImageProperties(mapImage);
                     const imgRatio = imgProps.width / imgProps.height;
@@ -1599,13 +1585,13 @@
                     
                     doc.addImage(mapImage, 'JPEG', 65, yPos, drawW, drawH);
                     doc.setDrawColor(220, 220, 220); doc.setLineWidth(2); doc.rect(65, yPos, drawW, drawH, 'S');
-                    
+
                     // --- NOUVEAU BLOC : DONNÉES GLOBALES ET LÉGENDE ---
                     let legX = 65 + drawW + 60;
                     
                     let totalDir = 0, totalConc = 0;
                     for(let k in agg.sectors) { totalDir += agg.sectors[k].direct; totalConc += agg.sectors[k].conceded; }
-                    
+
                     // Chiffres globaux
                     doc.setFontSize(45); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
                     doc.text(formatNb(agg.totalMeals), legX, yPos + 40);
@@ -1613,22 +1599,21 @@
                     doc.text("REPAS ANNUELS", legX, yPos + 60);
                     
                     doc.setDrawColor(230, 230, 230); doc.setLineWidth(1); doc.line(legX, yPos + 80, legX + 250, yPos + 80);
-                    
+
                     // Gestion Directe
-                    doc.setFontSize(28); doc.setTextColor(...dixDarkRGB); // Ajusté à foncé pour une meilleure lecture que le pistache
-                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(28); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
                     doc.text(formatNb(totalDir), legX, yPos + 120);
                     doc.setFontSize(14); doc.setTextColor(...grayText); doc.setFont("helvetica", "normal");
                     doc.text("EN GESTION DIRECTE", legX, yPos + 140);
-                    
+
                     // Gestion Concédée
                     doc.setFontSize(28); doc.setTextColor(225, 29, 72); doc.setFont("helvetica", "bold");
                     doc.text(formatNb(totalConc), legX, yPos + 180);
                     doc.setFontSize(14); doc.setTextColor(...grayText); doc.setFont("helvetica", "normal");
                     doc.text("EN GESTION CONCÉDÉE", legX, yPos + 200);
-                    
+
                     doc.setDrawColor(230, 230, 230); doc.setLineWidth(1); doc.line(legX, yPos + 230, legX + 250, yPos + 230);
-                    
+
                     // Légende de la carte
                     doc.setFontSize(16); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
                     doc.text("LÉGENDE CARTE", legX, yPos + 270);
@@ -1639,25 +1624,24 @@
                     
                     doc.setFillColor(225, 29, 72); doc.circle(legX + 8, yPos + 340, 8, 'F');
                     doc.text("Majorité Gestion Concédée", legX + 25, yPos + 345);
-                    
+
                     doc.setFont("helvetica", "italic"); doc.setFontSize(12);
                     doc.text("Taille proportionnelle au volume.", legX, yPos + 380);
-                    
+
                 } else {
                     doc.setDrawColor(200,200,200); doc.setLineWidth(2); doc.roundedRect(65, 180, 650, 420, 8, 8, 'S');
                     doc.setFontSize(20); doc.setTextColor(150,150,150); doc.setFont("helvetica", "normal");
                     doc.text("Cartographie indisponible", 390, 390, { align: "center" });
                 }
-                
                 drawFooter(3);
-                
+
                 // SLIDES 4 À 7 : FONCTION DYNAMIQUE DE DÉTAILS
                 const createAnalyticSlide = (type, pageNum) => {
                     doc.addPage(); doc.setFillColor(255,255,255); doc.rect(0, 0, 1280, 720, 'F');
                     
                     let title = "", subtitle = "", totalVal = 0, unit = "", totalLabel = "";
                     let chartData = {}; let listItems = [];
-                    
+
                     if (type === 'fini') {
                         title = "PRODUITS FINIS"; subtitle = "Volumes nets prêts à consommer par les bénéficiaires";
                         totalVal = agg.totalFini; unit = "Tonnes / an"; totalLabel = "VOLUME NET";
@@ -1673,7 +1657,7 @@
                     }
                     
                     drawHeader(title, subtitle);
-                    
+
                     for (let k in labels) {
                         const ct = agg.catTotals[k];
                         let mainVal = 0;
@@ -1681,7 +1665,7 @@
                         else if (type === 'brut') mainVal = ct.annualBrut;
                         else if (type === 'logistique') mainVal = ct.palletCount;
                         else if (type === 'agri') mainVal = ct.surface;
-                        
+
                         if (mainVal > 0) {
                             chartData[k] = { value: mainVal, color: pdfColors[k], label: labels[k] };
                             let valStr = "";
@@ -1692,16 +1676,13 @@
                             listItems.push({ color: pdfColors[k], label: labels[k], valStr: valStr, val: mainVal });
                         }
                     }
-                    
+
                     // BLOC GAUCHE - Fond grisé et valeurs globales
                     doc.setFillColor(249, 250, 251); doc.roundedRect(65, 230, 240, 240, 12, 12, 'F');
-                    
                     doc.setFontSize(60); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
                     doc.text(formatNb(totalVal, 1), 185, 330, { align: "center" });
-                    
-                    doc.setFontSize(26); doc.setTextColor(...dixDarkRGB); // Changement d'accessibilité (foncé au lieu du pistache)
+                    doc.setFontSize(26); doc.setTextColor(...dixDarkRGB);
                     doc.text(unit, 185, 380, { align: "center" });
-                    
                     doc.setFontSize(18); doc.setTextColor(...grayText); doc.setFont("helvetica", "normal");
                     doc.text(totalLabel, 185, 420, { align: "center" });
                     
@@ -1710,18 +1691,17 @@
                         doc.text(`Cultures : ${formatNb(agg.totalCultures, 1)} ha`, 185, 490, { align: "center" });
                         doc.text(`Prairies : ${formatNb(agg.totalPrairies, 1)} ha`, 185, 530, { align: "center" });
                     }
-                    
+
                     // BLOC MILIEU (Graphique pur sans texte)
                     const chartBase64 = createSlideDoughnutChartBase64(chartData, 600, 600, 240);
                     if (chartBase64) doc.addImage(chartBase64, 'PNG', 320, 180, 420, 420);
-                    
+
                     // BLOC DROIT (Légende Vectorielle HD)
                     let yList = 240;
                     listItems.forEach(item => {
                         const pct = totalVal > 0 ? ((item.val / totalVal) * 100).toFixed(1) : 0;
                         
                         doc.setFillColor(item.color); doc.roundedRect(780, yList - 20, 24, 24, 6, 6, 'F');
-                        
                         doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB);
                         doc.text(item.label, 825, yList);
                         
@@ -1736,18 +1716,18 @@
                         
                         yList += 65;
                     });
-                    
+
                     drawFooter(pageNum);
                 };
-                
+
                 createAnalyticSlide('fini', 4);
                 createAnalyticSlide('brut', 5);
                 createAnalyticSlide('logistique', 6);
                 createAnalyticSlide('agri', 7);
-                
+
                 let fileName = projTitle.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_') || "DIX_MENSION";
                 doc.save(`${fileName}_Presentation.pdf`);
-                
+
             } catch (error) {
                 console.error("Erreur de génération des Slides :", error);
                 alert("Une erreur est survenue lors de la génération. Consultez la console pour plus de détails.");
@@ -1756,5 +1736,43 @@
             }
         }
     </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
 </body>
 </html>
