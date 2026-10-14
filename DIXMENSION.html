@@ -57,7 +57,7 @@
         h1, h2, h3, h4, .font-oswald, .tab-btn, button, .filter-btn-label { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
         .input-group label { display: block; font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 0.875rem; color: #405F59; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
         
-        /* Boutons de Filtres façon pilule (Chevauchement corrigé + Vert Pistache Forcé) */
+        /* Boutons de Filtres façon pilule */
         .filter-btn-check { display: none; }
         .filter-btn-label { display: block; padding: 0.35rem 0.75rem; border: 1px solid #d1d5db; border-radius: 9999px; cursor: pointer; transition: all 0.2s; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space: nowrap; }
         .filter-btn-label:hover { border-color: #bfde9f; }
@@ -93,6 +93,10 @@
         /* Styling pour l'accordéon natif */
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
+        
+        /* Modal Custom Styles */
+        .settings-input { padding: 0.4rem; border: 1px solid #d1d5db; border-radius: 0.25rem; font-family: 'Georgia', serif; font-size: 0.875rem; width: 100%; text-align: right;}
+        .settings-label { font-size: 0.75rem; text-transform: uppercase; font-family: 'Oswald', sans-serif; color: #4b5563;}
     </style>
 </head>
 <body class="bg-dix-bg text-dix-text font-georgia flex flex-col min-h-screen relative">
@@ -101,6 +105,251 @@
     <div id="loader" class="fixed inset-0 flex flex-col items-center justify-center z-[100] hidden">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-dix-light mb-4"></div>
         <p class="font-oswald text-dix-dark text-xl animate-pulse" id="loader-text">Traitement en cours...</p>
+    </div>
+
+    <!-- Boîte de dialogue personnalisée (Remplace alert/confirm) -->
+    <div id="custom-dialog" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border-t-4 border-dix-light">
+            <div class="p-6">
+                <h3 id="dialog-title" class="font-oswald text-xl text-dix-dark mb-2 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dix-light" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Information
+                </h3>
+                <p id="dialog-message" class="font-georgia text-sm text-gray-600 whitespace-pre-wrap leading-relaxed"></p>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100" id="dialog-actions"></div>
+        </div>
+    </div>
+
+    <!-- Modal des Paramètres Moteur -->
+    <div id="settings-modal" class="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] flex flex-col overflow-hidden border-t-8" style="border-top-color: #bfde9f;">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                <div>
+                    <h2 class="font-oswald text-xl text-dix-dark tracking-wide flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        Paramètres du Moteur d'Inférence (V2)
+                    </h2>
+                    <p class="text-xs text-gray-500 font-georgia mt-1">Modifiez les variables pour ajuster la modélisation à la réalité opérationnelle de votre territoire.</p>
+                </div>
+                <button onclick="closeSettings()" class="text-gray-400 hover:text-red-500 transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            
+            <div class="overflow-y-auto flex-grow p-6 bg-white">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Colonne 1: EGalim & Fréquences -->
+                    <div class="space-y-4">
+                        <h3 class="font-oswald text-dix-dark border-b border-gray-200 pb-2 flex items-center gap-2"><span class="text-emerald-500">🌱</span> Fréquences & EGalim</h3>
+                        
+                        <div>
+                            <label class="settings-label text-emerald-700">Repas Végétariens / 20 j (Loi EGalim)</label>
+                            <input type="number" id="set-veg" min="0" max="20" class="settings-input mt-1 bg-emerald-50 font-bold text-emerald-900 border-emerald-200">
+                            <p class="text-[10px] text-gray-500 mt-1 italic">La modification de cette valeur ajuste automatiquement la fréquence des VPO ci-dessous.</p>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <label class="settings-label text-gray-400 mb-2 block border-b border-dashed border-gray-200">Fréquence de service sur 20 repas</label>
+                            <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                                <span class="text-xs font-georgia text-gray-600">Légumes (Garn/Entrée)</span>
+                                <div class="flex items-center gap-1"><input type="number" id="set-freq-leg" min="0" max="20" class="settings-input"><span class="text-xs text-gray-400">/20</span></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                                <span class="text-xs font-georgia text-gray-600">Féculents</span>
+                                <div class="flex items-center gap-1"><input type="number" id="set-freq-fec" min="0" max="20" class="settings-input"><span class="text-xs text-gray-400">/20</span></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                                <span class="text-xs font-georgia text-gray-600">VPO (Viande/Poisson)</span>
+                                <div class="flex items-center gap-1"><input type="number" id="set-freq-vpo" min="0" max="20" class="settings-input"><span class="text-xs text-gray-400">/20</span></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                                <span class="text-xs font-georgia text-gray-600">Fruits frais</span>
+                                <div class="flex items-center gap-1"><input type="number" id="set-freq-fru" min="0" max="20" class="settings-input"><span class="text-xs text-gray-400">/20</span></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                                <span class="text-xs font-georgia text-gray-600">Produits Laitiers</span>
+                                <div class="flex items-center gap-1"><input type="number" id="set-freq-lai" min="0" max="20" class="settings-input"><span class="text-xs text-gray-400">/20</span></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 items-center">
+                                <span class="text-xs font-georgia text-gray-600">Pain</span>
+                                <div class="flex items-center gap-1"><input type="number" id="set-freq-pain" min="0" max="20" class="settings-input"><span class="text-xs text-gray-400">/20</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Colonne 2: Rendements -->
+                    <div class="space-y-4">
+                        <h3 class="font-oswald text-dix-dark border-b border-gray-200 pb-2 flex items-center gap-2"><span class="text-orange-500">⚖️</span> Rendements Techniques</h3>
+                        <p class="text-[10px] text-gray-500 italic mb-2 leading-tight">Moyenne pondérée (Cru/Cuit) pour transformer le besoin Net en Achat Brut. <br>Ex: 0.75 = 25% de perte à l'épluchage/cuisson.</p>
+                        
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600">Légumes (Moyenne)</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-yield-leg" step="0.01" min="0.1" class="settings-input"><span class="text-xs text-gray-400">cff</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600">VPO (Perte au feu)</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-yield-vpo" step="0.01" min="0.1" class="settings-input"><span class="text-xs text-gray-400">cff</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600">Fruits (Moyenne)</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-yield-fru" step="0.01" min="0.1" class="settings-input"><span class="text-xs text-gray-400">cff</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600 font-bold text-amber-700">Féculents (Foisonnement)</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-yield-fec" step="0.1" min="1.0" class="settings-input bg-amber-50 border-amber-200 font-bold text-amber-900"><span class="text-xs text-gray-400">cff</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Colonne 3: Gaspillage -->
+                    <div class="space-y-4">
+                        <h3 class="font-oswald text-dix-dark border-b border-gray-200 pb-2 flex items-center gap-2"><span class="text-red-500">🗑️</span> Gaspillage Alimentaire</h3>
+                        <p class="text-[10px] text-gray-500 italic mb-2 leading-tight">Pertes (Surproduction + Assiette). <b>Calculé comme pur indicateur de suivi écologique et financier.</b> N'impacte plus le volume d'achat brut calculé. Exprimé en <b>g / Repas</b>.</p>
+                        
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600">Crèche</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-waste-creche" min="0" class="settings-input"><span class="text-xs text-gray-400">g</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600">Maternelle</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-waste-mat" min="0" class="settings-input"><span class="text-xs text-gray-400">g</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600">Élémentaire</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-waste-elem" min="0" class="settings-input"><span class="text-xs text-gray-400">g</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600">Secondaire</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-waste-sec" min="0" class="settings-input"><span class="text-xs text-gray-400">g</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600">Adulte</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-waste-ad" min="0" class="settings-input"><span class="text-xs text-gray-400">g</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-center mb-2">
+                            <span class="text-xs font-georgia text-gray-600">Sénior / EHPAD</span>
+                            <div class="flex items-center gap-1"><input type="number" id="set-waste-sen" min="0" class="settings-input text-red-700 font-bold bg-red-50 border-red-200"><span class="text-xs text-gray-400">g</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION GRAMMAGES -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <h3 class="font-oswald text-dix-dark pb-2 flex items-center gap-2 text-lg"><span class="text-blue-500">📏</span> Grammages Nets par Typologie (Assiette)</h3>
+                    <p class="text-[10px] text-gray-500 italic mb-3 leading-tight">Valeurs exprimées en <b>grammes nets (g)</b> prêts à être consommés. Les légumes regroupent l'entrée et la garniture. Les VPO font la moyenne des viandes et poissons. Base : GEM-RCN / CNRC.</p>
+                    <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+                        <table class="w-full text-left text-sm font-georgia text-gray-700 bg-white">
+                            <thead class="bg-gray-50 text-dix-dark font-oswald text-[10px] tracking-wider uppercase border-b border-gray-200">
+                                <tr>
+                                    <th class="p-2 text-center w-24">Public</th>
+                                    <th class="p-2 text-center text-emerald-700">Légumes<br><span class="text-[9px] lowercase font-georgia text-gray-400">(crus + cuits)</span></th>
+                                    <th class="p-2 text-center text-amber-700">Féculents</th>
+                                    <th class="p-2 text-center text-rose-700">VPO<br><span class="text-[9px] lowercase font-georgia text-gray-400">(moyenne)</span></th>
+                                    <th class="p-2 text-center text-orange-700">Fruits</th>
+                                    <th class="p-2 text-center text-cyan-700">Laitiers</th>
+                                    <th class="p-2 text-center text-stone-700">Pain</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 text-xs">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2 font-bold uppercase text-[10px] text-center">Crèche</td>
+                                    <td class="p-1"><input type="number" id="set-gram-creche-leg" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-creche-fec" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-creche-vpo" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-creche-fru" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-creche-lai" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-creche-pain" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2 font-bold uppercase text-[10px] text-center">Maternelle</td>
+                                    <td class="p-1"><input type="number" id="set-gram-maternelle-leg" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-maternelle-fec" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-maternelle-vpo" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-maternelle-fru" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-maternelle-lai" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-maternelle-pain" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2 font-bold uppercase text-[10px] text-center">Élémentaire</td>
+                                    <td class="p-1"><input type="number" id="set-gram-elementaire-leg" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-elementaire-fec" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-elementaire-vpo" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-elementaire-fru" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-elementaire-lai" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-elementaire-pain" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2 font-bold uppercase text-[10px] text-center">Secondaire</td>
+                                    <td class="p-1"><input type="number" id="set-gram-secondaire-leg" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-secondaire-fec" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-secondaire-vpo" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-secondaire-fru" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-secondaire-lai" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-secondaire-pain" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2 font-bold uppercase text-[10px] text-center">Adulte</td>
+                                    <td class="p-1"><input type="number" id="set-gram-adulte-leg" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-adulte-fec" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-adulte-vpo" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-adulte-fru" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-adulte-lai" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-adulte-pain" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-2 font-bold uppercase text-[10px] text-center">Sénior</td>
+                                    <td class="p-1"><input type="number" id="set-gram-senior-leg" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-senior-fec" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-senior-vpo" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-senior-fru" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-senior-lai" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                    <td class="p-1"><input type="number" id="set-gram-senior-pain" class="settings-input text-center font-bold text-gray-600 bg-gray-50"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- EXEMPLE DE CALCUL & BIBLIOGRAPHIE -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                        <details class="group cursor-pointer">
+                            <summary class="font-oswald text-sm text-blue-800 uppercase flex items-center gap-2 outline-none list-none select-none">
+                                <svg class="h-4 w-4 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                💡 Cible du calcul : De l'Assiette à la Commande Brute
+                            </summary>
+                            <div class="mt-3 text-xs text-blue-900 font-georgia space-y-2">
+                                <p>L'outil passe du besoin nutritionnel à la commande agricole :</p>
+                                <div class="bg-white p-3 rounded shadow-sm border border-blue-100">
+                                    <ul class="space-y-2">
+                                        <li><strong>1. Besoin Net Lissé :</strong> En Élémentaire, 145g de légumes nets recommandés (GEM-RCN), servis 10 fois sur 20 (Fréquence). Le besoin moyen lissé est de <span class="font-bold">72,5g nets par repas.</span></li>
+                                        <li><strong>2. Commande Brute (Achat) :</strong> On divise ce besoin net par le rendement technique (ex: 0.75 pour l'épluchage/cuisson). On commande donc logistiquement <span class="font-bold">96,6g bruts à l'agriculteur.</span></li>
+                                        <li><strong>3. Indicateur Gaspillage :</strong> Calculé à part pour mesurer la perte écologique et financière. Il n'est pas rajouté à l'achat pour éviter le double comptage !</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="bg-gray-100 p-4 rounded-xl border border-gray-200 flex flex-col justify-center">
+                        <h4 class="font-oswald text-sm text-gray-700 uppercase mb-2">📚 Bibliographie & Référentiels</h4>
+                        <ul class="text-[10px] text-gray-500 font-georgia space-y-1 list-disc pl-4">
+                            <li>Loi EGalim & Climat-Résilience (Fréquences Végétariennes)</li>
+                            <li>Recommandations GEM-RCN 2015 & CNRC 2021 (Portions)</li>
+                            <li>ADEME & INRAE (Taux de gaspillage sectoriels)</li>
+                            <li>CTIFL & Agreste (Rendements techniques et agricoles)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
+                <button onclick="resetSettings()" class="text-xs font-oswald uppercase text-gray-500 hover:text-dix-dark transition underline">Rétablir par défaut</button>
+                <div class="flex gap-3">
+                    <button onclick="closeSettings()" class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded shadow-sm text-sm uppercase tracking-wider font-oswald hover:bg-gray-50 transition">Annuler</button>
+                    <button onclick="saveSettings()" class="bg-dix-light text-dix-dark hover:bg-[#a8cc87] py-2 px-6 rounded shadow-sm text-sm font-bold uppercase tracking-wider font-oswald transition transform hover:-translate-y-0.5">Enregistrer & Recalculer</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="max-w-[1400px] mx-auto flex-grow w-full p-4 md:p-8 pt-8">
@@ -112,17 +361,33 @@
                 </h1>
                 
                 <div class="flex flex-col sm:flex-row gap-3 items-center">
-                    <button onclick="generatePDF()" class="bg-dix-dark hover:bg-gray-800 text-white py-2 px-5 rounded-xl shadow-sm flex items-center gap-2 transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider font-oswald">
+                    <button onclick="generatePDF()" class="bg-dix-dark hover:bg-gray-800 text-white py-2 px-4 rounded-xl shadow-sm flex items-center gap-2 transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider font-oswald">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                        <span>Rapport (A4)</span>
+                        <span class="hidden md:inline">Rapport</span>
                     </button>
-                    <button onclick="generateSlidesPDF()" class="bg-dix-light text-dix-dark hover:bg-[#a8cc87] py-2 px-5 rounded-xl shadow-sm flex items-center gap-2 transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider font-oswald font-bold" id="tour-step-4">
+                    <button onclick="generateSlidesPDF()" class="bg-dix-light text-dix-dark hover:bg-[#a8cc87] py-2 px-4 rounded-xl shadow-sm flex items-center gap-2 transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider font-oswald font-bold">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
-                        <span>Présentation (Slides)</span>
+                        <span class="hidden md:inline">Présentation</span>
                     </button>
-                    <div class="bg-white border-2 border-dix-light px-4 py-1.5 rounded-xl shadow-sm text-center min-w-[150px] ml-2">
+                    
+                    <!-- BOUTON PARAMÈTRES MOTEUR -->
+                    <button id="tour-btn-settings" onclick="openSettings()" class="bg-white border-2 border-gray-200 hover:border-dix-light text-gray-700 py-2 px-4 rounded-xl shadow-sm flex items-center gap-2 transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider font-oswald" title="Paramètres du Moteur d'Inférence">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </button>
+                    
+                    <div class="bg-white border-2 border-dix-light px-4 py-1.5 rounded-xl shadow-sm text-center min-w-[120px] ml-2">
                         <div class="font-oswald text-dix-dark text-[10px] tracking-widest mb-0.5 uppercase">Repas Annuels</div>
                         <div id="totalMeals" class="font-georgia text-xl font-bold text-dix-dark">0</div>
+                    </div>
+
+                    <div class="bg-white border-2 border-emerald-200 px-4 py-1.5 rounded-xl shadow-sm text-center min-w-[120px] ml-2">
+                        <div class="font-oswald text-emerald-800 text-[10px] tracking-widest mb-0.5 uppercase">Achat Brut Total</div>
+                        <div id="topTotalBrut" class="font-georgia text-xl font-bold text-emerald-600">0 t</div>
+                    </div>
+
+                    <div class="bg-white border-2 border-orange-200 px-4 py-1.5 rounded-xl shadow-sm text-center min-w-[120px] ml-2">
+                        <div class="font-oswald text-orange-800 text-[10px] tracking-widest mb-0.5 uppercase">Dont Gaspillage</div>
+                        <div id="totalWaste" class="font-georgia text-xl font-bold text-orange-600">0 t</div>
                     </div>
                 </div>
             </div>
@@ -142,13 +407,13 @@
                 </div>
                 
                 <!-- COL DROITE : Avertissement & Contact -->
-                <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-xl shadow-sm flex flex-col justify-between">
+                <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-xl shadow-sm flex flex-col justify-between" id="tour-step-5">
                     <p class="text-sm font-georgia text-orange-800 leading-relaxed mb-3">
                         <strong class="font-oswald uppercase text-orange-600 tracking-wider text-xs">⚠️ À noter :</strong> Les résultats présentés ne sont pas des valeurs absolues mais des <b>ordres de grandeur</b> permettant de se projeter.
                     </p>
                     <a href="mailto:contact@dix-autrement.fr" class="bg-white border border-orange-300 hover:bg-orange-100 text-orange-700 py-2 px-3 rounded shadow-sm transition font-oswald text-xs uppercase tracking-wider flex items-center justify-center gap-2 text-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                        Être contacté pour approfondir l'étude
+                        Être contacté
                     </a>
                 </div>
             </div>
@@ -173,7 +438,7 @@
                             <label>Logo Client/Partenaire (Optionnel)</label>
                             <div class="flex items-center gap-3">
                                 <label for="logoUpload" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded font-oswald text-sm transition-colors border border-gray-300 w-full text-center">
-                                    Charger une image (PNG/JPG)
+                                    Charger une image
                                 </label>
                                 <input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
                                 <img id="logoPreview" class="h-10 w-auto object-contain hidden border rounded bg-white p-1" alt="Logo">
@@ -409,7 +674,7 @@
                     <button onclick="exportCSV()" class="bg-white border border-gray-300 text-gray-700 font-oswald text-xs px-3 py-1.5 rounded hover:bg-gray-100 transition flex items-center gap-1 shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> Exporter CSV
                     </button>
-                    <button onclick="savedEstablishments=[]; saveData();" class="bg-white border border-red-300 text-red-500 font-oswald text-xs px-3 py-1.5 rounded hover:bg-red-500 hover:text-white transition shadow-sm">Tout effacer</button>
+                    <button onclick="showDialog('Confirmation', 'Êtes-vous sûr de vouloir supprimer tous les établissements du périmètre ?', true, () => { savedEstablishments=[]; saveData(); })" class="bg-white border border-red-300 text-red-500 font-oswald text-xs px-3 py-1.5 rounded hover:bg-red-500 hover:text-white transition shadow-sm">Tout effacer</button>
                 </div>
             </div>
             <div class="overflow-x-auto">
@@ -421,9 +686,9 @@
                             <th class="px-4 py-3 w-36 cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('publicType')" title="Trier par Public">Public ↕</th>
                             <th class="px-4 py-3 w-28 text-center cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('mealsPerDay')" title="Trier par Volume">Repas/Jour ↕</th>
                             
-                           <!-- INFO-BULLE JOURS/AN SÉCURISÉE (POP-UP AU CLIC) -->
+                            <!-- INFO-BULLE JOURS/AN SÉCURISÉE (POP-UP AU CLIC) -->
                             <th class="px-4 py-3 w-28 text-center cursor-pointer hover:bg-gray-200 transition" 
-                                onclick="alert('💡 CALCUL DES JOURS / AN\n\nSi le registre de l\'État est incomplet, le simulateur applique ces valeurs par défaut :\n• 144j (Maternelle/Élémentaire)\n• 180j (Crèche/Secondaire)\n• 260j (Adulte/Sénior)\n\nCependant, si le registre précise à la fois le volume annuel et journalier, l\'outil calcule le nombre de jours d\'ouverture exact (Annuel / Journalier).')" 
+                                onclick="showDialog('Calcul des Jours / An', 'Si le registre de l\'État est incomplet, le simulateur applique ces valeurs par défaut :\n• 144j (Maternelle/Élémentaire)\n• 180j (Crèche/Secondaire)\n• 260j (Adulte/Sénior)\n\nCependant, si le registre précise à la fois le volume annuel et journalier, l\'outil calcule le nombre de jours d\'ouverture exact (Annuel / Journalier).')" 
                                 title="Cliquez pour comprendre le calcul">
                                 <span class="border-b border-dashed border-gray-400 pb-0.5">Jours / An ℹ️</span>
                             </th>
@@ -447,7 +712,7 @@
         
         <!-- Badge d'utilisation -->
         <div class="mt-4 flex flex-wrap justify-center items-center gap-4">
-            <img src="https://visitor-badge.laobi.icu/badge?page_id=dix.mension.simulateur.dixmension&left_text=Ouvertures%20de%20l'outil&left_color=%23405F59&right_color=%23bfde9f" alt="Ouvertures de l'outil" class="shadow-sm rounded h-[20px]">
+            <img src="https://visitor-badge.laobi.icu/badge?page_id=dix.mension.simulateur.total&left_text=Ouvertures%20de%20l'outil&left_color=%23405F59&right_color=%23bfde9f" alt="Ouvertures de l'outil" class="shadow-sm rounded h-[20px]">
         </div>
     </footer>
 
@@ -462,28 +727,15 @@
             pain: { label: "Pain", colorCls: "text-stone-600", bgCls: "bg-stone-100", borderCls: "border-stone-500" }
         };
 
-        const grammages = {
-            creche:      { leg: 0.120, vpo: 0.045, fec: 0.030, fru: 0.060, lai: 0.040, pain: 0.020 },
-            maternelle:  { leg: 0.150, vpo: 0.065, fec: 0.050, fru: 0.080, lai: 0.050, pain: 0.030 },
-            elementaire: { leg: 0.200, vpo: 0.100, fec: 0.065, fru: 0.100, lai: 0.060, pain: 0.040 },
-            secondaire:  { leg: 0.250, vpo: 0.125, fec: 0.090, fru: 0.120, lai: 0.070, pain: 0.050 },
-            adulte:      { leg: 0.230, vpo: 0.125, fec: 0.080, fru: 0.120, lai: 0.060, pain: 0.050 },
-            senior:      { leg: 0.200, vpo: 0.100, fec: 0.060, fru: 0.100, lai: 0.070, pain: 0.040 }
-        };
-
-        const yields = { leg: 0.75, vpo: 0.80, fec: 2.80, fru: 0.90, lai: 1.0, pain: 1.0 };
         const labels = { leg: "Légumes", vpo: "VPO", fec: "Féculents", fru: "Fruits", lai: "Laitiers", pain: "Pain" };
         const palletCapacities = { leg: 600, vpo: 500, fec: 800, fru: 500, lai: 450, pain: 150 };
-        const agriYields = { leg: 25, fru: 18, fec: 7, pain: 6.5, lai: 9, vpo: 0.35 };
+        const agriYields = { leg: 25.0, fru: 18.0, fec: 6.0, pain: 6.5, lai: 9.0, vpo: 0.35 };
 
         // Variables globales PDF (Couleurs et Textes institutionnels)
         const pdfColors = { leg: '#059669', vpo: '#e11d48', fec: '#d97706', fru: '#ea580c', lai: '#0891b2', pain: '#57534e' };
         
         const preambleText = "L'outil DIX.MENSION a vocation à fournir un ordre de grandeur des volumes et des flux de produits alimentaires des établissements de restauration collective pour un territoire donné.\n\nIl s'agit de dimensionner les volumes alimentaires et logistiques de la restauration collective de manière opérationnelle.\n\nLes résultats présentés ne sont pas des valeurs absolues mais des ordres de grandeur permettant de se projeter. Ils dépendent de manière effective des volumes de productions à l'hectare par typologie de culture, des volumes effectifs des produits sur palettes, des rendements brut et net effectifs en cantine.\n\nAinsi, il est tout à fait possible d'affiner cette analyse pour rendre compte d'une réalité plus fine et adaptée à votre contexte.";
         
-        const legalTextA4 = "DIX - LA COOPÉRATIVE DES TRANSITIONS AGRICOLES ET ALIMENTAIRES DES TERRITOIRES\nSCOP SAS à capital variable | Siège social : 6 Grande Rue, 77320 Chartronges | 830 937 710 R.C.S. Meaux\nN° TVA Intracommunautaire : FR 54 830 937 710 | contact@dix-autrement.fr | www.dix.coop";
-        const legalTextSlides = "© 2026 DIX - LA COOPÉRATIVE DES TRANSITIONS AGRICOLES ET ALIMENTAIRES DES TERRITOIRES (Sources: data.gouv.fr, Agreste, GEM-RCN)";
-
         let savedEstablishments = JSON.parse(localStorage.getItem('dix_sim_ests')) || [];
         let rawCSVData = []; 
         let logoDataUrl = null;
@@ -493,35 +745,145 @@
 
         document.getElementById('projectDate').valueAsDate = new Date();
 
-        function escapeHtml(unsafe) { 
-            return (unsafe || "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); 
-        }
-
-        function formatNb(num, decimals = 0) {
-            if (num === undefined || num === null || isNaN(num)) return "0";
-            return Number(num).toLocaleString('fr-FR', { maximumFractionDigits: decimals }).replace(/[\u202F\u00A0]/g, ' ');
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.remove('hidden');
-            document.getElementById('btn-' + tabId).classList.add('active');
-        }
-
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    logoDataUrl = e.target.result;
-                    const img = document.getElementById('logoPreview');
-                    img.src = logoDataUrl;
-                    img.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+        // --- GESTION DES BOÎTES DE DIALOGUE (Remplacement Alert/Confirm) ---
+        function showDialog(title, message, isConfirm = false, onConfirm = null) {
+            document.getElementById('dialog-title').innerHTML = title;
+            document.getElementById('dialog-message').innerText = message;
+            const actions = document.getElementById('dialog-actions');
+            actions.innerHTML = '';
+            
+            if (isConfirm) {
+                const btnCancel = document.createElement('button');
+                btnCancel.className = 'px-4 py-2 bg-white border border-gray-300 rounded text-sm font-oswald uppercase text-gray-700 hover:bg-gray-50 transition shadow-sm';
+                btnCancel.innerText = 'Annuler';
+                btnCancel.onclick = () => closeDialog();
+                
+                const btnOk = document.createElement('button');
+                btnOk.className = 'px-4 py-2 bg-red-500 text-white rounded text-sm font-oswald uppercase hover:bg-red-600 transition shadow-sm';
+                btnOk.innerText = 'Confirmer';
+                btnOk.onclick = () => { closeDialog(); if(onConfirm) onConfirm(); };
+                
+                actions.appendChild(btnCancel);
+                actions.appendChild(btnOk);
+            } else {
+                const btnOk = document.createElement('button');
+                btnOk.className = 'px-6 py-2 bg-dix-light text-dix-dark font-bold rounded text-sm font-oswald uppercase hover:bg-[#a8cc87] transition shadow-sm';
+                btnOk.innerText = 'Compris';
+                btnOk.onclick = () => closeDialog();
+                actions.appendChild(btnOk);
             }
+            
+            document.getElementById('custom-dialog').classList.remove('hidden');
         }
+        
+        function closeDialog() {
+            document.getElementById('custom-dialog').classList.add('hidden');
+        }
+
+        // --- GESTION DES PARAMÈTRES MOTEUR (LocalStorage) ---
+        const DEFAULT_SETTINGS = {
+            vegMeals: 4,
+            freq: { leg: 10, fec: 10, fru: 10, lai: 20, pain: 20, vpo: 16 },
+            yields: { leg: 0.75, vpo: 0.70, fec: 2.80, fru: 0.85, lai: 1.00, pain: 1.00 },
+            waste: { creche: 80, maternelle: 110, elementaire: 120, secondaire: 125, adulte: 95, senior: 170 },
+            // Nouveaux grammages (en kg) unifiés (Cuits+Crus, Viandes+Poissons) selon recommandations DeepSearch
+            grammages: {
+                creche:      { leg: 0.070, vpo: 0.030, fec: 0.080, fru: 0.080, lai: 0.040, pain: 0.015 },
+                maternelle:  { leg: 0.115, vpo: 0.045, fec: 0.110, fru: 0.110, lai: 0.050, pain: 0.025 },
+                elementaire: { leg: 0.145, vpo: 0.068, fec: 0.150, fru: 0.120, lai: 0.060, pain: 0.045 },
+                secondaire:  { leg: 0.240, vpo: 0.090, fec: 0.225, fru: 0.165, lai: 0.070, pain: 0.055 },
+                adulte:      { leg: 0.250, vpo: 0.110, fec: 0.225, fru: 0.165, lai: 0.060, pain: 0.055 },
+                senior:      { leg: 0.230, vpo: 0.095, fec: 0.175, fru: 0.165, lai: 0.070, pain: 0.045 }
+            }
+        };
+        
+        let userSettings = JSON.parse(localStorage.getItem('dix_engine_settings')) || JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+
+        function openSettings() {
+            document.getElementById('set-veg').value = userSettings.vegMeals;
+            
+            document.getElementById('set-freq-leg').value = userSettings.freq.leg;
+            document.getElementById('set-freq-fec').value = userSettings.freq.fec;
+            document.getElementById('set-freq-fru').value = userSettings.freq.fru;
+            document.getElementById('set-freq-lai').value = userSettings.freq.lai;
+            document.getElementById('set-freq-pain').value = userSettings.freq.pain;
+            document.getElementById('set-freq-vpo').value = userSettings.freq.vpo || 16;
+            
+            document.getElementById('set-yield-leg').value = userSettings.yields.leg;
+            document.getElementById('set-yield-vpo').value = userSettings.yields.vpo;
+            document.getElementById('set-yield-fru').value = userSettings.yields.fru;
+            document.getElementById('set-yield-fec').value = userSettings.yields.fec;
+            
+            document.getElementById('set-waste-creche').value = userSettings.waste.creche;
+            document.getElementById('set-waste-mat').value = userSettings.waste.maternelle;
+            document.getElementById('set-waste-elem').value = userSettings.waste.elementaire;
+            document.getElementById('set-waste-sec').value = userSettings.waste.secondaire;
+            document.getElementById('set-waste-ad').value = userSettings.waste.adulte;
+            document.getElementById('set-waste-sen').value = userSettings.waste.senior;
+
+            if(!userSettings.grammages) userSettings.grammages = DEFAULT_SETTINGS.grammages;
+            ['creche', 'maternelle', 'elementaire', 'secondaire', 'adulte', 'senior'].forEach(p => {
+                ['leg', 'vpo', 'fec', 'fru', 'lai', 'pain'].forEach(c => {
+                    document.getElementById(`set-gram-${p}-${c}`).value = Math.round((userSettings.grammages[p][c] || 0) * 1000);
+                });
+            });
+
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            userSettings.vegMeals = parseFloat(document.getElementById('set-veg').value) || 0;
+            
+            userSettings.freq.leg = parseFloat(document.getElementById('set-freq-leg').value) || 10;
+            userSettings.freq.fec = parseFloat(document.getElementById('set-freq-fec').value) || 10;
+            userSettings.freq.fru = parseFloat(document.getElementById('set-freq-fru').value) || 10;
+            userSettings.freq.lai = parseFloat(document.getElementById('set-freq-lai').value) || 20;
+            userSettings.freq.pain = parseFloat(document.getElementById('set-freq-pain').value) || 20;
+            userSettings.freq.vpo = parseFloat(document.getElementById('set-freq-vpo').value) || 16;
+
+            userSettings.yields.leg = parseFloat(document.getElementById('set-yield-leg').value) || 0.75;
+            userSettings.yields.vpo = parseFloat(document.getElementById('set-yield-vpo').value) || 0.70;
+            userSettings.yields.fru = parseFloat(document.getElementById('set-yield-fru').value) || 0.85;
+            userSettings.yields.fec = parseFloat(document.getElementById('set-yield-fec').value) || 2.80;
+
+            userSettings.waste.creche = parseFloat(document.getElementById('set-waste-creche').value) || 80;
+            userSettings.waste.maternelle = parseFloat(document.getElementById('set-waste-mat').value) || 110;
+            userSettings.waste.elementaire = parseFloat(document.getElementById('set-waste-elem').value) || 120;
+            userSettings.waste.secondaire = parseFloat(document.getElementById('set-waste-sec').value) || 125;
+            userSettings.waste.adulte = parseFloat(document.getElementById('set-waste-ad').value) || 95;
+            userSettings.waste.senior = parseFloat(document.getElementById('set-waste-sen').value) || 170;
+
+            if(!userSettings.grammages) userSettings.grammages = {};
+            ['creche', 'maternelle', 'elementaire', 'secondaire', 'adulte', 'senior'].forEach(p => {
+                if(!userSettings.grammages[p]) userSettings.grammages[p] = {};
+                ['leg', 'vpo', 'fec', 'fru', 'lai', 'pain'].forEach(c => {
+                    userSettings.grammages[p][c] = (parseFloat(document.getElementById(`set-gram-${p}-${c}`).value) || 0) / 1000;
+                });
+            });
+
+            localStorage.setItem('dix_engine_settings', JSON.stringify(userSettings));
+            closeSettings();
+            calculateAll();
+        }
+
+        function resetSettings() {
+            showDialog("Réinitialisation", "Voulez-vous réinitialiser tous les paramètres aux recommandations par défaut (ADEME / EGalim / GEM-RCN) ?", true, () => {
+                userSettings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+                localStorage.setItem('dix_engine_settings', JSON.stringify(userSettings));
+                closeSettings();
+                calculateAll();
+            });
+        }
+
+        // Auto-adjust VPO when Veggie meals change
+        document.getElementById('set-veg').addEventListener('input', function() {
+            let veg = parseFloat(this.value) || 0;
+            document.getElementById('set-freq-vpo').value = Math.max(0, 20 - veg);
+        });
 
         // --- GESTION DE L'IMPORT ET DES FILTRES DATA.GOUV.FR ---
         async function fetchLatestCSV() {
@@ -551,7 +913,7 @@
                             textSpan.innerText = "Télécharger les données";
                         },
                         error: function(err) {
-                            alert("Erreur réseau lors du téléchargement : " + err);
+                            showDialog("Erreur réseau", "Erreur réseau lors du téléchargement : " + err);
                             btn.classList.remove('opacity-50', 'cursor-not-allowed', 'animate-pulse');
                             textSpan.innerText = "Télécharger les données";
                         }
@@ -560,7 +922,7 @@
                     throw new Error("Fichier CSV introuvable sur l'API.");
                 }
             } catch(e) {
-                alert("Impossible de récupérer les données automatiquement. Détail: " + e.message);
+                showDialog("Erreur", "Impossible de récupérer les données automatiquement.\nDétail: " + e.message);
                 btn.classList.remove('opacity-50', 'cursor-not-allowed', 'animate-pulse');
                 textSpan.innerText = "Télécharger les données";
             }
@@ -584,6 +946,20 @@
             return 'adulte';
         }
 
+        function validateDaysPerYear(days, type) {
+            if (type === 'maternelle' || type === 'elementaire') return (days >= 130 && days <= 160) ? days : 144;
+            if (type === 'creche' || type === 'secondaire') return (days >= 170 && days <= 210) ? days : 180;
+            if (type === 'senior') return (days >= 300 && days <= 365) ? days : 365;
+            return (days >= 200 && days <= 260) ? days : 230; 
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
         function resetImport() {
             rawCSVData = [];
             document.getElementById('step2-filters').classList.add('hidden');
@@ -600,7 +976,7 @@
                 create: false,
                 plugins: ['remove_button'],
                 placeholder: 'Sélectionner...',
-                maxItems: null, // Permet la sélection multiple
+                maxItems: null,
             });
         }
 
@@ -622,7 +998,7 @@
             const checkedProd = Array.from(document.querySelectorAll('#filter-prod-checkboxes input:checked')).map(cb => cb.value);
 
             if(regs.length === 0 && deps.length === 0 && epcis.length === 0 && cities.length === 0) {
-                alert("Veuillez remplir au moins un critère géographique pour ne pas importer toute la France.");
+                showDialog("Attention", "Veuillez remplir au moins un critère géographique (Région, Département, EPCI ou Commune) pour ne pas importer toute la France.");
                 return;
             }
 
@@ -655,27 +1031,16 @@
 
                 const pType = deducePublicType(row.sector_list, row.name);
                 
-                let defaultDays = 260;
-                if (pType === 'maternelle' || pType === 'elementaire') defaultDays = 144;
-                else if (pType === 'secondaire' || pType === 'creche') defaultDays = 180;
-
                 let daily = parseFloat(row.daily_meal_count) || 0;
                 let yearly = parseFloat(row.yearly_meal_count) || 0;
                 
-                let finalDays = defaultDays;
-                let finalDaily = 0;
-
-                if (yearly > 0) {
-                    let calculatedDays = daily > 0 ? Math.round(yearly / daily) : defaultDays;
-                    if (calculatedDays < 50 || calculatedDays > 365) calculatedDays = defaultDays;
-                    
-                    finalDays = calculatedDays;
-                    finalDaily = yearly / finalDays;
-                } else if (daily > 0) {
-                    finalDaily = daily;
-                    finalDays = defaultDays;
+                let baseDays = 260;
+                if (yearly > 0 && daily > 0) {
+                    baseDays = Math.round(yearly / daily);
                 }
-
+                let finalDays = validateDaysPerYear(baseDays, pType);
+                
+                let finalDaily = daily > 0 ? daily : (yearly > 0 ? yearly / finalDays : 0);
                 let mgmt = row.management_type === 'direct' ? 'Directe' : (row.management_type === 'conceded' ? 'Concédée' : 'Inconnue');
 
                 if(finalDaily > 0 || yearly > 0) {
@@ -694,14 +1059,27 @@
             });
 
             if(imported > 0) {
-                alert(`Succès ! ${imported} établissements correspondant à vos filtres ont été ajoutés.`);
+                showDialog("Succès", `${imported} établissements correspondant à vos filtres ont été ajoutés au périmètre d'étude.`);
                 saveData();
             } else {
-                alert("Aucun établissement ne correspond à cette combinaison de filtres.");
+                showDialog("Résultat vide", "Aucun établissement ne correspond à cette combinaison de filtres.");
             }
         }
 
-        // --- IMPORT CSV PERSONNALISÉ (EXCEL) ---
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoDataUrl = e.target.result;
+                    const img = document.getElementById('logoPreview');
+                    img.src = logoDataUrl;
+                    img.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function importCustomCSV(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -712,16 +1090,19 @@
                 complete: function(results) {
                     let imported = 0;
                     results.data.forEach(row => {
-                        // Adaptation aux colonnes exportées (Etablissement;Commune;Public;RepasJour;JoursAn;Gestion)
                         if(row.Etablissement && row.RepasJour) {
+                            let pType = row.Public || 'adulte';
+                            let parsedDays = parseInt(row.JoursAn) || 260;
+                            let validatedDays = validateDaysPerYear(parsedDays, pType);
+
                             savedEstablishments.push({
                                 id: Date.now() + Math.random(),
                                 name: row.Etablissement,
                                 city: row.Commune || "N/A",
-                                insee: "", // On perd l'INSEE à l'export simple, géocodage par nom de ville.
-                                publicType: row.Public || 'adulte',
+                                insee: "",
+                                publicType: pType,
                                 mealsPerDay: parseFloat(row.RepasJour) || 0,
-                                daysPerYear: parseInt(row.JoursAn) || 260,
+                                daysPerYear: validatedDays,
                                 managementType: row.Gestion || 'Inconnue'
                             });
                             imported++;
@@ -729,17 +1110,16 @@
                     });
 
                     if(imported > 0) {
-                        alert(`Succès ! ${imported} établissements ont été ré-importés depuis votre fichier Excel.`);
+                        showDialog("Import réussi", `${imported} établissements ont été ré-importés depuis votre fichier.`);
                         saveData();
                     } else {
-                        alert("Erreur: Le fichier CSV ne semble pas avoir le bon format d'en-tête (Etablissement, RepasJour, etc.).");
+                        showDialog("Erreur de format", "Le fichier CSV ne semble pas avoir le bon format d'en-tête (Etablissement, RepasJour, etc.). Veuillez vérifier vos colonnes.");
                     }
-                    event.target.value = ''; // Reset de l'input file
+                    event.target.value = '';
                 }
             });
         }
 
-        // --- FONCTIONS CLASSIQUES DE L'OUTIL ---
         function removeEst(id) { savedEstablishments = savedEstablishments.filter(e => e.id !== id); saveData(); }
         
         function updateEst(id, field, value) {
@@ -751,10 +1131,19 @@
             }
         }
 
+        function escapeHtml(unsafe) { 
+            return (unsafe || "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); 
+        }
+
+        function formatNb(num, decimals = 0) {
+            if (num === undefined || num === null || isNaN(num)) return "0";
+            return Number(num).toLocaleString('fr-FR', { maximumFractionDigits: decimals }).replace(/[\u202F\u00A0]/g, ' ');
+        }
+
         function renderTable() {
             const tbody = document.getElementById('estTableBody');
             tbody.innerHTML = savedEstablishments.map(e => {
-                let days = e.daysPerYear || Math.round((e.weeksPerYear||36) * (e.daysPerWeek||5));
+                let days = e.daysPerYear || validateDaysPerYear(Math.round((e.weeksPerYear||36) * (e.daysPerWeek||5)), e.publicType);
                 return `
                 <tr class="hover:bg-gray-50 border-b border-gray-100 group">
                     <td class="px-2 py-1"><input type="text" value="${escapeHtml(e.name)}" onchange="updateEst(${e.id}, 'name', this.value)" class="inline-edit-input font-bold text-dix-dark"></td>
@@ -802,55 +1191,85 @@
             savedEstablishments.sort((a, b) => {
                 let valA = a[col] || "";
                 let valB = b[col] || "";
-                
                 if (typeof valA === 'string') valA = valA.toLowerCase();
                 if (typeof valB === 'string') valB = valB.toLowerCase();
-                
                 if (valA < valB) return currentSortAsc ? -1 : 1;
                 if (valA > valB) return currentSortAsc ? 1 : -1;
                 return 0;
             });
-            
             saveData(); 
         }
 
+        // --- STREAMING_CHUNK:Implementing mathematical models (Net to Gross without waste)... ---
         function calculateAll() {
-            let globalTotalMeals = 0; let totalAnnualFini = 0, totalAnnualBrut = 0, totalWeeklyPallets = 0, totalSurfaceAgri = 0;
-            let totalSurfaceCultures = 0, totalSurfacePrairies = 0;
-            let catTotals = {}; for (let k in labels) catTotals[k] = { annualFini: 0, annualBrut: 0, weeklyBrutKg: 0, weeklyFiniKg: 0, surface: 0, palletCount: 0 };
+            let globalTotalMeals = 0; 
+            let globalTotalWasteKg = 0; // Calcul du KPI global du gaspillage (non réinjecté dans l'achat brut)
             
+            let totalAnnualFini = 0, totalAnnualBrut = 0, totalWeeklyPallets = 0, totalSurfaceAgri = 0;
+            let totalSurfaceCultures = 0, totalSurfacePrairies = 0;
+            
+            let catTotals = {}; 
+            for (let k in labels) catTotals[k] = { annualFini: 0, annualBrut: 0, weeklyBrutKg: 0, weeklyFiniKg: 0, surface: 0, palletCount: 0 };
+            
+            const currentGrammages = userSettings.grammages || DEFAULT_SETTINGS.grammages;
+            const freqConfig = userSettings.freq || DEFAULT_SETTINGS.freq;
+
             let summaryBySector = {};
-            Object.keys(grammages).forEach(k => summaryBySector[k] = { meals: 0, direct: 0, conceded: 0, brutTons: 0 });
+            Object.keys(currentGrammages).forEach(k => summaryBySector[k] = { meals: 0, direct: 0, conceded: 0, brutTons: 0 });
             
             savedEstablishments.forEach(item => {
-                let days = item.daysPerYear || Math.round((item.weeksPerYear||36) * (item.daysPerWeek||5));
+                let days = item.daysPerYear || validateDaysPerYear(Math.round((item.weeksPerYear||36) * (item.daysPerWeek||5)), item.publicType);
                 const totalMeals = item.mealsPerDay * days;
                 globalTotalMeals += totalMeals;
                 
                 const pType = item.publicType || 'adulte';
-                let g = grammages[pType];
+                let g = currentGrammages[pType] || currentGrammages['adulte'];
+                
+                if (!summaryBySector[pType]) summaryBySector[pType] = { meals: 0, direct: 0, conceded: 0, brutTons: 0 };
                 
                 summaryBySector[pType].meals += totalMeals;
                 if (item.managementType === 'Directe') summaryBySector[pType].direct += totalMeals;
                 else if (item.managementType === 'Concédée') summaryBySector[pType].conceded += totalMeals;
                 
+                // 1. Ajout au KPI global de Gaspillage
+                let wasteKgPerMeal = (userSettings.waste[pType] || 115) / 1000;
+                globalTotalWasteKg += (totalMeals * wasteKgPerMeal);
+
                 let localBrutKg = 0;
 
-                for (let k in labels) {
-                    const annualBrut = (totalMeals * g[k]) / 1000;
-                    localBrutKg += (totalMeals * g[k]); 
+                let dynamicFreq = {
+                    leg: freqConfig.leg / 20,
+                    fec: freqConfig.fec / 20,
+                    vpo: freqConfig.vpo / 20,
+                    fru: freqConfig.fru / 20,
+                    lai: freqConfig.lai / 20,
+                    pain: freqConfig.pain / 20
+                };
 
-                    const annualFini = (totalMeals * g[k] * yields[k]) / 1000;
+                // Calcul des Volumes Nets et Bruts par famille (Strictement logistique)
+                for (let k in labels) {
+                    const freq = dynamicFreq[k];
+                    
+                    // A. Net Consommé (Lissé) en Tonnes
+                    const annualNetFini = (totalMeals * g[k] * freq) / 1000;
+                    
+                    // B. Achat Brut (Conversion inverse via le rendement de transformation)
+                    let annualBrut = annualNetFini / (userSettings.yields[k] || 1); 
+
+                    localBrutKg += (annualBrut * 1000); 
+
                     const weeklyBrutKg = (annualBrut * 1000) / 52;
-                    const weeklyFiniKg = (annualFini * 1000) / 52;
+                    const weeklyFiniKg = (annualNetFini * 1000) / 52;
                     
                     catTotals[k].annualBrut += annualBrut; 
-                    catTotals[k].annualFini += annualFini; 
+                    catTotals[k].annualFini += annualNetFini; 
                     catTotals[k].weeklyBrutKg += weeklyBrutKg;
                     catTotals[k].weeklyFiniKg += weeklyFiniKg;
                     catTotals[k].palletCount += weeklyBrutKg / palletCapacities[k];
                     
-                    totalAnnualFini += annualFini; totalAnnualBrut += annualBrut; totalWeeklyPallets += (weeklyBrutKg / palletCapacities[k]);
+                    totalAnnualFini += annualNetFini; 
+                    totalAnnualBrut += annualBrut; 
+                    totalWeeklyPallets += (weeklyBrutKg / palletCapacities[k]);
 
                     if (agriYields[k]) {
                         const surface = annualBrut / agriYields[k]; 
@@ -944,6 +1363,8 @@
             
             document.getElementById('summaryTableBody').innerHTML = summaryHtml;
             document.getElementById('totalMeals').innerText = formatNb(Math.round(globalTotalMeals));
+            document.getElementById('topTotalBrut').innerText = formatNb(totalAnnualBrut, 1) + " t";
+            document.getElementById('totalWaste').innerText = formatNb((globalTotalWasteKg / 1000), 1) + " t";
             
             let finiHtml = "", brutHtml = "", logistiqueHtml = "", agriHtml = "";
 
@@ -970,7 +1391,7 @@
         }
 
         function exportCSV() {
-            if (savedEstablishments.length === 0) return alert("Aucune donnée à exporter.");
+            if (savedEstablishments.length === 0) return showDialog("Export impossible", "Aucune donnée à exporter. Veuillez d'abord ajouter des établissements.");
 
             let csv = "Etablissement;Commune;Public;RepasJour;JoursAn;Gestion\n";
             savedEstablishments.forEach(e => {
@@ -991,15 +1412,9 @@
 
         async function updateMap() {
             if (!map) {
-                // preferCanvas est CRITIQUE pour permettre la capture de Leaflet par html2canvas
                 map = L.map('map', { preferCanvas: true }).setView([46.603354, 1.888334], 6);
-                
-                // Utilisation de Esri World Street Map
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-                    attribution: '&copy; Esri &mdash; Source: Esri',
-                    className: 'bw-map', // Filtre N&B
-                    maxZoom: 16,
-                    crossOrigin: true // Autorise l'export
+                    attribution: '&copy; Esri', className: 'bw-map', maxZoom: 16, crossOrigin: true
                 }).addTo(map);
             }
             
@@ -1011,7 +1426,7 @@
                 let city = est.city || "Inconnue";
                 if (!cityData[city]) cityData[city] = { meals: 0, direct: 0, conceded: 0, insee: est.insee, details: {} };
                 
-                let days = est.daysPerYear || Math.round((est.weeksPerYear||36) * (est.daysPerWeek||5));
+                let days = validateDaysPerYear(est.daysPerYear || 260, est.publicType);
                 let meals = est.mealsPerDay * days;
                 cityData[city].meals += meals;
                 
@@ -1034,14 +1449,13 @@
                     try {
                         let queryUrl = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(city)}&type=municipality&limit=1`;
                         if(cData.insee) queryUrl += `&citycode=${cData.insee}`;
-                        
                         let res = await fetch(queryUrl);
                         let data = await res.json();
                         if (data.features && data.features.length > 0) {
                             let coords = data.features[0].geometry.coordinates;
                             cityCoordinates[city] = [coords[1], coords[0]]; 
                         }
-                    } catch(e) { console.warn("Géocodage impossible pour la ville de", city); }
+                    } catch(e) {}
                 }
 
                 if (cityCoordinates[city]) {
@@ -1069,30 +1483,19 @@
                     let markerColor = isDirect ? '#bfde9f' : '#e11d48';
                     
                     L.circleMarker(cityCoordinates[city], {
-                        radius: radius,
-                        fillColor: markerColor,
-                        color: "#fff",
-                        weight: 1,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    }).addTo(map)
-                      .bindPopup(popupContent);
+                        radius: radius, fillColor: markerColor, color: "#fff", weight: 1, opacity: 1, fillOpacity: 0.8
+                    }).addTo(map).bindPopup(popupContent);
                       
                     bounds.push(cityCoordinates[city]);
                 }
             }
 
-            if (bounds.length > 0) {
-                map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
-            }
+            if (bounds.length > 0) map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
         }
 
-        // --- L'APPEL INITIAL ---
         window.onload = function() { 
             renderTable(); 
             calculateAll(); 
-            
-            // Gestion du bouton de tutoriel mémorisé
             if(!localStorage.getItem('dix_tour_seen')) {
                 const btn = document.getElementById('tour-btn');
                 if(btn) btn.classList.add('animate-pulse', 'bg-green-50', 'ring-4', 'ring-green-100');
@@ -1102,11 +1505,12 @@
         // --- TUTORIEL DYNAMIQUE ---
         let currentTourStep = -1;
         const tourData = [
-            { id: null, title: "Bienvenue dans DIX.MENSION", text: "Cet outil a vocation à fournir un ordre de grandeur des <b>volumes et des flux de produits alimentaires</b> des établissements de restauration collective pour un territoire donné.<br><br>Il s'agit de dimensionner les volumes alimentaires et logistiques de la restauration collective de manière opérationnelle." },
-            { id: 'tour-step-1', title: "1. Paramétrage du Livrable", text: "Donnez un nom à votre étude et ajoutez le logo de votre territoire. Ces éléments personnaliseront vos rapports PDF." },
-            { id: 'tour-step-2', title: "2. Import des Données", text: "Interrogez directement la base de l'État pour cibler un EPCI ou une commune. <br><br>💡 <b>Astuce :</b> Vous pouvez répéter l'opération (en changeant de commune) pour ajouter d'autres territoires au même projet !" },
-            { id: 'tour-step-3', title: "3. Édition du Périmètre", text: "Les données de l'État sont parfois incomplètes (jours d'ouverture manquants, gestion non renseignée).<br><br><b>Corrigez directement les valeurs en cliquant dans ce tableau</b>, toute la simulation se mettra à jour en temps réel !" },
-            { id: 'tour-step-4', title: "4. Exports Professionnels", text: "Une fois votre périmètre consolidé, générez en 1 clic vos supports de présentation complets (Rapport A4 ou Slides) incluant tous les graphiques et la cartographie !" }
+            { id: null, title: "Bienvenue dans DIX.MENSION (V2)", text: "Le moteur de cet outil a été mis à jour pour intégrer les normes EGalim, le gaspillage ADEME et les rendements techniques.<br><br>Il permet de dimensionner les véritables achats agricoles de la restauration collective en retirant le double comptage." },
+            { id: 'tour-step-1', title: "1. Paramétrage", text: "Donnez un nom à votre étude et ajoutez le logo de votre territoire. Ces éléments personnaliseront vos rapports." },
+            { id: 'tour-step-2', title: "2. Import des Données", text: "Interrogez directement la base de l'État pour cibler un EPCI ou une commune. Pensez à utiliser l'accordéon 'Type de site' pour éviter le double comptage !" },
+            { id: 'tour-step-3', title: "3. Édition du Périmètre", text: "Ajustez manuellement les jours d'ouverture ou le mode de gestion pour corriger les éventuels oublis de la base de l'État." },
+            { id: 'tour-btn-settings', title: "4. Roue Crantée : Le Moteur d'Inférence", text: "C'est l'intelligence de l'outil ! Cliquez ici pour modifier les portions, les fréquences, les pertes et les rendements. <b>L'outil divise l'assiette nette par le rendement de préparation pour vous donner le vrai volume agricole brut.</b>" },
+            { id: 'tour-step-4', title: "5. Exports Professionnels", text: "Une fois votre simulation ajustée, générez en un clic vos supports de présentation (Rapport A4 ou Slides) incluant tous les graphiques et la cartographie." }
         ];
 
         function ensureTourElements() {
@@ -1183,596 +1587,338 @@
             document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
         }
 
-        // --- GÉNÉRATION DES PDF (A4 & SLIDES) ---
-        
-        // Générateur d'anneau vierge pour jsPDF (Sans la légende texte pour garder un rendu HD)
+        // --- STREAMING_CHUNK:Generating PDF and presentation logic... ---
         function createSlideDoughnutChartBase64(dataObj, width = 600, height = 600, radius = 240) {
             const canvas = document.createElement('canvas');
             canvas.width = width; canvas.height = height;
             const ctx = canvas.getContext('2d');
-
             let total = 0;
             for (let k in dataObj) total += dataObj[k].value;
             if (total === 0) return null;
-
             let startAngle = -Math.PI / 2;
             const centerX = width / 2;
             const centerY = height / 2;
-
             for (let k in dataObj) {
                 if (dataObj[k].value <= 0) continue;
                 const sliceAngle = (dataObj[k].value / total) * 2 * Math.PI;
-
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
                 ctx.arc(centerX, centerY, radius * 0.6, startAngle + sliceAngle, startAngle, true);
                 ctx.closePath();
-
                 ctx.fillStyle = dataObj[k].color;
                 ctx.fill();
-
                 startAngle += sliceAngle;
             }
             return canvas.toDataURL('image/png');
         }
 
-        // Capture robuste de la carte Leaflet
         async function captureMapImage() {
             const mapEl = document.getElementById('map');
             if (!mapEl || typeof html2canvas === 'undefined') return null;
-            
-            // Retrait temporaire du filtre N&B si présent pour garantir la capture
             const tiles = document.querySelectorAll('.bw-map');
             tiles.forEach(t => t.style.filter = 'none');
-            
             if (map) map.invalidateSize();
-            // Délai obligatoire pour s'assurer que Leaflet a bien affiché les tuiles
             await new Promise(resolve => setTimeout(resolve, 800));
-
             try {
-                const canvas = await html2canvas(mapEl, { 
-                    useCORS: true, 
-                    allowTaint: false,
-                    scale: 2, 
-                    backgroundColor: '#f9fafb', 
-                    logging: false 
-                });
-                tiles.forEach(t => t.style.filter = ''); // Restauration
+                const canvas = await html2canvas(mapEl, { useCORS: true, allowTaint: false, scale: 2, backgroundColor: '#f9fafb', logging: false });
+                tiles.forEach(t => t.style.filter = ''); 
                 return canvas.toDataURL('image/jpeg', 0.8);
             } catch (e) {
-                console.warn("Capture de la carte impossible :", e);
                 tiles.forEach(t => t.style.filter = ''); 
                 return null;
             }
         }
 
         async function generatePDF() {
-            if (!window.dixAggData || window.dixAggData.perimeter.length === 0) {
-                alert("Veuillez d'abord importer des données avant de générer le rapport.");
-                return;
-            }
-            
+            if (!window.dixAggData || window.dixAggData.perimeter.length === 0) return showDialog("Action impossible", "Veuillez d'abord importer des données avant de générer le rapport.");
             document.getElementById('loader').style.display = 'flex';
             document.getElementById('loader-text').innerText = "Génération du rapport PDF en cours...";
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
             const mapImage = await captureMapImage();
             const agg = window.dixAggData;
-            const projTitle = agg.projectTitleStr;
-            const projDate = agg.projectDateStr;
             
             const dixDarkRGB = [64, 95, 89];
-            const dixLightRGB = [191, 222, 159]; // Vert Pistache
+            const dixLightRGB = [191, 222, 159]; 
             const grayText = [107, 114, 128];
 
-            // --- PAGE DE GARDE ---
             doc.setFillColor(...dixDarkRGB); doc.rect(0, 0, 210, 297, 'F');
             doc.setFillColor(...dixLightRGB); doc.rect(0, 0, 210, 15, 'F');
-            
             if (logoDataUrl) {
                 const logoProps = doc.getImageProperties(logoDataUrl);
-                const lRatio = logoProps.width / logoProps.height;
-                let lW = 45; let lH = lW / lRatio;
-                if (lH > 25) { lH = 25; lW = lH * lRatio; }
-                // Alignement parfait du logo non déformé à droite
+                let lW = 45; let lH = lW / (logoProps.width / logoProps.height);
+                if (lH > 25) { lH = 25; lW = lH * (logoProps.width / logoProps.height); }
                 doc.addImage(logoDataUrl, 'PNG', 190 - lW, 25, lW, lH, '', 'FAST');
             }
             
             doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(150, 150, 150);
-            doc.text("RAPPORT D'ANALYSE DIX.MENSION", 20, 50);
-            
+            doc.text("RAPPORT D'ANALYSE DIX.MENSION (V2)", 20, 50);
             doc.setFontSize(26); doc.setTextColor(255, 255, 255);
-            const splitTitle = doc.splitTextToSize(projTitle, 160);
+            const splitTitle = doc.splitTextToSize(agg.projectTitleStr, 160);
             doc.text(splitTitle, 20, 65);
-            
             const offset = (splitTitle.length * 9);
             doc.setFontSize(12); doc.setTextColor(...dixLightRGB); doc.setFont("helvetica", "italic");
-            doc.text(`Modélisation générée le ${projDate}`, 20, 75 + offset);
+            doc.text(`Modélisation générée le ${agg.projectDateStr}`, 20, 75 + offset);
             
             doc.setFillColor(255, 255, 255); doc.roundedRect(20, 95 + offset, 140, 45, 3, 3, 'F');
             doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB);
             doc.text("VOLUME GLOBAL DE LA DEMANDE", 25, 107 + offset);
-            doc.setFontSize(26); doc.setTextColor(...dixDarkRGB); // Forcé en foncé pour la lisibilité sur PDF blanc
+            doc.setFontSize(26); doc.setTextColor(...dixDarkRGB); 
             doc.text(`${formatNb(agg.totalMeals)} Repas / an`, 25, 122 + offset);
             doc.setFontSize(11); doc.setTextColor(100,100,100); doc.setFont("helvetica", "normal");
-            doc.text(`Soit environ ${formatNb(agg.totalBrut, 1)} tonnes de denrées brutes.`, 25, 132 + offset);
+            doc.text(`Soit environ ${formatNb(agg.totalBrut, 1)} tonnes de denrées brutes à commander.`, 25, 132 + offset);
 
             doc.setFontSize(10); doc.setTextColor(220, 220, 220); doc.setFont("helvetica", "italic");
             doc.text(doc.splitTextToSize(preambleText, 170), 20, 160 + offset);
 
-            // --- TEMPLATE MASTER ---
             const applyHeaderFooter = (pageTitle, subtitle) => {
                 doc.addPage();
                 doc.setFillColor(...dixDarkRGB); doc.rect(0, 0, 210, 12, 'F');
                 doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixLightRGB);
                 doc.text("DIX.MENSION | LA COOPÉRATIVE DES TRANSITIONS", 14, 8);
-                
                 doc.setFontSize(22); doc.setTextColor(...dixDarkRGB); doc.text(pageTitle, 14, 28);
                 doc.setFontSize(12); doc.setFont("helvetica", "italic"); doc.setTextColor(100,100,100);
                 doc.text(subtitle, 14, 35);
                 doc.setDrawColor(229, 231, 235); doc.line(14, 40, 196, 40);
-                
-                // CORRECTION DU DÉBORDEMENT PIED DE PAGE A4 (Scindé en 2 lignes + texte correct)
                 doc.setFontSize(7); doc.setFont("helvetica", "normal"); doc.setTextColor(150, 150, 150);
                 doc.text("© 2026 DIX - La Coopérative des Transitions Agricoles et Alimentaires des Territoires. Tous droits réservés.", 14, 285);
-                doc.text("SCOP SAS à capital variable | Siège social : 6 Grande Rue, 77320 Chartronges | 830 937 710 R.C.S. Meaux | contact@dix.coop", 14, 289);
+                doc.text("SCOP SAS à capital variable | Siège social : 6 Grande Rue, 77320 Chartronges | contact@dix.coop", 14, 289);
                 doc.setFontSize(9); doc.text(`Page ${doc.internal.getNumberOfPages()}`, 196, 289, {align: "right"});
             };
 
-            // --- PAGE 2 : CARTE & SYNTHÈSE ---
             applyHeaderFooter("CARTOGRAPHIE DU TERRITOIRE", "Répartition géographique et synthèse par typologie");
-            
             let mapEndY = 45;
             if (mapImage) {
-                const imgProps = doc.getImageProperties(mapImage);
-                const imgRatio = imgProps.width / imgProps.height;
-                let drawW = 182;
-                let drawH = drawW / imgRatio;
-
-                if (drawH > 90) { 
-                    drawH = 90;
-                    drawW = 90 * imgRatio;
-                }
+                const imgRatio = doc.getImageProperties(mapImage).width / doc.getImageProperties(mapImage).height;
+                let drawW = 182; let drawH = drawW / imgRatio;
+                if (drawH > 90) { drawH = 90; drawW = 90 * imgRatio; }
                 let xPos = 14 + (182 - drawW) / 2; 
-                
                 doc.addImage(mapImage, 'JPEG', xPos, 45, drawW, drawH);
                 doc.setDrawColor(...dixDarkRGB); doc.setLineWidth(0.5); doc.rect(xPos, 45, drawW, drawH, 'S');
-                
                 mapEndY = 45 + drawH;
-                
                 doc.setFillColor(...dixLightRGB); doc.circle(16, mapEndY + 6, 2, 'F');
                 doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...grayText);
                 doc.text("Majorité Gestion Directe", 20, mapEndY + 7.5);
-                
                 doc.setFillColor(225, 29, 72); doc.circle(70, mapEndY + 6, 2, 'F');
                 doc.text("Majorité Gestion Concédée", 74, mapEndY + 7.5);
-                
-                doc.setFont("helvetica", "italic"); doc.text("Taille du point proportionnelle aux volumes", 130, mapEndY + 7.5);
             }
             
-            let summaryBody = [];
-            let validSectors = Object.keys(agg.sectors).filter(k => agg.sectors[k].meals > 0);
-            let sumMeals = 0, sumDirect = 0, sumConceded = 0, sumBrut = 0;
+            let summaryBody = []; let sumMeals = 0, sumDirect = 0, sumConceded = 0, sumBrut = 0;
             const typeLabels = { creche: "Crèche", maternelle: "Maternelle", elementaire: "Élémentaire", secondaire: "Secondaire", adulte: "Adulte", senior: "Sénior" };
-            
-            validSectors.forEach(k => {
+            Object.keys(agg.sectors).filter(k => agg.sectors[k].meals > 0).forEach(k => {
                 sumMeals += agg.sectors[k].meals; sumDirect += agg.sectors[k].direct; sumConceded += agg.sectors[k].conceded; sumBrut += agg.sectors[k].brutTons;
-                
-                // INTÉGRATION DES POURCENTAGES AU TABLEAU PDF
-                let pctGlobal = sumMeals > 0 ? ((agg.sectors[k].meals / agg.totalMeals) * 100).toFixed(1) : 0;
-                let pctDirect = agg.sectors[k].meals > 0 ? ((agg.sectors[k].direct / agg.sectors[k].meals) * 100).toFixed(0) : 0;
-                let pctConceded = agg.sectors[k].meals > 0 ? ((agg.sectors[k].conceded / agg.sectors[k].meals) * 100).toFixed(0) : 0;
-
-                summaryBody.push([ 
-                    typeLabels[k], 
-                    `${formatNb(Math.round(agg.sectors[k].meals))} (${formatNb(pctGlobal, 1)}%)`, 
-                    `${formatNb(Math.round(agg.sectors[k].direct))} (${pctDirect}%)`, 
-                    `${formatNb(Math.round(agg.sectors[k].conceded))} (${pctConceded}%)`, 
-                    `${formatNb(agg.sectors[k].brutTons, 1)} t` 
-                ]);
+                summaryBody.push([ typeLabels[k], `${formatNb(Math.round(agg.sectors[k].meals))} (${((agg.sectors[k].meals/agg.totalMeals)*100).toFixed(1)}%)`, `${formatNb(Math.round(agg.sectors[k].direct))}`, `${formatNb(Math.round(agg.sectors[k].conceded))}`, `${formatNb(agg.sectors[k].brutTons, 1)} t` ]);
             });
-            
-            let totalPctDirect = sumMeals > 0 ? ((sumDirect / sumMeals) * 100).toFixed(0) : 0;
-            let totalPctConceded = sumMeals > 0 ? ((sumConceded / sumMeals) * 100).toFixed(0) : 0;
+            summaryBody.push([ "TOTAL", `${formatNb(Math.round(sumMeals))} (100%)`, `${formatNb(Math.round(sumDirect))}`, `${formatNb(Math.round(sumConceded))}`, `${formatNb(sumBrut, 1)} t` ]);
 
-            summaryBody.push([ 
-                "TOTAL", 
-                `${formatNb(Math.round(sumMeals))} (100%)`, 
-                `${formatNb(Math.round(sumDirect))} (${totalPctDirect}%)`, 
-                `${formatNb(Math.round(sumConceded))} (${totalPctConceded}%)`, 
-                `${formatNb(sumBrut, 1)} t` 
-            ]);
+            doc.autoTable({ startY: mapEndY + 12, head: [['Secteur', 'Repas / An', 'Dont Directe', 'Dont Concédée', 'Volume Brut']], body: summaryBody, theme: 'grid', headStyles: { fillColor: dixDarkRGB, textColor: 255 }, styles: { fontSize: 10 } });
 
-            doc.autoTable({
-                startY: mapEndY + 12, head: [['Secteur', 'Repas / An', 'Dont Directe', 'Dont Concédée', 'Volume Brut']], body: summaryBody,
-                theme: 'grid', headStyles: { fillColor: dixDarkRGB, textColor: 255, fontStyle: 'bold' }, styles: { font: 'helvetica', fontSize: 10, textColor: 50 }, margin: { left: 14, right: 14 }
-            });
-
-            // --- PAGES DE GRAPHIQUES ---
             function createContentPage(title, subtitle, type) {
                 applyHeaderFooter(title, subtitle);
-
                 let tableBody = []; let totalVal = 0; let chartData = {};
                 for (let k in labels) {
                     const ct = agg.catTotals[k];
                     let mainVal = 0, weeklyVal = 0;
-                    
                     if (type === 'fini') { mainVal = ct.annualFini; weeklyVal = ct.weeklyFiniKg; } 
                     else if (type === 'brut') { mainVal = ct.annualBrut; weeklyVal = ct.weeklyBrutKg; } 
                     else if (type === 'logistique') { mainVal = ct.palletCount; weeklyVal = ct.weeklyBrutKg; }
                     else if (type === 'agri') { mainVal = ct.surface; weeklyVal = 0; }
-                    
                     totalVal += mainVal;
-                    
                     if (mainVal > 0) {
-                        if(type === 'agri') tableBody.push([labels[k], formatNb(mainVal, 2) + (['vpo', 'lai'].includes(k) ? " ha (prairies)" : " ha (cultures)"), "-"]);
-                        else if(type === 'logistique') tableBody.push([labels[k], formatNb(mainVal, 1) + " pal/sem", formatNb(Math.round(weeklyVal)) + " kg"]);
+                        if(type === 'agri') tableBody.push([labels[k], formatNb(mainVal, 2) + " ha", "-"]);
+                        else if(type === 'logistique') tableBody.push([labels[k], formatNb(mainVal, 1) + " pal.", formatNb(Math.round(weeklyVal)) + " kg"]);
                         else tableBody.push([labels[k], formatNb(mainVal, 1) + " t", formatNb(mainVal/12, 1) + " t", formatNb(Math.round(weeklyVal)) + " kg"]);
-                        
                         chartData[k] = { value: mainVal, color: pdfColors[k], label: labels[k] };
                     }
                 }
-                
                 doc.setFillColor(249, 250, 251); doc.roundedRect(14, 50, 80, 25, 2, 2, 'F');
                 doc.setFontSize(10); doc.setTextColor(...grayText); doc.setFont("helvetica", "bold");
-                
-                let boxTitle = type === 'agri' ? "TOTAL FONCIER ESTIMÉ" : (type === 'logistique' ? "FLUX HEBDO ESTIMÉ" : "TOTAL ANNUEL ESTIMÉ");
-                doc.text(boxTitle, 19, 58);
+                doc.text(type === 'agri' ? "TOTAL FONCIER ESTIMÉ" : (type === 'logistique' ? "FLUX HEBDO ESTIMÉ" : "TOTAL ANNUEL ESTIMÉ"), 19, 58);
                 doc.setFontSize(20); doc.setTextColor(...dixDarkRGB);
-                let totalUnit = type === 'agri' ? 'ha' : (type === 'logistique' ? 'Palettes' : 'Tonnes');
-                doc.text(`${formatNb(totalVal, 1)} ${totalUnit}`, 19, 68);
+                doc.text(`${formatNb(totalVal, 1)} ${type === 'agri' ? 'ha' : (type === 'logistique' ? 'Palettes' : 'Tonnes')}`, 19, 68);
                 
-                if (type === 'agri') {
-                    doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(100, 100, 100);
-                    doc.text(`Cultures: ${formatNb(agg.totalCultures, 1)} ha | Prairies: ${formatNb(agg.totalPrairies, 1)} ha`, 19, 74);
-                }
-
-                // Génération HD de l'anneau et Légende tracée en texte vectoriel pour éviter toute coupure
                 const chartBase64 = createSlideDoughnutChartBase64(chartData, 400, 400, 160);
                 if (chartBase64 && type !== 'agri' && type !== 'logistique') {
                     doc.addImage(chartBase64, 'PNG', 100, 42, 40, 40);
-                    
                     let yLegend = 48;
                     for (let k in chartData) {
-                        const item = chartData[k];
-                        const pct = ((item.value / totalVal) * 100).toFixed(1);
-                        
-                        doc.setFillColor(item.color);
-                        doc.roundedRect(145, yLegend - 3, 3, 3, 1, 1, 'F');
-                        
-                        doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB);
-                        doc.text(item.label, 150, yLegend);
-                        doc.setFont("helvetica", "normal"); doc.setTextColor(...grayText);
-                        doc.text(`(${formatNb(pct, 1)} %)`, 175, yLegend);
-                        
+                        doc.setFillColor(chartData[k].color); doc.roundedRect(145, yLegend - 3, 3, 3, 1, 1, 'F');
+                        doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB); doc.text(chartData[k].label, 150, yLegend);
+                        doc.setFont("helvetica", "normal"); doc.setTextColor(...grayText); doc.text(`(${formatNb((chartData[k].value / totalVal) * 100, 1)} %)`, 175, yLegend);
                         yLegend += 6;
                     }
                 }
-
                 let headerCols = type === 'agri' ? ['Catégorie', 'Empreinte (Hectares)', '-'] : (type === 'logistique' ? ['Catégorie', 'Flux (Palettes)', 'Moy. Hebdo (kg)'] : ['Catégorie', 'Annuel', 'Mensuel', 'Moy. Hebdo']);
-                
-                doc.autoTable({
-                    startY: 85, head: [headerCols], body: tableBody, theme: 'grid',
-                    headStyles: { fillColor: dixDarkRGB, textColor: 255, fontStyle: 'bold' }, styles: { font: 'helvetica', fontSize: 11, textColor: 50 }, margin: { left: 14, right: 14 }
-                });
-
-                let readingSentence = "";
-                if (type === 'fini') readingSentence = `Lecture : Le volume net de nourriture réellement consommé dans l'assiette.`;
-                if (type === 'brut') readingSentence = `Lecture : En tenant compte des pertes de préparation, la cuisine devra commander un volume brut d'environ ${formatNb(totalVal, 1)} tonnes.`;
-                if (type === 'logistique') readingSentence = `Lecture : Le transport génèrera un flux estimé à ${formatNb(totalVal, 1)} palettes par semaine.`;
-                if (type === 'agri') readingSentence = `Lecture : Il faudrait sanctuariser ${formatNb(totalVal, 1)} hectares pour relocaliser à 100% cet approvisionnement.`;
-                
-                doc.setFontSize(10); doc.setTextColor(...grayText); doc.setFont("helvetica", "italic");
-                doc.text(doc.splitTextToSize(readingSentence, 180), 14, doc.lastAutoTable.finalY + 10);
+                doc.autoTable({ startY: 85, head: [headerCols], body: tableBody, theme: 'grid', headStyles: { fillColor: dixDarkRGB, textColor: 255 }, styles: { fontSize: 11 } });
             }
 
-            createContentPage("PRODUITS FINIS", "Volumes nets prêts à consommer par les bénéficiaires", 'fini');
-            createContentPage("PRODUITS BRUTS", "Équivalents d'achats nécessaires (entrées structure)", 'brut');
+            createContentPage("PRODUITS FINIS", "Volumes nets lissés consommés dans l'assiette", 'fini');
+            createContentPage("PRODUITS BRUTS", "Achat agricole brut (Après rendement de préparation)", 'brut');
             createContentPage("FLUX LOGISTIQUE", "Estimation de l'empreinte logistique et transport", 'logistique');
             createContentPage("EMPREINTE FONCIÈRE", "Estimation des surfaces agricoles nécessaires", 'agri');
 
-            // --- PAGE FINALE : PÉRIMÈTRE ---
-            applyHeaderFooter("PÉRIMÈTRE D'ÉTUDE", "Liste détaillée des établissements intégrés à la simulation");
-            
-            let estBody = agg.perimeter.map(est => [ est.name, est.city, est.publicType, Math.round(est.mealsPerDay).toString(), est.daysPerYear.toString(), est.managementType ]);
-            
-            doc.autoTable({
-                startY: 45, head: [['Établissement', 'Commune', 'Public', 'Repas/j', 'Jours/an', 'Gestion']], body: estBody,
-                theme: 'grid', headStyles: { fillColor: dixDarkRGB, textColor: 255 }, styles: { font: 'helvetica', fontSize: 9, textColor: 50 }, margin: { left: 14, right: 14 }
-            });
-
-            let fileName = projTitle.replace(/\s+/g, '_') || "DIX_MENSION";
+            let fileName = agg.projectTitleStr.replace(/\s+/g, '_') || "DIX_MENSION";
             doc.save(`${fileName}_Rapport.pdf`);
-
             document.getElementById('loader').style.display = 'none';
         }
 
         async function generateSlidesPDF() {
-            if (!window.dixAggData || window.dixAggData.perimeter.length === 0) return alert("Veuillez d'abord importer des données.");
-            
+            if (!window.dixAggData || window.dixAggData.perimeter.length === 0) return showDialog("Action impossible", "Veuillez d'abord importer des données avant de générer la présentation.");
             document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "Génération de la presentation en cours...";
+            document.getElementById('loader-text').innerText = "Génération de la présentation en cours...";
 
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1280, 720] });
-
                 const mapImage = await captureMapImage();
                 const agg = window.dixAggData;
                 
-                const dixDarkRGB = [64, 95, 89];
-                const dixLightRGB = [191, 222, 159]; // Pistache
-                const grayText = [107, 114, 128];
-
-                const projTitle = agg.projectTitleStr;
-                const projDate = agg.projectDateStr;
+                const dixDarkRGB = [64, 95, 89]; const dixLightRGB = [191, 222, 159]; const grayText = [107, 114, 128];
 
                 const drawFooter = (pageNum) => {
                     doc.setDrawColor(209, 213, 219); doc.setLineWidth(1); doc.line(65, 655, 1215, 655);
-                    doc.setFont("helvetica", "normal"); doc.setFontSize(12); doc.setTextColor(...grayText);
-                    doc.text("© 2026 DIX - La Coopérative des Transitions Agricoles et Alimentaires des Territoires. Tous droits réservés.", 65, 675);
-                    doc.text("SCOP SAS à capital variable | Siège social : 6 Grande Rue, 77320 Chartronges | 830 937 710 R.C.S. Meaux | contact@dix.coop", 65, 695);
-                    doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB);
-                    doc.text(`PAGE ${pageNum}`, 1215, 685, { align: "right" });
+                    doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(...grayText);
+                    doc.text("© 2026 DIX - La Coopérative des Transitions (Sources: data.gouv.fr, ADEME, Agreste, GEM-RCN, CNRC).", 65, 675);
+                    doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB); doc.text(`PAGE ${pageNum}`, 1215, 685, { align: "right" });
                 };
 
                 const drawHeader = (title, subtitle) => {
-                    doc.setFontSize(40); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
-                    doc.text(title, 65, 100);
+                    doc.setFontSize(40); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold"); doc.text(title, 65, 100);
                     doc.setDrawColor(...dixLightRGB); doc.setLineWidth(4); doc.line(65, 120, 600, 120);
-                    doc.setFontSize(20); doc.setTextColor(...grayText); doc.setFont("helvetica", "italic");
-                    doc.text(subtitle, 65, 155);
+                    doc.setFontSize(20); doc.setTextColor(...grayText); doc.setFont("helvetica", "italic"); doc.text(subtitle, 65, 155);
                 };
 
-                // SLIDE 1: TITRE
+                // SLIDE 1
                 doc.setFillColor(249, 250, 251); doc.rect(0, 0, 1280, 720, 'F');
                 let titleStartY = 300;
-                
                 if (logoDataUrl) { 
                     const logoProps = doc.getImageProperties(logoDataUrl);
-                    const lRatio = logoProps.width / logoProps.height;
-                    let lW = 250; let lH = lW / lRatio;
-                    // Blocage hauteur pour éviter les déformations et les conflits
-                    if (lH > 140) { lH = 140; lW = lH * lRatio; }
-                    let lX = 640 - (lW / 2); // Centrage dynamique
-                    
-                    doc.addImage(logoDataUrl, 'PNG', lX, 80, lW, lH, '', 'FAST'); 
-                    titleStartY = 80 + lH + 50; 
+                    let lW = 250; let lH = lW / (logoProps.width / logoProps.height);
+                    if (lH > 140) { lH = 140; lW = lH * (logoProps.width / logoProps.height); }
+                    doc.addImage(logoDataUrl, 'PNG', 640 - (lW / 2), 80, lW, lH, '', 'FAST'); titleStartY = 80 + lH + 50; 
                 }
-                
-                doc.setFont("helvetica", "bold"); doc.setFontSize(40); doc.setTextColor(...grayText);
-                doc.text("RAPPORT D'ANALYSE DIX.MENSION", 640, titleStartY, { align: "center" });
-                
-                doc.setFontSize(35); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
-                const splitTitle = doc.splitTextToSize(projTitle, 1150);
-                doc.text(splitTitle, 640, titleStartY + 50, { align: "center" });
-                
-                const slideOffset = splitTitle.length * 40;
-                doc.setFontSize(20); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "italic");
-                doc.text(`Modélisation générée le ${projDate}`, 640, titleStartY + 60 + slideOffset, { align: "center" });
-                
+                doc.setFont("helvetica", "bold"); doc.setFontSize(40); doc.setTextColor(...grayText); doc.text("RAPPORT D'ANALYSE DIX.MENSION", 640, titleStartY, { align: "center" });
+                doc.setFontSize(35); doc.setTextColor(...dixDarkRGB); doc.text(doc.splitTextToSize(agg.projectTitleStr, 1150), 640, titleStartY + 50, { align: "center" });
                 drawFooter(1);
 
-                // SLIDE 2: PRÉAMBULE
+                // SLIDE 2
                 doc.addPage(); doc.setFillColor(255,255,255); doc.rect(0, 0, 1280, 720, 'F');
                 drawHeader("PRÉAMBULE MÉTHODOLOGIQUE", "Cadre et limites de la modélisation DIX.MENSION");
                 doc.setFillColor(249, 250, 251); doc.roundedRect(65, 200, 1150, 420, 15, 15, 'F');
                 doc.setFontSize(24); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "normal");
-                const splitPreamble = doc.splitTextToSize(preambleText, 1050);
-                doc.text(splitPreamble, 115, 260, { lineHeightFactor: 1.6 });
+                doc.text(doc.splitTextToSize(preambleText, 1050), 115, 260, { lineHeightFactor: 1.6 });
                 drawFooter(2);
 
-                // SLIDE 3: CARTE & VOLUMES
+                // SLIDE 3 : CARTE ET REPARTITION
                 doc.addPage(); doc.setFillColor(255,255,255); doc.rect(0, 0, 1280, 720, 'F');
                 drawHeader("CARTOGRAPHIE DU TERRITOIRE", "Répartition géographique et volumes globaux");
-
                 if (mapImage) {
-                    const imgProps = doc.getImageProperties(mapImage);
-                    const imgRatio = imgProps.width / imgProps.height;
-                    const maxBoxW = 650, maxBoxH = 450;
-                    
-                    let drawW = maxBoxW;
-                    let drawH = drawW / imgRatio;
-                    
-                    if (drawH > maxBoxH) { // Garder le bon ratio sans écraser l'image
-                        drawH = maxBoxH;
-                        drawW = maxBoxH * imgRatio;
-                    }
-                    
-                    let yPos = 180 + (maxBoxH - drawH) / 2; // Centrage vertical dans la boite allouée
-                    
+                    const imgRatio = doc.getImageProperties(mapImage).width / doc.getImageProperties(mapImage).height;
+                    let drawH = 650 / imgRatio; let drawW = 650;
+                    if (drawH > 450) { drawH = 450; drawW = 450 * imgRatio; }
+                    let yPos = 180 + (450 - drawH) / 2;
                     doc.addImage(mapImage, 'JPEG', 65, yPos, drawW, drawH);
                     doc.setDrawColor(220, 220, 220); doc.setLineWidth(2); doc.rect(65, yPos, drawW, drawH, 'S');
-
-                    // --- NOUVEAU BLOC : DONNÉES GLOBALES ET LÉGENDE ---
-                    let legX = 65 + drawW + 60;
                     
+                    let legX = 65 + drawW + 60;
                     let totalDir = 0, totalConc = 0;
-                    for(let k in agg.sectors) { totalDir += agg.sectors[k].direct; totalConc += agg.sectors[k].conceded; }
+                    let typeMeals = { creche: 0, maternelle: 0, elementaire: 0, secondaire: 0, adulte: 0, senior: 0 };
+                    for(let k in agg.sectors) { 
+                        totalDir += agg.sectors[k].direct; 
+                        totalConc += agg.sectors[k].conceded; 
+                        typeMeals[k] = agg.sectors[k].meals;
+                    }
 
-                    // Chiffres globaux
                     doc.setFontSize(45); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
                     doc.text(formatNb(agg.totalMeals), legX, yPos + 40);
                     doc.setFontSize(16); doc.setTextColor(...grayText); doc.setFont("helvetica", "normal");
                     doc.text("REPAS ANNUELS", legX, yPos + 60);
-                    
-                    doc.setDrawColor(230, 230, 230); doc.setLineWidth(1); doc.line(legX, yPos + 80, legX + 250, yPos + 80);
 
-                    // Gestion Directe
-                    doc.setFontSize(28); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
-                    doc.text(formatNb(totalDir), legX, yPos + 120);
-                    doc.setFontSize(14); doc.setTextColor(...grayText); doc.setFont("helvetica", "normal");
-                    doc.text("EN GESTION DIRECTE", legX, yPos + 140);
+                    doc.setDrawColor(230, 230, 230); doc.setLineWidth(1); doc.line(legX, yPos + 80, legX + 300, yPos + 80);
 
-                    // Gestion Concédée
-                    doc.setFontSize(28); doc.setTextColor(225, 29, 72); doc.setFont("helvetica", "bold");
-                    doc.text(formatNb(totalConc), legX, yPos + 180);
-                    doc.setFontSize(14); doc.setTextColor(...grayText); doc.setFont("helvetica", "normal");
-                    doc.text("EN GESTION CONCÉDÉE", legX, yPos + 200);
+                    doc.setFontSize(20); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
+                    doc.text(formatNb(totalDir), legX, yPos + 110);
+                    doc.setFontSize(12); doc.setTextColor(...grayText); doc.setFont("helvetica", "normal");
+                    doc.text("GESTION DIRECTE", legX, yPos + 125);
 
-                    doc.setDrawColor(230, 230, 230); doc.setLineWidth(1); doc.line(legX, yPos + 230, legX + 250, yPos + 230);
+                    doc.setFontSize(20); doc.setTextColor(225, 29, 72); doc.setFont("helvetica", "bold");
+                    doc.text(formatNb(totalConc), legX + 150, yPos + 110);
+                    doc.setFontSize(12); doc.setTextColor(...grayText); doc.setFont("helvetica", "normal");
+                    doc.text("GESTION CONCÉDÉE", legX + 150, yPos + 125);
 
-                    // Légende de la carte
-                    doc.setFontSize(16); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
-                    doc.text("LÉGENDE CARTE", legX, yPos + 270);
-                    
-                    doc.setFillColor(...dixLightRGB); doc.circle(legX + 8, yPos + 300, 8, 'F');
-                    doc.setFontSize(14); doc.setFont("helvetica", "normal"); doc.setTextColor(...grayText);
-                    doc.text("Majorité Gestion Directe", legX + 25, yPos + 305);
-                    
-                    doc.setFillColor(225, 29, 72); doc.circle(legX + 8, yPos + 340, 8, 'F');
-                    doc.text("Majorité Gestion Concédée", legX + 25, yPos + 345);
+                    doc.setDrawColor(230, 230, 230); doc.setLineWidth(1); doc.line(legX, yPos + 145, legX + 300, yPos + 145);
 
-                    doc.setFont("helvetica", "italic"); doc.setFontSize(12);
-                    doc.text("Taille proportionnelle au volume.", legX, yPos + 380);
-
-                } else {
-                    doc.setDrawColor(200,200,200); doc.setLineWidth(2); doc.roundedRect(65, 180, 650, 420, 8, 8, 'S');
-                    doc.setFontSize(20); doc.setTextColor(150,150,150); doc.setFont("helvetica", "normal");
-                    doc.text("Cartographie indisponible", 390, 390, { align: "center" });
-                }
-                drawFooter(3);
-
-                // SLIDES 4 À 7 : FONCTION DYNAMIQUE DE DÉTAILS
-                const createAnalyticSlide = (type, pageNum) => {
-                    doc.addPage(); doc.setFillColor(255,255,255); doc.rect(0, 0, 1280, 720, 'F');
-                    
-                    let title = "", subtitle = "", totalVal = 0, unit = "", totalLabel = "";
-                    let chartData = {}; let listItems = [];
-
-                    if (type === 'fini') {
-                        title = "PRODUITS FINIS"; subtitle = "Volumes nets prêts à consommer par les bénéficiaires";
-                        totalVal = agg.totalFini; unit = "Tonnes / an"; totalLabel = "VOLUME NET";
-                    } else if (type === 'brut') {
-                        title = "PRODUITS BRUTS"; subtitle = "Équivalents d'achats nécessaires (entrées structure)";
-                        totalVal = agg.totalBrut; unit = "Tonnes / an"; totalLabel = "VOLUME BRUT";
-                    } else if (type === 'logistique') {
-                        title = "FLUX LOGISTIQUE"; subtitle = "Estimation de l'empreinte logistique et transport";
-                        totalVal = agg.totalPallets; unit = "Palettes / sem."; totalLabel = "FLUX MOYEN";
-                    } else if (type === 'agri') {
-                        title = "EMPREINTE FONCIÈRE"; subtitle = "Estimation des surfaces agricoles nécessaires";
-                        totalVal = agg.totalAgri; unit = "Hectares"; totalLabel = "SURFACE TOTALE";
-                    }
-                    
-                    drawHeader(title, subtitle);
-
-                    for (let k in labels) {
-                        const ct = agg.catTotals[k];
-                        let mainVal = 0;
-                        if (type === 'fini') mainVal = ct.annualFini;
-                        else if (type === 'brut') mainVal = ct.annualBrut;
-                        else if (type === 'logistique') mainVal = ct.palletCount;
-                        else if (type === 'agri') mainVal = ct.surface;
-
-                        if (mainVal > 0) {
-                            chartData[k] = { value: mainVal, color: pdfColors[k], label: labels[k] };
-                            let valStr = "";
-                            if(type === 'agri') valStr = formatNb(mainVal, 1) + " ha";
-                            else if(type === 'logistique') valStr = formatNb(mainVal, 1) + " pal.";
-                            else valStr = formatNb(mainVal, 1) + " t";
-                            
-                            listItems.push({ color: pdfColors[k], label: labels[k], valStr: valStr, val: mainVal });
+                    doc.setFontSize(14); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
+                    doc.text("RÉPARTITION PAR PUBLIC", legX, yPos + 175);
+                    let yTypo = yPos + 195;
+                    const typeLabels = { creche: "Crèche", maternelle: "Maternelle", elementaire: "Élémentaire", secondaire: "Secondaire", adulte: "Adulte", senior: "Sénior" };
+                    for(let k in typeMeals) {
+                        if(typeMeals[k] > 0) {
+                            doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(...grayText);
+                            doc.text(`• ${typeLabels[k]} :`, legX, yTypo);
+                            doc.setFont("helvetica", "normal");
+                            doc.text(`${formatNb(Math.round(typeMeals[k]))} repas`, legX + 90, yTypo);
+                            yTypo += 18;
                         }
                     }
 
-                    // BLOC GAUCHE - Fond grisé et valeurs globales
-                    doc.setFillColor(249, 250, 251); doc.roundedRect(65, 230, 240, 240, 12, 12, 'F');
-                    doc.setFontSize(60); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
-                    doc.text(formatNb(totalVal, 1), 185, 330, { align: "center" });
-                    doc.setFontSize(26); doc.setTextColor(...dixDarkRGB);
-                    doc.text(unit, 185, 380, { align: "center" });
-                    doc.setFontSize(18); doc.setTextColor(...grayText); doc.setFont("helvetica", "normal");
-                    doc.text(totalLabel, 185, 420, { align: "center" });
+                    doc.setDrawColor(230, 230, 230); doc.setLineWidth(1); doc.line(legX, yTypo + 10, legX + 300, yTypo + 10);
+
+                    doc.setFontSize(14); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold");
+                    doc.text("LÉGENDE CARTE", legX, yTypo + 35);
+                    doc.setFillColor(...dixLightRGB); doc.circle(legX + 6, yTypo + 55, 6, 'F');
+                    doc.setFontSize(12); doc.setFont("helvetica", "normal"); doc.setTextColor(...grayText);
+                    doc.text("Majorité Directe", legX + 18, yTypo + 59);
+                    doc.setFillColor(225, 29, 72); doc.circle(legX + 130, yTypo + 55, 6, 'F');
+                    doc.text("Majorité Concédée", legX + 142, yTypo + 59);
+                    doc.setFont("helvetica", "italic"); doc.setFontSize(10);
+                    doc.text("Taille proportionnelle au volume.", legX, yTypo + 80);
+                }
+                drawFooter(3);
+
+                // SLIDES 4-7
+                const createAnalyticSlide = (type, pageNum) => {
+                    doc.addPage(); doc.setFillColor(255,255,255); doc.rect(0, 0, 1280, 720, 'F');
+                    let title = "", subtitle = "", totalVal = 0, unit = "", totalLabel = ""; let chartData = {}; let listItems = [];
+                    if (type === 'fini') { title = "PRODUITS FINIS"; subtitle = "Volumes nets lissés consommés"; totalVal = agg.totalFini; unit = "Tonnes / an"; totalLabel = "VOLUME NET"; }
+                    else if (type === 'brut') { title = "PRODUITS BRUTS"; subtitle = "Achat agricole brut"; totalVal = agg.totalBrut; unit = "Tonnes / an"; totalLabel = "VOLUME BRUT"; }
+                    else if (type === 'logistique') { title = "FLUX LOGISTIQUE"; subtitle = "Empreinte transport"; totalVal = agg.totalPallets; unit = "Pal. / sem."; totalLabel = "FLUX MOYEN"; }
+                    else if (type === 'agri') { title = "EMPREINTE FONCIÈRE"; subtitle = "Surfaces agricoles nécessaires"; totalVal = agg.totalAgri; unit = "Hectares"; totalLabel = "SURFACE"; }
                     
-                    if (type === 'agri') {
-                        doc.setFontSize(18); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "italic");
-                        doc.text(`Cultures : ${formatNb(agg.totalCultures, 1)} ha`, 185, 490, { align: "center" });
-                        doc.text(`Prairies : ${formatNb(agg.totalPrairies, 1)} ha`, 185, 530, { align: "center" });
+                    drawHeader(title, subtitle);
+                    for (let k in labels) {
+                        let mainVal = type === 'fini' ? agg.catTotals[k].annualFini : (type === 'brut' ? agg.catTotals[k].annualBrut : (type === 'logistique' ? agg.catTotals[k].palletCount : agg.catTotals[k].surface));
+                        if (mainVal > 0) {
+                            chartData[k] = { value: mainVal, color: pdfColors[k], label: labels[k] };
+                            listItems.push({ color: pdfColors[k], label: labels[k], valStr: formatNb(mainVal, 1) + (type==='agri'?" ha":(type==='logistique'?" pal.":" t")), val: mainVal });
+                        }
                     }
 
-                    // BLOC MILIEU (Graphique pur sans texte)
+                    doc.setFillColor(249, 250, 251); doc.roundedRect(65, 230, 240, 240, 12, 12, 'F');
+                    doc.setFontSize(60); doc.setTextColor(...dixDarkRGB); doc.setFont("helvetica", "bold"); doc.text(formatNb(totalVal, 1), 185, 330, { align: "center" });
+                    doc.setFontSize(26); doc.text(unit, 185, 380, { align: "center" });
+                    
                     const chartBase64 = createSlideDoughnutChartBase64(chartData, 600, 600, 240);
                     if (chartBase64) doc.addImage(chartBase64, 'PNG', 320, 180, 420, 420);
-
-                    // BLOC DROIT (Légende Vectorielle HD)
+                    
                     let yList = 240;
                     listItems.forEach(item => {
-                        const pct = totalVal > 0 ? ((item.val / totalVal) * 100).toFixed(1) : 0;
-                        
                         doc.setFillColor(item.color); doc.roundedRect(780, yList - 20, 24, 24, 6, 6, 'F');
-                        doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB);
-                        doc.text(item.label, 825, yList);
-                        
-                        doc.setFontSize(18); doc.setFont("helvetica", "normal"); doc.setTextColor(...grayText);
-                        doc.text(`(${formatNb(pct, 1)} %)`, 970, yList);
-                        
-                        doc.setFontSize(24); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB);
-                        doc.text(item.valStr, 1215, yList, { align: "right" });
-                        
-                        doc.setDrawColor(240, 240, 240); doc.setLineWidth(2);
-                        doc.line(780, yList + 15, 1215, yList + 15);
-                        
+                        doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.setTextColor(...dixDarkRGB); doc.text(item.label, 825, yList);
+                        doc.setFontSize(24); doc.text(item.valStr, 1215, yList, { align: "right" });
                         yList += 65;
                     });
-
                     drawFooter(pageNum);
                 };
 
-                createAnalyticSlide('fini', 4);
-                createAnalyticSlide('brut', 5);
-                createAnalyticSlide('logistique', 6);
-                createAnalyticSlide('agri', 7);
-
-                let fileName = projTitle.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_') || "DIX_MENSION";
-                doc.save(`${fileName}_Presentation.pdf`);
+                createAnalyticSlide('fini', 4); createAnalyticSlide('brut', 5); createAnalyticSlide('logistique', 6); createAnalyticSlide('agri', 7);
+                doc.save(`${agg.projectTitleStr.replace(/[^a-z0-9]/gi, '_') || "DIX_MENSION"}_Presentation.pdf`);
 
             } catch (error) {
-                console.error("Erreur de génération des Slides :", error);
-                alert("Une erreur est survenue lors de la génération. Consultez la console pour plus de détails.");
-            } finally {
-                document.getElementById('loader').style.display = 'none';
-            }
+                showDialog("Erreur de génération", "Une erreur inattendue est survenue lors de la création du PDF. Consultez la console pour plus de détails.");
+            } finally { document.getElementById('loader').style.display = 'none'; }
         }
     </script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </body>
 </html>
