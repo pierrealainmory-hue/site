@@ -1449,14 +1449,18 @@
         }
 
         async function updateMap() {
-            if (!map) {
-                map = L.map('map', { preferCanvas: true }).setView([46.603354, 1.888334], 6);
+            // Fix: Déclaration explicite sur l'objet window pour éviter tout ReferenceError
+            window.dixMap = window.dixMap || null;
+            window.dixCityCoordinates = window.dixCityCoordinates || {};
+
+            if (!window.dixMap) {
+                window.dixMap = L.map('map', { preferCanvas: true }).setView([46.603354, 1.888334], 6);
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
                     attribution: '&copy; Esri', className: 'bw-map', maxZoom: 16, crossOrigin: true
-                }).addTo(map);
+                }).addTo(window.dixMap);
             }
             
-            setTimeout(() => map.invalidateSize(), 100);
+            setTimeout(() => window.dixMap.invalidateSize(), 100);
 
             let cityData = {};
 
@@ -1475,7 +1479,7 @@
                 else cityData[city].conceded += meals;
             });
 
-            map.eachLayer((layer) => { if (layer instanceof L.CircleMarker) layer.remove(); });
+            window.dixMap.eachLayer((layer) => { if (layer instanceof L.CircleMarker) layer.remove(); });
 
             let bounds = [];
 
@@ -1483,7 +1487,7 @@
                 if(city === "Inconnue" || city === "N/A" || city.trim() === "") continue;
                 let cData = cityData[city];
                 
-                if (!cityCoordinates[city]) {
+                if (!window.dixCityCoordinates[city]) {
                     try {
                         let queryUrl = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(city)}&type=municipality&limit=1`;
                         if(cData.insee) queryUrl += `&citycode=${cData.insee}`;
@@ -1491,12 +1495,12 @@
                         let data = await res.json();
                         if (data.features && data.features.length > 0) {
                             let coords = data.features[0].geometry.coordinates;
-                            cityCoordinates[city] = [coords[1], coords[0]]; 
+                            window.dixCityCoordinates[city] = [coords[1], coords[0]]; 
                         }
                     } catch(e) {}
                 }
 
-                if (cityCoordinates[city]) {
+                if (window.dixCityCoordinates[city]) {
                     let radius = Math.max(10, Math.sqrt(cData.meals) / 12); 
                     let isDirect = cData.direct >= cData.conceded;
                     
@@ -1520,15 +1524,15 @@
 
                     let markerColor = isDirect ? '#bfde9f' : '#e11d48';
                     
-                    L.circleMarker(cityCoordinates[city], {
+                    L.circleMarker(window.dixCityCoordinates[city], {
                         radius: radius, fillColor: markerColor, color: "#fff", weight: 1, opacity: 1, fillOpacity: 0.8
-                    }).addTo(map).bindPopup(popupContent);
+                    }).addTo(window.dixMap).bindPopup(popupContent);
                       
-                    bounds.push(cityCoordinates[city]);
+                    bounds.push(window.dixCityCoordinates[city]);
                 }
             }
 
-            if (bounds.length > 0) map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+            if (bounds.length > 0) window.dixMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
         }
 
         window.onload = function() { 
@@ -1655,7 +1659,10 @@
             if (!mapEl || typeof html2canvas === 'undefined') return null;
             const tiles = document.querySelectorAll('.bw-map');
             tiles.forEach(t => t.style.filter = 'none');
-            if (map) map.invalidateSize();
+            
+            if (window.dixMap) window.dixMap.invalidateSize();
+            else if (typeof map !== 'undefined' && map) map.invalidateSize();
+            
             await new Promise(resolve => setTimeout(resolve, 800));
             try {
                 const canvas = await html2canvas(mapEl, { useCORS: true, allowTaint: false, scale: 2, backgroundColor: '#f9fafb', logging: false });
